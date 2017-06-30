@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "392609190134",
+    "firebase_url": "https://buddies-5d07f.firebaseio.com",
+    "project_id": "buddies-5d07f",
+    "storage_bucket": "buddies-5d07f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:392609190134:android:0855b2c0f919193f",
+        "android_client_info": {
+          "package_name": "br.com.felipeacerbi.buddies"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "392609190134-m075cij0fj085r4tgjg7agvah6nupq56.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.com.felipeacerbi.buddies",
+            "certificate_hash": "8371ed39677801ac76ae94ef79d9c0e919cc50c6"
+          }
+        },
+        {
+          "client_id": "392609190134-md16nkbipujdf1qv6ruu1krkgs35mnjb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHSl08VJi1X1TIHOBMUWQVepVACw-2mUg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "392609190134-md16nkbipujdf1qv6ruu1krkgs35mnjb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
