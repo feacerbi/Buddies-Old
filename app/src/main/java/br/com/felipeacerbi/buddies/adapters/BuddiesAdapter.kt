@@ -4,7 +4,7 @@ import android.support.v4.util.SparseArrayCompat
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import br.com.felipeacerbi.buddies.FirebaseService
-import br.com.felipeacerbi.buddies.adapters.delegates.BuddyDelegateAdapter
+import br.com.felipeacerbi.buddies.adapters.delegates.BuddiesDelegateAdapter
 import br.com.felipeacerbi.buddies.adapters.delegates.CategoryDelegateAdapter
 import br.com.felipeacerbi.buddies.adapters.interfaces.IOnListFragmentInteractionListener
 import br.com.felipeacerbi.buddies.adapters.interfaces.ViewType
@@ -13,7 +13,6 @@ import br.com.felipeacerbi.buddies.adapters.interfaces.ViewTypeDelegateAdapter
 import br.com.felipeacerbi.buddies.models.Category
 import br.com.felipeacerbi.buddies.utils.Constants
 import br.com.felipeacerbi.buddies.utils.forEach
-import javax.inject.Inject
 
 /**
  * [RecyclerView.Adapter] that can display a list and makes a call to the
@@ -30,16 +29,16 @@ class BuddiesAdapter(private var items: ArrayList<ViewType> = ArrayList<ViewType
 
     init {
         delegateAdapters.put(Constants.CATEGORY_VIEW_TYPE, CategoryDelegateAdapter())
-        delegateAdapters.put(Constants.BUDDY_VIEW_TYPE, BuddyDelegateAdapter(firebaseService.getUserPetsReference(firebaseService.getCurrentUsername())))
+        //delegateAdapters.put(Constants.BUDDY_VIEW_TYPE, BuddiesDelegateAdapter(firebaseService.getUserPetsReference(firebaseService.getCurrentUsername())))
         items.add(Category("Buddies"))
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return delegateAdapters.get(viewType).onCreateViewHolder(parent)
+        return delegateAdapters.get(viewType).onCreateDelegateViewHolder(parent)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        delegateAdapters.get(getItemViewType(position)).onBindViewHolder(holder, items[position])
+        delegateAdapters.get(getItemViewType(position)).onBindDelegateViewHolder(holder, position, items[position])
     }
 
     override fun getItemViewType(position: Int): Int {

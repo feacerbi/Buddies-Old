@@ -12,6 +12,7 @@ import br.com.felipeacerbi.buddies.BuddiesApplication
 import br.com.felipeacerbi.buddies.FirebaseService
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.adapters.BuddiesAdapter
+import br.com.felipeacerbi.buddies.adapters.delegates.BuddiesDelegateAdapter
 import br.com.felipeacerbi.buddies.adapters.interfaces.IOnListFragmentInteractionListener
 import br.com.felipeacerbi.buddies.adapters.interfaces.ViewType
 import br.com.felipeacerbi.buddies.models.Buddy
@@ -32,8 +33,7 @@ import javax.inject.Inject
 class BuddiesListFragment : Fragment() {
 
     private var mListener: IOnListFragmentInteractionListener? = null
-
-    @Inject lateinit var firebaseService: FirebaseService
+    val firebaseService: FirebaseService = FirebaseService()
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -46,13 +46,13 @@ class BuddiesListFragment : Fragment() {
         if (view is RecyclerView) {
             with(view) {
                 layoutManager = LinearLayoutManager(context)
-                adapter = BuddiesAdapter(firebaseService = firebaseService, listener = mListener)
+                adapter = BuddiesDelegateAdapter(firebaseService.getUserPetsReference(firebaseService.getCurrentUsername())) //BuddiesAdapter(firebaseService = firebaseService, listener = mListener)
             }
         }
         return view
     }
 
-    fun getAdapter() = list.adapter as BuddiesAdapter
+    fun getAdapter(): BuddiesDelegateAdapter? = if(list != null && list.adapter != null) (list.adapter as BuddiesDelegateAdapter) else null
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -66,6 +66,6 @@ class BuddiesListFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         mListener = null
-        getAdapter().cleanAdapters()
+        getAdapter()?.cleanup()
     }
 }

@@ -18,10 +18,9 @@ import br.com.felipeacerbi.buddies.adapters.interfaces.IOnListFragmentInteractio
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.adapters.interfaces.ViewType
 import br.com.felipeacerbi.buddies.fragments.BuddiesListFragment
-import br.com.felipeacerbi.buddies.models.NFCTag
-import com.google.firebase.auth.FirebaseAuth
+import br.com.felipeacerbi.buddies.models.BaseTag
+import br.com.felipeacerbi.buddies.models.Buddy
 import kotlinx.android.synthetic.main.activity_main.*
-import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), IOnListFragmentInteractionListener {
 
@@ -29,7 +28,7 @@ class MainActivity : AppCompatActivity(), IOnListFragmentInteractionListener {
         val TAG = "MainActivity"
     }
 
-    @Inject lateinit var firebaseService: FirebaseService
+    val firebaseService = FirebaseService()
 
     val nfcService: NFCService by lazy {
         NFCService()
@@ -42,7 +41,6 @@ class MainActivity : AppCompatActivity(), IOnListFragmentInteractionListener {
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_dashboard -> {
-                transactToFragment(BuddiesListFragment(), R.id.container)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_notifications -> {
@@ -76,7 +74,7 @@ class MainActivity : AppCompatActivity(), IOnListFragmentInteractionListener {
 
         supportActionBar?.title = firebaseService.getCurrentUserDisplayName()
 
-        firebaseService.registerUser()
+        //firebaseService.registerUser()
 
         transactToFragment(BuddiesListFragment(), R.id.container)
     }
@@ -94,7 +92,7 @@ class MainActivity : AppCompatActivity(), IOnListFragmentInteractionListener {
             when(intent.action) {
                 NfcAdapter.ACTION_NDEF_DISCOVERED -> {
                     val nfcTag = nfcService.parseIntent(intent)
-                    showTwoChoiceDialog(
+                    showTwoChoiceCancelableDialog(
                             "TAG Scan",
                             "A new TAG was detected, what do you want to do?",
                             "Follow Buddy",
@@ -109,17 +107,16 @@ class MainActivity : AppCompatActivity(), IOnListFragmentInteractionListener {
         }
     }
 
-    fun showTagInfo(nfcTag: NFCTag) {
-//        showTextDialog("Tag id: " + nfcTag.id + "\n" +
-//                "Tag tech: " + nfcTag.tag + "\n" +
-//                "Tag message: " + nfcTag.ndefMessage + "\n" +
-//                "Tag decoded: " + nfcTag.decodedPayload)
+    fun showTagInfo(baseTag: BaseTag) {
+//        showTextDialog("Tag id: " + baseTag.id + "\n" +
+//                "Tag tech: " + baseTag.tagId + "\n" +
+//                "Tag message: " + baseTag.ndefMessage + "\n" +
+//                "Tag decoded: " + baseTag.decodedPayload)
 
 //        val frag = supportFragmentManager.findFragmentById(R.id.container) as BuddiesListFragment
-//        frag.addBuddy(nfcTag.decodedPayload)
+//        frag.addBuddy(baseTag.decodedPayload)
 
-        nfcTag.petName = "Rex"
-        firebaseService.addNewPet(nfcTag)
+        firebaseService.addNewPet(baseTag, Buddy("Rex", "Pug"))
     }
 
     override fun onListFragmentInteraction(item: ViewType) {
@@ -152,15 +149,15 @@ class MainActivity : AppCompatActivity(), IOnListFragmentInteractionListener {
         finish()
     }
 
-    fun showTextDialog(text: String) {
+    fun showTextDialog(text: String, func: (DialogInterface, Int) -> Unit) {
         val dialog = AlertDialog.Builder(this)
         dialog.setTitle("Alert")
                 .setMessage(text)
-                .setPositiveButton("OK") { _, _ ->  }
+                .setPositiveButton("OK", func)
                 .show()
     }
 
-    fun showTwoChoiceDialog(
+    fun showTwoChoiceCancelableDialog(
             title: String,
             message: String,
             buttonOneTitle: String,
@@ -171,7 +168,8 @@ class MainActivity : AppCompatActivity(), IOnListFragmentInteractionListener {
         dialog.setTitle(title)
                 .setMessage(message)
                 .setPositiveButton(buttonOneTitle, funcOne)
-                .setNeutralButton(buttonTwoTitle, funcTwo)
+                .setNegativeButton(buttonTwoTitle, funcTwo)
+                .setNeutralButton("Cancel") { _, _ ->  }
                 .show()
     }
 

@@ -5,7 +5,7 @@ import android.nfc.NdefMessage
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.util.Log
-import br.com.felipeacerbi.buddies.models.NFCTag
+import br.com.felipeacerbi.buddies.models.BaseTag
 import br.com.felipeacerbi.buddies.utils.toHexString
 import java.io.UnsupportedEncodingException
 import kotlin.experimental.and
@@ -19,7 +19,7 @@ class NFCService {
         val TAG = "NFCService"
     }
 
-    fun parseIntent(intent: Intent): NFCTag {
+    fun parseIntent(intent: Intent): BaseTag {
 
         val messages = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)
         var message: NdefMessage? = null
@@ -30,12 +30,12 @@ class NFCService {
         }
 
         val tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
-        Log.d(TAG, "Ndef tag: " + tag)
+        Log.d(TAG, "Ndef tagId: " + tag)
 
         val id = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID).toHexString()
         Log.d(TAG, "Ndef id: " + id)
 
-        return NFCTag(tag, message, id, decodePayload(message))
+        return BaseTag(id = id)
     }
 
     private fun decodePayload(ndefMessage: NdefMessage?): String {

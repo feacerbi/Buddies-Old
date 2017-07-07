@@ -14,16 +14,18 @@ import kotlinx.android.synthetic.main.category_list_item.view.*
  */
 class CategoryDelegateAdapter : ViewTypeDelegateAdapter {
 
-    override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
+    override fun onCreateDelegateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
         return CategoryViewHolder(parent)
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, item: ViewType) {
-        holder as CategoryViewHolder
-        item as Category
+    override fun onBindDelegateViewHolder(holder: RecyclerView.ViewHolder, position: Int, item: ViewType?) {
+        if(item != null) {
+            holder as CategoryViewHolder
+            item as Category
 
-        with(holder.itemView) {
-            title.text = item.title
+            with(holder.itemView) {
+                title.text = item.title
+            }
         }
     }
 
