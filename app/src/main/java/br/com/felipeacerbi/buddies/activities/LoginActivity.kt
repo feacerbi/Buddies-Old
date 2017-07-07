@@ -1,4 +1,4 @@
-package br.com.felipeacerbi.buddies
+package br.com.felipeacerbi.buddies.activities
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -12,11 +12,11 @@ import android.widget.TextView
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
+import br.com.felipeacerbi.buddies.R
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.*
 
-import kotlinx.android.synthetic.main.activity_login.*
 import java.lang.Exception
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.auth.api.Auth
@@ -26,12 +26,17 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import kotlinx.android.synthetic.main.activity_login.view.*
+import kotlinx.android.synthetic.main.activity_login.*
 
 /**
  * A login screen that offers login via email/password.
  */
 class LoginActivity : AppCompatActivity(), OnCompleteListener<AuthResult>, GoogleApiClient.OnConnectionFailedListener {
+
+    companion object {
+        val TAG = "LoginActivity"
+        val RC_SIGN_IN = 100
+    }
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -74,31 +79,32 @@ class LoginActivity : AppCompatActivity(), OnCompleteListener<AuthResult>, Googl
 
     override fun onStart() {
         super.onStart()
-        if(email.text.isEmpty()) {
+        if(isSignedIn()) {
+            launchMainActivity()
+        } else if(email.text.isEmpty()) {
             email.requestFocus()
         } else {
             password.requestFocus()
         }
         password.setText("")
-        showProgress(false)
     }
 
     private fun signInWithGoogle() {
         showProgress(true)
         val signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient)
-        Log.d("Login", "Starting Google sign in")
+        Log.d(TAG, "Starting Google sign in")
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }
 
     override fun onConnectionFailed(result: ConnectionResult) {
         Toast.makeText(this, "Fail to login", Toast.LENGTH_SHORT).show()
-        Log.w("Login", "Login failed " + result.errorMessage)
+        Log.w(TAG, "Login failed " + result.errorMessage)
         showProgress(false)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         super.onActivityResult(requestCode, resultCode, data)
-        Log.d("Login", "Activity result code " + requestCode)
+        Log.d(TAG, "Activity result code " + requestCode)
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
@@ -109,15 +115,17 @@ class LoginActivity : AppCompatActivity(), OnCompleteListener<AuthResult>, Googl
 
     private fun handleSignInResult(result: GoogleSignInResult) {
         if (result.isSuccess) {
-            Log.d("Login", "Login success")
+            Log.d(TAG, "Login success")
             // Signed in successfully, show authenticated UI.
             val account = result.signInAccount
             if(account != null) {
                 firebaseAuthWithGoogle(account)
+            } else {
+                Log.w(TAG, "Login account null")
+                showProgress(false)
             }
-            Log.w("Login", "Login account null")
         } else {
-            Log.w("Login", "Login is not success")
+            Log.w(TAG, "Google login is not success")
             // Signed out, show unauthenticated UI.
             showProgress(false)
         }
@@ -129,14 +137,17 @@ class LoginActivity : AppCompatActivity(), OnCompleteListener<AuthResult>, Googl
                 .addOnCompleteListener(this)
                 { task ->
                     // Sign in success, update UI with the signed-in user's information
-                    if (task.isSuccessful && firebaseAuth.currentUser != null) {
+                    if (task.isSuccessful && isSignedIn()) {
                         launchMainActivity()
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        showProgress(false)
                     }
+
+                    Log.w(TAG, "Firebase login is not success")
+                    // If sign in fails, display a message to the user.
+                    showProgress(false)
                 }
     }
+
+    fun isSignedIn() = firebaseAuth.currentUser != null
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -203,12 +214,12 @@ class LoginActivity : AppCompatActivity(), OnCompleteListener<AuthResult>, Googl
     override fun onComplete(task: Task<AuthResult>) {
         var focusView: View? = null
         if(task.isSuccessful) {
-            Log.d("Login", "Login successful")
+            Log.d(TAG, "Login successful")
             if(firebaseAuth.currentUser != null) {
                 launchMainActivity()
             } else {
                 Toast.makeText(this, "Fail to login, user invalid", Toast.LENGTH_SHORT).show()
-                Log.w("Login", "Login user invalid " + task.result.toString())
+                Log.w(TAG, "Login user invalid " + task.result.toString())
                 focusView = email
                 showProgress(false)
             }
@@ -217,21 +228,21 @@ class LoginActivity : AppCompatActivity(), OnCompleteListener<AuthResult>, Googl
                 throw task.exception!!
             } catch(e: FirebaseAuthUserCollisionException) {
                 Toast.makeText(this, "Fail to login, user already registered", Toast.LENGTH_SHORT).show()
-                Log.w("Login", "Login failed " + e.message)
+                Log.w(TAG, "Login failed " + e.message)
                 focusView = email
             } catch(e: FirebaseAuthInvalidCredentialsException) {
                 Toast.makeText(this, "Fail to login, wrong password", Toast.LENGTH_SHORT).show()
-                Log.w("Login", "Login failed " + e.message)
+                Log.w(TAG, "Login failed " + e.message)
                 focusView = password
             } catch(e: Exception) {
                 Toast.makeText(this, "Fail to login, unknown exception", Toast.LENGTH_SHORT).show()
-                Log.w("Login", "Login failed " + e.message)
+                Log.w(TAG, "Login failed " + e.message)
                 focusView = email
             }
             showProgress(false)
         } else {
             Toast.makeText(this, "Fail to login, unknown error", Toast.LENGTH_SHORT).show()
-            Log.w("Login", "Login failed " + task.result.toString())
+            Log.w(TAG, "Login failed " + task.result.toString())
             focusView = email
             showProgress(false)
         }
@@ -249,6 +260,7 @@ class LoginActivity : AppCompatActivity(), OnCompleteListener<AuthResult>, Googl
     private fun launchMainActivity() {
         val mainActivityIntent = Intent(this, MainActivity::class.java)
         startActivity(mainActivityIntent)
+        finish()
     }
 
     /**
@@ -279,9 +291,5 @@ class LoginActivity : AppCompatActivity(), OnCompleteListener<AuthResult>, Googl
                         login_progress.visibility = if (show) View.VISIBLE else View.GONE
                     }
                 })
-    }
-
-    companion object {
-        val RC_SIGN_IN = 100
     }
 }

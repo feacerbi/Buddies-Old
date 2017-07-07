@@ -1,5 +1,6 @@
 package br.com.felipeacerbi.buddies
 
+import br.com.felipeacerbi.buddies.activities.LoginActivity
 import org.junit.Assert
 import org.junit.Test
 
