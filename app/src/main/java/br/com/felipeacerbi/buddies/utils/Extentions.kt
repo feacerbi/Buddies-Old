@@ -1,10 +1,11 @@
 package br.com.felipeacerbi.buddies.utils
 
 import android.support.v4.util.SparseArrayCompat
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import br.com.felipeacerbi.buddies.adapters.interfaces.ViewTypeDelegateAdapter
+import android.widget.Adapter
 
 /**
  * Created by felipe.acerbi on 04/07/2017.
@@ -36,7 +37,7 @@ fun String.toUsername(): String {
     return this.toLowerCase().trim().replace(".", "", true).replace("@", "", true)
 }
 
-fun SparseArrayCompat<ViewTypeDelegateAdapter>.forEach(func: (adapter: ViewTypeDelegateAdapter) -> Unit) {
+fun SparseArrayCompat<RecyclerView.Adapter<RecyclerView.ViewHolder>>.forEach(func: (adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>) -> Unit) {
     if(size() > 0) {
         var i = 0
         while(i < size()) {

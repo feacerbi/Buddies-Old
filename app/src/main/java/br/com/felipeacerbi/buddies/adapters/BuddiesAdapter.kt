@@ -1,65 +1,63 @@
-package br.com.felipeacerbi.buddies.adapters
+package br.com.felipeacerbi.buddies.adapters.delegates
 
-import android.support.v4.util.SparseArrayCompat
 import android.support.v7.widget.RecyclerView
-import android.view.ViewGroup
+import android.util.Log
+import android.view.View
 import br.com.felipeacerbi.buddies.FirebaseService
-import br.com.felipeacerbi.buddies.adapters.delegates.BuddiesDelegateAdapter
-import br.com.felipeacerbi.buddies.adapters.delegates.CategoryDelegateAdapter
+import br.com.felipeacerbi.buddies.models.Buddy
+import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.adapters.interfaces.IOnListFragmentInteractionListener
-import br.com.felipeacerbi.buddies.adapters.interfaces.ViewType
-import br.com.felipeacerbi.buddies.adapters.interfaces.ViewTypeDelegateAdapter
-
-import br.com.felipeacerbi.buddies.models.Category
-import br.com.felipeacerbi.buddies.utils.Constants
-import br.com.felipeacerbi.buddies.utils.forEach
+import com.firebase.ui.database.FirebaseRecyclerAdapter
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
+import kotlinx.android.synthetic.main.buddy_list_item.view.*
 
 /**
- * [RecyclerView.Adapter] that can display a list and makes a call to the
- * specified [OnListFragmentInteractionListener].
- * TODO: Replace the implementation with code for your data type.
+ * Created by felipe.acerbi on 04/07/2017.
  */
-class BuddiesAdapter(private var items: ArrayList<ViewType> = ArrayList<ViewType>(),
-                     private val firebaseService: FirebaseService,
-                     private val listener: IOnListFragmentInteractionListener?) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    val delegateAdapters by lazy {
-        SparseArrayCompat<ViewTypeDelegateAdapter>()
+class BuddiesAdapter(val petsReference: DatabaseReference, val listener: IOnListFragmentInteractionListener?) :
+        FirebaseRecyclerAdapter<String, BuddiesAdapter.BuddyViewHolder>
+        (
+                String::class.java,
+                R.layout.buddy_list_item,
+                BuddyViewHolder::class.java,
+                petsReference
+        ) {
+
+    companion object {
+        val TAG = "BuddiesDelAdapter"
     }
 
-    init {
-        delegateAdapters.put(Constants.CATEGORY_VIEW_TYPE, CategoryDelegateAdapter())
-        //delegateAdapters.put(Constants.BUDDY_VIEW_TYPE, BuddiesDelegateAdapter(firebaseService.getUserPetsReference(firebaseService.getCurrentUsername())))
-        items.add(Category("Buddies"))
+    val firebaseService = FirebaseService()
+
+    override fun populateViewHolder(holder: BuddyViewHolder?, item: String?, position: Int) {
+        val petId = getRef(position).key
+
+        firebaseService.getPetReference(petId).addValueEventListener(object: ValueEventListener {
+            override fun onCancelled(p0: DatabaseError?) {
+                Log.d(TAG, "Fail to retrieve pet.")
+            }
+
+            override fun onDataChange(dataSnapshot: DataSnapshot?) {
+                Log.d(TAG, "New data.")
+                if(dataSnapshot != null && holder != null) {
+                    val buddy = Buddy(dataSnapshot)
+                    Log.d(TAG, "Load buddy " + buddy.name)
+
+                    with(holder.itemView) {
+                        name.text = buddy.name
+                        breed.text = buddy.breed
+                        tagID.text = buddy.tagId
+                    }
+
+                    listener?.onListFragmentInteraction()
+                }
+            }
+        })
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return delegateAdapters.get(viewType).onCreateDelegateViewHolder(parent)
-    }
-
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        delegateAdapters.get(getItemViewType(position)).onBindDelegateViewHolder(holder, position, items[position])
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        return items[position].getViewType()
-    }
-
-    override fun getItemCount(): Int {
-        return items.size
-    }
-
-    fun cleanAdapters() {
-        delegateAdapters.forEach { it.cleanUp() }
-    }
-
-    fun addItem(item: ViewType) {
-        items.add(item)
-        notifyItemInserted(items.indexOf(item))
-    }
-
-    fun addItems(newItems: Array<ViewType>) {
-        items.addAll(newItems)
-        notifyItemRangeChanged(items.indexOf(newItems[0]), items.indexOf(newItems[newItems.size - 1]))
-    }
+    class BuddyViewHolder(view: View) : RecyclerView.ViewHolder(view)
 }

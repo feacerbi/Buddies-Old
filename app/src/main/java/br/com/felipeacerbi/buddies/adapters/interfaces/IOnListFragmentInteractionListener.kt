@@ -1,5 +1,8 @@
 package br.com.felipeacerbi.buddies.adapters.interfaces
 
+import android.support.v7.widget.RecyclerView
+import com.firebase.ui.database.FirebaseRecyclerAdapter
+
 /**
  * Created by felipe.acerbi on 03/07/2017.
  */
@@ -15,5 +18,5 @@ interface IOnListFragmentInteractionListener {
      * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
      */
      // TODO: Update argument type and name
-     fun onListFragmentInteraction(item: ViewType)
+     fun onListFragmentInteraction()
 }

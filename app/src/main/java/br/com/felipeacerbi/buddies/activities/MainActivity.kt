@@ -8,19 +8,22 @@ import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import br.com.felipeacerbi.buddies.BuddiesApplication
 import br.com.felipeacerbi.buddies.FirebaseService
 import br.com.felipeacerbi.buddies.NFCService
 import br.com.felipeacerbi.buddies.adapters.interfaces.IOnListFragmentInteractionListener
 import br.com.felipeacerbi.buddies.R
-import br.com.felipeacerbi.buddies.adapters.interfaces.ViewType
 import br.com.felipeacerbi.buddies.fragments.BuddiesListFragment
 import br.com.felipeacerbi.buddies.models.BaseTag
 import br.com.felipeacerbi.buddies.models.Buddy
+import com.firebase.ui.database.FirebaseRecyclerAdapter
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.buddies_list.*
 
 class MainActivity : AppCompatActivity(), IOnListFragmentInteractionListener {
 
@@ -65,8 +68,6 @@ class MainActivity : AppCompatActivity(), IOnListFragmentInteractionListener {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
         handleIntent(intent)
-
-        BuddiesApplication.appComponent.inject(this)
     }
 
     override fun onStart() {
@@ -119,8 +120,9 @@ class MainActivity : AppCompatActivity(), IOnListFragmentInteractionListener {
         firebaseService.addNewPet(baseTag, Buddy("Rex", "Pug"))
     }
 
-    override fun onListFragmentInteraction(item: ViewType) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onListFragmentInteraction() {
+        progress.visibility = View.INVISIBLE
+        container.visibility = View.VISIBLE
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -175,5 +177,14 @@ class MainActivity : AppCompatActivity(), IOnListFragmentInteractionListener {
 
     override fun onBackPressed() {
         finish()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        supportFragmentManager.fragments?.forEach {
+            if(it is FirebaseRecyclerAdapter<*, *>) {
+                it.cleanup()
+            }
+        }
     }
 }

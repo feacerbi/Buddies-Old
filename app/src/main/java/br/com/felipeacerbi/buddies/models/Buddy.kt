@@ -1,7 +1,5 @@
 package br.com.felipeacerbi.buddies.models
 
-import br.com.felipeacerbi.buddies.utils.Constants
-import br.com.felipeacerbi.buddies.adapters.interfaces.ViewType
 import com.google.firebase.database.DataSnapshot
 
 /**
@@ -11,7 +9,7 @@ data class Buddy(
         var name: String = "",
         var breed: String = "",
         var tagId: String = "",
-        var owners: Map<String, String> = HashMap()) : ViewType {
+        var owners: Map<String, String> = HashMap()) {
 
     companion object {
         val DATABASE_NAME_CHILD = "name"
@@ -35,10 +33,6 @@ data class Buddy(
         breed = dataSnapshot.child(DATABASE_BREED_CHILD).value as String
         tagId = dataSnapshot.child(DATABASE_TAG_CHILD).value as String
         owners = dataSnapshot.child(DATABASE_OWNERS_CHILD).value as Map<String, String>
-    }
-
-    override fun getViewType(): Int {
-        return Constants.BUDDY_VIEW_TYPE
     }
 
 }
