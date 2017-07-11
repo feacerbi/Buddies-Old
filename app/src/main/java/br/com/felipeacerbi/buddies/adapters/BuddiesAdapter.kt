@@ -19,30 +19,30 @@ import kotlinx.android.synthetic.main.buddy_list_item.view.*
  */
 
 class BuddiesAdapter(val petsReference: DatabaseReference, val listener: IOnListFragmentInteractionListener?) :
-        FirebaseRecyclerAdapter<String, BuddiesAdapter.BuddyViewHolder>
+        FirebaseRecyclerAdapter<Boolean, BuddiesAdapter.BuddyViewHolder>
         (
-                String::class.java,
+                Boolean::class.java,
                 R.layout.buddy_list_item,
                 BuddyViewHolder::class.java,
                 petsReference
         ) {
 
     companion object {
-        val TAG = "BuddiesDelAdapter"
+        val TAG = "BuddiesAdapter"
     }
 
     val firebaseService = FirebaseService()
 
-    override fun populateViewHolder(holder: BuddyViewHolder?, item: String?, position: Int) {
+    override fun populateViewHolder(holder: BuddyViewHolder?, item: Boolean?, position: Int) {
         val petId = getRef(position).key
 
         firebaseService.getPetReference(petId).addValueEventListener(object: ValueEventListener {
             override fun onCancelled(p0: DatabaseError?) {
-                Log.d(TAG, "Fail to retrieve pet.")
+                Log.d(TAG, "Fail to retrieve pet")
             }
 
             override fun onDataChange(dataSnapshot: DataSnapshot?) {
-                Log.d(TAG, "New data.")
+                Log.d(TAG, "New data")
                 if(dataSnapshot != null && holder != null) {
                     val buddy = Buddy(dataSnapshot)
                     Log.d(TAG, "Load buddy " + buddy.name)
@@ -53,7 +53,7 @@ class BuddiesAdapter(val petsReference: DatabaseReference, val listener: IOnList
                         tagID.text = buddy.tagId
                     }
 
-                    listener?.onListFragmentInteraction()
+                    //listener?.onListFragmentInteraction()
                 }
             }
         })

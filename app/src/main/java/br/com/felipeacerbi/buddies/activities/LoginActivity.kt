@@ -10,9 +10,13 @@ import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import br.com.felipeacerbi.buddies.R
+import com.facebook.*
+import com.facebook.login.LoginManager
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.*
@@ -25,13 +29,20 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.auth.api.signin.GoogleSignInResult
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import kotlinx.android.synthetic.main.activity_login.*
+
+import com.facebook.login.LoginResult
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
+
 
 /**
  * A login screen that offers login via email/password.
  */
-class LoginActivity : AppCompatActivity(), OnCompleteListener<AuthResult>, GoogleApiClient.OnConnectionFailedListener {
+class LoginActivity : AppCompatActivity(),
+        OnCompleteListener<AuthResult>,
+        GoogleApiClient.OnConnectionFailedListener,
+        FacebookCallback<LoginResult> {
 
     companion object {
         val TAG = "LoginActivity"
@@ -43,6 +54,14 @@ class LoginActivity : AppCompatActivity(), OnCompleteListener<AuthResult>, Googl
      */
     val firebaseAuth: FirebaseAuth by lazy {
         FirebaseAuth.getInstance()
+    }
+
+    val faceCallbackManager: CallbackManager by lazy {
+        CallbackManager.Factory.create()
+    }
+
+    val faceLoginManager: LoginManager by lazy {
+        LoginManager.getInstance()
     }
 
     val gso: GoogleSignInOptions by lazy {
@@ -75,18 +94,39 @@ class LoginActivity : AppCompatActivity(), OnCompleteListener<AuthResult>, Googl
         email_sign_in_button.setOnClickListener { validate(this::attemptLogin) }
         email_register_button.setOnClickListener { validate(this::attemptRegister) }
         google_sign_in_button.setOnClickListener { signInWithGoogle() }
+
+        face_sign_in_button.setReadPermissions("email", "public_profile")
+        face_sign_in_button.registerCallback(faceCallbackManager, this)
+    }
+
+    override fun onError(error: FacebookException?) {
+        Log.d(TAG, "Facebook error sign in")
+    }
+
+    override fun onCancel() {
+        Log.d(TAG, "Facebook cancel sign in")
+    }
+
+    override fun onSuccess(result: LoginResult?) {
+        Log.d(TAG, "Facebook success sign in " + result)
+        showProgress(true)
+        handleFacebookAccessToken(result?.accessToken)
     }
 
     override fun onStart() {
         super.onStart()
         if(isSignedIn()) {
             launchMainActivity()
-        } else if(email.text.isEmpty()) {
-            email.requestFocus()
         } else {
-            password.requestFocus()
+            if (email.text.isEmpty()) {
+                email.requestFocus()
+            } else {
+                password.requestFocus()
+            }
+
+            password.setText("")
+            faceLoginManager.logOut()
         }
-        password.setText("")
     }
 
     private fun signInWithGoogle() {
@@ -106,10 +146,21 @@ class LoginActivity : AppCompatActivity(), OnCompleteListener<AuthResult>, Googl
         super.onActivityResult(requestCode, resultCode, data)
         Log.d(TAG, "Activity result code " + requestCode)
 
+        faceCallbackManager.onActivityResult(requestCode, resultCode, data)
+
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
             handleSignInResult(result)
+        }
+    }
+
+    private fun handleFacebookAccessToken(accessToken: AccessToken?) {
+        if(accessToken != null) {
+            val credential = FacebookAuthProvider.getCredential(accessToken.token)
+            signInUsingCredential(credential)
+        } else {
+            Log.d(TAG, "Face token null")
         }
     }
 
@@ -119,7 +170,8 @@ class LoginActivity : AppCompatActivity(), OnCompleteListener<AuthResult>, Googl
             // Signed in successfully, show authenticated UI.
             val account = result.signInAccount
             if(account != null) {
-                firebaseAuthWithGoogle(account)
+                val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+                signInUsingCredential(credential)
             } else {
                 Log.w(TAG, "Login account null")
                 showProgress(false)
@@ -131,8 +183,7 @@ class LoginActivity : AppCompatActivity(), OnCompleteListener<AuthResult>, Googl
         }
     }
 
-    private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount) {
-        val credential = GoogleAuthProvider.getCredential(acct.idToken, null)
+    fun signInUsingCredential(credential: AuthCredential) {
         firebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this)
                 { task ->
@@ -141,7 +192,7 @@ class LoginActivity : AppCompatActivity(), OnCompleteListener<AuthResult>, Googl
                         launchMainActivity()
                     }
 
-                    Log.w(TAG, "Firebase login is not success")
+                    Log.w(TAG, "Firebase login was not succeeded")
                     // If sign in fails, display a message to the user.
                     showProgress(false)
                 }
@@ -291,5 +342,24 @@ class LoginActivity : AppCompatActivity(), OnCompleteListener<AuthResult>, Googl
                         login_progress.visibility = if (show) View.VISIBLE else View.GONE
                     }
                 })
+    }
+
+    // Just in case
+    fun printFaceLoginHash() {
+        try {
+            val info = packageManager.getPackageInfo(
+                    "br.com.felipeacerbi.buddies",
+                    PackageManager.GET_SIGNATURES)
+
+            for (signature in info.signatures) {
+                val md = MessageDigest.getInstance("SHA")
+                md.update(signature.toByteArray())
+                Log.d(TAG, "KeyHash: " + Base64.encodeToString(md.digest(), Base64.DEFAULT))
+            }
+        } catch (e: PackageManager.NameNotFoundException) {
+
+        } catch (e: NoSuchAlgorithmException) {
+
+        }
     }
 }

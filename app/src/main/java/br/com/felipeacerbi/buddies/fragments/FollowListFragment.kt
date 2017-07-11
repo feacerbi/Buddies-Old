@@ -26,7 +26,7 @@ import kotlinx.android.synthetic.main.buddies_list.*
  * Mandatory empty constructor for the fragment manager to instantiate the
  * fragment (e.g. upon screen orientation changes).
  */
-class BuddiesListFragment : Fragment() {
+class FollowListFragment : Fragment() {
 
     private var mListener: IOnListFragmentInteractionListener? = null
     val firebaseService: FirebaseService = FirebaseService()
@@ -40,7 +40,7 @@ class BuddiesListFragment : Fragment() {
         if (view is RecyclerView) {
             with(view) {
                 layoutManager = LinearLayoutManager(context)
-                adapter = BuddiesAdapter(firebaseService.getUserPetsReference(firebaseService.getCurrentUsername()), mListener)
+                adapter = BuddiesAdapter(firebaseService.getUserFollowReference(firebaseService.getCurrentUsername()), mListener)
             }
         }
         return view

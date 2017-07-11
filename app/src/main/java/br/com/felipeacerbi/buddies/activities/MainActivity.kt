@@ -19,8 +19,10 @@ import br.com.felipeacerbi.buddies.NFCService
 import br.com.felipeacerbi.buddies.adapters.interfaces.IOnListFragmentInteractionListener
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.fragments.BuddiesListFragment
+import br.com.felipeacerbi.buddies.fragments.FollowListFragment
 import br.com.felipeacerbi.buddies.models.BaseTag
 import br.com.felipeacerbi.buddies.models.Buddy
+import br.com.felipeacerbi.buddies.models.BuddyInfo
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.buddies_list.*
@@ -29,6 +31,7 @@ class MainActivity : AppCompatActivity(), IOnListFragmentInteractionListener {
 
     companion object {
         val TAG = "MainActivity"
+        val NEW_PET_RESULT = 100
     }
 
     val firebaseService = FirebaseService()
@@ -40,10 +43,11 @@ class MainActivity : AppCompatActivity(), IOnListFragmentInteractionListener {
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_home -> {
-                transactToFragment(BuddiesListFragment(), R.id.container)
+                transactToFragment(FollowListFragment(), R.id.container)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_dashboard -> {
+                transactToFragment(BuddiesListFragment(), R.id.container)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_notifications -> {
@@ -75,9 +79,9 @@ class MainActivity : AppCompatActivity(), IOnListFragmentInteractionListener {
 
         supportActionBar?.title = firebaseService.getCurrentUserDisplayName()
 
-        //firebaseService.registerUser()
+        firebaseService.registerUser()
 
-        transactToFragment(BuddiesListFragment(), R.id.container)
+        transactToFragment(FollowListFragment(), R.id.container)
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -95,11 +99,11 @@ class MainActivity : AppCompatActivity(), IOnListFragmentInteractionListener {
                     val nfcTag = nfcService.parseIntent(intent)
                     showTwoChoiceCancelableDialog(
                             "TAG Scan",
-                            "A new TAG was detected, what do you want to do?",
+                            "A new Buddy Tag was detected, what do you want to do?",
                             "Follow Buddy",
                             "Add new Buddy",
-                            { _, _ -> showTagInfo(nfcTag) },
-                            { _, _ -> showTagInfo(nfcTag)})
+                            { _, _ -> firebaseService.addFollowPet(nfcTag)},
+                            { _, _ -> launchNewPetActivity(nfcTag) })
                 }
             }
 
@@ -108,17 +112,33 @@ class MainActivity : AppCompatActivity(), IOnListFragmentInteractionListener {
         }
     }
 
-    fun showTagInfo(baseTag: BaseTag) {
+    fun launchNewPetActivity(baseTag: BaseTag) {
+        val newPetActivityIntent = Intent(this, NewPetActivity::class.java)
+        newPetActivityIntent.putExtra(NewPetActivity.EXTRA_BASETAG, baseTag)
+        startActivityForResult(newPetActivityIntent, NEW_PET_RESULT)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Log.d(TAG, "Activity result code " + requestCode)
+
+        if(requestCode == NEW_PET_RESULT && resultCode == NewPetActivity.RESULT_OK) {
+            val buddyInfo = data.extras.getSerializable(NewPetActivity.BUDDY_INFO_EXTRA) as BuddyInfo
+            val baseTag = data.extras.getSerializable(NewPetActivity.EXTRA_BASETAG) as BaseTag
+            firebaseService.addNewPet(baseTag, Buddy(buddyInfo.name, buddyInfo.breed))
+        }
+    }
+
+//    fun showTagInfo(baseTag: BaseTag) {
 //        showTextDialog("Tag id: " + baseTag.id + "\n" +
 //                "Tag tech: " + baseTag.tagId + "\n" +
 //                "Tag message: " + baseTag.ndefMessage + "\n" +
 //                "Tag decoded: " + baseTag.decodedPayload)
-
+//
 //        val frag = supportFragmentManager.findFragmentById(R.id.container) as BuddiesListFragment
 //        frag.addBuddy(baseTag.decodedPayload)
-
-        firebaseService.addNewPet(baseTag, Buddy("Rex", "Pug"))
-    }
+//
+//    }
 
     override fun onListFragmentInteraction() {
         progress.visibility = View.INVISIBLE

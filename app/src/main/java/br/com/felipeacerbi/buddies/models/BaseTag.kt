@@ -1,13 +1,14 @@
 package br.com.felipeacerbi.buddies.models
 
 import com.google.firebase.database.DataSnapshot
+import java.io.Serializable
 
 /**
  * Created by felipe.acerbi on 05/07/2017.
  */
 data class BaseTag(
         var id: String = "",
-        var petId: String = "") {
+        var petId: String = "") : Serializable {
 
     companion object {
         val DATABASE_ID_CHILD = "id"

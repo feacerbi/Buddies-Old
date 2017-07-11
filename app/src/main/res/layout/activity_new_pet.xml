@@ -1,4 +1,6 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,23 +10,14 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="br.com.felipeacerbi.buddies.activities.LoginActivity">
-
-    <!-- Login progress -->
-    <ProgressBar
-        android:id="@+id/login_progress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:visibility="gone" />
+    tools:context="br.com.felipeacerbi.buddies.activities.NewPetActivity">
 
     <ScrollView
-        android:id="@+id/login_form"
+        android:id="@+id/new_pet_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/email_login_form"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -34,11 +27,11 @@
                 android:layout_height="wrap_content">
 
                 <AutoCompleteTextView
-                    android:id="@+id/email"
+                    android:id="@+id/pet_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/prompt_email"
-                    android:inputType="textEmailAddress"
+                    android:hint="Pet Name"
+                    android:inputType="textPersonName"
                     android:maxLines="1"
                     android:singleLine="true" />
 
@@ -48,52 +41,36 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <EditText
-                    android:id="@+id/password"
+                <AutoCompleteTextView
+                    android:id="@+id/breed"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/prompt_password"
-                    android:imeActionId="@+id/login"
-                    android:imeActionLabel="@string/action_sign_in"
-                    android:imeOptions="actionUnspecified"
-                    android:inputType="textPassword"
+                    android:hint="Breed"
+                    android:inputType="textCapSentences"
                     android:maxLines="1"
                     android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>
 
             <Button
-                android:id="@+id/email_sign_in_button"
+                android:id="@+id/add_button"
                 style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/action_sign_in"
+                android:text="Add"
                 android:textStyle="bold" />
 
             <Button
-                android:id="@+id/email_register_button"
+                android:id="@+id/cancel_button"
                 style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/action_register"
+                android:text="Cancel"
                 android:textStyle="bold" />
-
-            <com.google.android.gms.common.SignInButton
-                android:id="@+id/google_sign_in_button"
-                android:layout_gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp" />
-
-            <com.facebook.login.widget.LoginButton
-                android:id="@+id/face_sign_in_button"
-                android:layout_gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp" />
 
         </LinearLayout>
     </ScrollView>
-</LinearLayout>
+
+</android.support.constraint.ConstraintLayout>
