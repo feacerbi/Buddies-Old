@@ -8,5 +8,5 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layoutManager="LinearLayoutManager"
-    tools:context="br.com.felipeacerbi.buddies.fragments.BuddiesListFragment"
+    tools:context="br.com.felipeacerbi.buddies.fragments.FirebaseListFragment"
     tools:listitem="@layout/buddy_list_item" />

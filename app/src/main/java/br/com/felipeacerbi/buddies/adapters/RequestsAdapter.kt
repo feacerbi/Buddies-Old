@@ -12,17 +12,18 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.buddy_list_item.view.*
+import kotlinx.android.synthetic.main.request_list_item.view.*
 
 /**
  * Created by felipe.acerbi on 04/07/2017.
  */
 
-class BuddiesAdapter(val petsReference: DatabaseReference) :
-        FirebaseRecyclerAdapter<Boolean, BuddiesAdapter.BuddyViewHolder>
+class RequestsAdapter(val petsReference: DatabaseReference) :
+        FirebaseRecyclerAdapter<Boolean, RequestsAdapter.RequestViewHolder>
         (
                 Boolean::class.java,
                 R.layout.buddy_list_item,
-                BuddyViewHolder::class.java,
+                RequestViewHolder::class.java,
                 petsReference
         ) {
 
@@ -33,10 +34,10 @@ class BuddiesAdapter(val petsReference: DatabaseReference) :
     val firebaseService = FirebaseService()
 
     init {
-        //mSnapshots.removeAll(mSnapshots.filter { it.value == false })
+        //mSnapshots.removeAll(mSnapshots.filter { it.child() == true })
     }
 
-    override fun populateViewHolder(holder: BuddyViewHolder?, item: Boolean?, position: Int) {
+    override fun populateViewHolder(holder: RequestViewHolder?, item: Boolean?, position: Int) {
         val petId = getRef(position).key
 
         firebaseService.getPetReference(petId).addValueEventListener(object: ValueEventListener {
@@ -51,15 +52,14 @@ class BuddiesAdapter(val petsReference: DatabaseReference) :
                     Log.d(TAG, "Load buddy " + buddy.name)
 
                     with(holder.itemView) {
-                        name.text = buddy.name
-                        breed.text = buddy.breed
-                        tagID.text = buddy.tagId
-                        remove_button.setOnClickListener { firebaseService.removePet(petsReference.key, petId) }
+                        requester_username.text = buddy.name
+                        requested_pet_id.text = petId
+                        //allow_button.setOnClickListener { firebaseService.allowPetOwner(petId, ) }
                     }
                 }
             }
         })
     }
 
-    class BuddyViewHolder(view: View) : RecyclerView.ViewHolder(view)
+    class RequestViewHolder(view: View) : RecyclerView.ViewHolder(view)
 }

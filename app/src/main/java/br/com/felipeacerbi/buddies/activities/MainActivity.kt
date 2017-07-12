@@ -16,12 +16,12 @@ import android.view.MenuItem
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.nfc.NFCService
 import br.com.felipeacerbi.buddies.R
-import br.com.felipeacerbi.buddies.fragments.BuddiesListFragment
-import br.com.felipeacerbi.buddies.fragments.FollowListFragment
+import br.com.felipeacerbi.buddies.fragments.FirebaseListFragment
 import br.com.felipeacerbi.buddies.nfc.tags.BaseTag
 import br.com.felipeacerbi.buddies.models.Buddy
 import br.com.felipeacerbi.buddies.models.BuddyInfo
 import com.firebase.ui.database.FirebaseRecyclerAdapter
+import com.google.firebase.database.DatabaseReference
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
@@ -31,6 +31,7 @@ class MainActivity : RxBaseActivity() {
     companion object {
         val TAG = "MainActivity"
         val NEW_PET_RESULT = 100
+        val BUNDLE_ARGUMENT = "bundle_argument"
     }
 
     val firebaseService = FirebaseService()
@@ -40,17 +41,23 @@ class MainActivity : RxBaseActivity() {
     }
 
     val pendingIntent: PendingIntent by lazy {
-        PendingIntent.getActivity(this, 0, Intent(this, AppCompatActivity::class.java), 0)
+        PendingIntent.getActivity(this, 0, Intent(this, AppCompatActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0)
     }
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_following -> {
-                transactToFragment(FollowListFragment(), R.id.container)
+                transactToFragment(
+                        FirebaseListFragment(),
+                        R.id.container,
+                        makeQueryBundle(queryFollow()))
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_buddies -> {
-                transactToFragment(BuddiesListFragment(), R.id.container)
+                transactToFragment(
+                        FirebaseListFragment(),
+                        R.id.container,
+                        makeQueryBundle(queryBuddies()))
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_notifications -> {
@@ -61,30 +68,38 @@ class MainActivity : RxBaseActivity() {
         false
     }
 
-    fun transactToFragment(fragment: Fragment, id: Int) {
+    fun transactToFragment(fragment: Fragment, id: Int, bundle: Bundle?) {
         val transaction = supportFragmentManager.beginTransaction()
+        if(bundle != null) fragment.arguments.putBundle(BUNDLE_ARGUMENT, bundle)
 
         transaction.replace(id, fragment)
         transaction.commit()
     }
 
+    fun makeQueryBundle(query: DatabaseReference): Bundle {
+        val bundle = Bundle()
+        bundle.putString(FirebaseListFragment.DATABASE_REFERENCE, query.toString())
+        return bundle
+    }
+
+    fun queryBuddies() = firebaseService.getUserPetsReference(firebaseService.getCurrentUsername())
+    fun queryFollow() = firebaseService.getUserFollowReference(firebaseService.getCurrentUsername())
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        handleIntent(intent)
+
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+        supportActionBar?.title = firebaseService.getCurrentUserDisplayName()
 
         firebaseService.registerUser()
 
-        handleIntent(intent)
-    }
-
-    override fun onStart() {
-        super.onStart()
-
-        supportActionBar?.title = firebaseService.getCurrentUserDisplayName()
-
-        transactToFragment(FollowListFragment(), R.id.container)
+        transactToFragment(
+                FirebaseListFragment(),
+                R.id.container,
+                makeQueryBundle(queryFollow()))
     }
 
     override fun onResume() {
@@ -180,7 +195,7 @@ class MainActivity : RxBaseActivity() {
 //                "Tag message: " + baseTag.ndefMessage + "\n" +
 //                "Tag decoded: " + baseTag.decodedPayload)
 //
-//        val frag = supportFragmentManager.findFragmentById(R.id.container) as BuddiesListFragment
+//        val frag = supportFragmentManager.findFragmentById(R.id.container) as FirebaseListFragment
 //        frag.addBuddy(baseTag.decodedPayload)
 //
 //    }
