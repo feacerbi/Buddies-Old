@@ -20,4 +20,5 @@
     <string name="web_client_id">392609190134-md16nkbipujdf1qv6ruu1krkgs35mnjb.apps.googleusercontent.com</string>
     <string name="action_title_sign_out">Sign Out</string>
     <string name="facebook_app_id">326376017783700</string>
+    <string name="navigation_string_following">Following</string>
 </resources>

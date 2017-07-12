@@ -3,10 +3,9 @@ package br.com.felipeacerbi.buddies.adapters.delegates
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
-import br.com.felipeacerbi.buddies.FirebaseService
+import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.models.Buddy
 import br.com.felipeacerbi.buddies.R
-import br.com.felipeacerbi.buddies.adapters.interfaces.IOnListFragmentInteractionListener
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -18,7 +17,7 @@ import kotlinx.android.synthetic.main.buddy_list_item.view.*
  * Created by felipe.acerbi on 04/07/2017.
  */
 
-class BuddiesAdapter(val petsReference: DatabaseReference, val listener: IOnListFragmentInteractionListener?) :
+class BuddiesAdapter(val petsReference: DatabaseReference) :
         FirebaseRecyclerAdapter<Boolean, BuddiesAdapter.BuddyViewHolder>
         (
                 Boolean::class.java,

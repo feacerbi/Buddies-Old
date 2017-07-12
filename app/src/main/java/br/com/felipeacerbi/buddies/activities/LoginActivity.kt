@@ -350,7 +350,7 @@ class LoginActivity : AppCompatActivity(),
             val info = packageManager.getPackageInfo(
                     "br.com.felipeacerbi.buddies",
                     PackageManager.GET_SIGNATURES)
-
+            Log.w(TAG, "Print face hash")
             for (signature in info.signatures) {
                 val md = MessageDigest.getInstance("SHA")
                 md.update(signature.toByteArray())

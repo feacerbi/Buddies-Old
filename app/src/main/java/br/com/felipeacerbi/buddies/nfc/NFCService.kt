@@ -1,11 +1,14 @@
-package br.com.felipeacerbi.buddies
+package br.com.felipeacerbi.buddies.nfc
 
 import android.content.Intent
 import android.nfc.NdefMessage
 import android.nfc.NfcAdapter
 import android.nfc.Tag
+import android.nfc.tech.*
+import android.util.ArrayMap
 import android.util.Log
-import br.com.felipeacerbi.buddies.models.BaseTag
+import br.com.felipeacerbi.buddies.nfc.tags.BaseTag
+import br.com.felipeacerbi.buddies.nfc.tags.NFCTag
 import br.com.felipeacerbi.buddies.utils.toHexString
 import java.io.UnsupportedEncodingException
 import kotlin.experimental.and
@@ -19,7 +22,7 @@ class NFCService {
         val TAG = "NFCService"
     }
 
-    fun parseIntent(intent: Intent): BaseTag {
+    fun parseIntent(intent: Intent): NFCTag {
 
         val messages = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)
         var message: NdefMessage? = null
@@ -35,7 +38,7 @@ class NFCService {
         val id = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID).toHexString()
         Log.d(TAG, "Ndef id: " + id)
 
-        return BaseTag(id = id)
+        return NFCTag(tag, message, decodePayload(message), BaseTag(id))
     }
 
     private fun decodePayload(ndefMessage: NdefMessage?): String {
@@ -74,4 +77,15 @@ class NFCService {
         return resultPayload
     }
 
+    fun getTechs() = arrayOf(arrayOf(
+            IsoDep::javaClass.name,
+            NfcA::javaClass.name,
+            NfcB::javaClass.name,
+            NfcF::javaClass.name,
+            NfcV::javaClass.name,
+            Ndef::javaClass.name,
+            NdefFormatable::javaClass.name,
+            MifareClassic::javaClass.name,
+            MifareUltralight::javaClass.name
+    ))
 }

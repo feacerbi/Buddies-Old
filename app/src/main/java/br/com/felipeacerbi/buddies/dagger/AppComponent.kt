@@ -1,4 +1,4 @@
-package br.com.felipeacerbi.buddies
+package br.com.felipeacerbi.buddies.dagger
 
 import br.com.felipeacerbi.buddies.activities.MainActivity
 import br.com.felipeacerbi.buddies.fragments.BuddiesListFragment

@@ -8,12 +8,9 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import br.com.felipeacerbi.buddies.BuddiesApplication
-import br.com.felipeacerbi.buddies.FirebaseService
+import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.adapters.delegates.BuddiesAdapter
-import br.com.felipeacerbi.buddies.adapters.interfaces.IOnListFragmentInteractionListener
-import kotlinx.android.synthetic.main.buddies_list.*
 
 /**
  * A fragment representing a list of Items.
@@ -28,7 +25,6 @@ import kotlinx.android.synthetic.main.buddies_list.*
  */
 class FollowListFragment : Fragment() {
 
-    private var mListener: IOnListFragmentInteractionListener? = null
     val firebaseService: FirebaseService = FirebaseService()
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
@@ -40,7 +36,7 @@ class FollowListFragment : Fragment() {
         if (view is RecyclerView) {
             with(view) {
                 layoutManager = LinearLayoutManager(context)
-                adapter = BuddiesAdapter(firebaseService.getUserFollowReference(firebaseService.getCurrentUsername()), mListener)
+                adapter = BuddiesAdapter(firebaseService.getUserFollowReference(firebaseService.getCurrentUsername()))
             }
         }
         return view
@@ -50,15 +46,9 @@ class FollowListFragment : Fragment() {
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        if (context is IOnListFragmentInteractionListener) {
-            mListener = context
-        } else {
-            throw RuntimeException(context!!.toString() + " must implement OnListFragmentInteractionListener")
-        }
     }
 
     override fun onDetach() {
         super.onDetach()
-        mListener = null
     }
 }

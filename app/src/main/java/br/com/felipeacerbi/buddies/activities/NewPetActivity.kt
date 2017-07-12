@@ -4,7 +4,7 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import br.com.felipeacerbi.buddies.R
-import br.com.felipeacerbi.buddies.models.BaseTag
+import br.com.felipeacerbi.buddies.nfc.tags.BaseTag
 import br.com.felipeacerbi.buddies.models.BuddyInfo
 import kotlinx.android.synthetic.main.activity_new_pet.*
 
@@ -13,6 +13,7 @@ class NewPetActivity : AppCompatActivity() {
     companion object {
         val BUDDY_INFO_EXTRA = "buddy_info"
         val EXTRA_BASETAG = "basetag"
+        val RESULT_CANCEL = 1
         val RESULT_OK = 0
     }
 
@@ -26,15 +27,19 @@ class NewPetActivity : AppCompatActivity() {
 
         handleIntent(intent)
 
-        cancel_button.setOnClickListener { finish() }
+        val resultIntent = Intent(this, MainActivity::class.java)
+
+        cancel_button.setOnClickListener {
+            setResult(RESULT_CANCEL, resultIntent)
+            finish()
+        }
         add_button.setOnClickListener {
             val name = pet_name.text.toString()
             val breed = breed.text.toString()
 
-            val petInfoIntent = Intent(this, MainActivity::class.java)
-            petInfoIntent.putExtra(BUDDY_INFO_EXTRA, BuddyInfo(name, breed))
-            petInfoIntent.putExtra(EXTRA_BASETAG, baseTag)
-            setResult(RESULT_OK, petInfoIntent)
+            resultIntent.putExtra(BUDDY_INFO_EXTRA, BuddyInfo(name, breed))
+            resultIntent.putExtra(EXTRA_BASETAG, baseTag)
+            setResult(RESULT_OK, resultIntent)
 
             finish()
         }

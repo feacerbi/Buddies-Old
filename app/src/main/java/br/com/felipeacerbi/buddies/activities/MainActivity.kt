@@ -1,33 +1,32 @@
 package br.com.felipeacerbi.buddies.activities
 
+import android.app.PendingIntent
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.IntentFilter
 import android.nfc.NfcAdapter
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import br.com.felipeacerbi.buddies.BuddiesApplication
-import br.com.felipeacerbi.buddies.FirebaseService
-import br.com.felipeacerbi.buddies.NFCService
-import br.com.felipeacerbi.buddies.adapters.interfaces.IOnListFragmentInteractionListener
+import br.com.felipeacerbi.buddies.firebase.FirebaseService
+import br.com.felipeacerbi.buddies.nfc.NFCService
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.fragments.BuddiesListFragment
 import br.com.felipeacerbi.buddies.fragments.FollowListFragment
-import br.com.felipeacerbi.buddies.models.BaseTag
+import br.com.felipeacerbi.buddies.nfc.tags.BaseTag
 import br.com.felipeacerbi.buddies.models.Buddy
 import br.com.felipeacerbi.buddies.models.BuddyInfo
 import com.firebase.ui.database.FirebaseRecyclerAdapter
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.buddies_list.*
 
-class MainActivity : AppCompatActivity(), IOnListFragmentInteractionListener {
+class MainActivity : RxBaseActivity() {
 
     companion object {
         val TAG = "MainActivity"
@@ -40,13 +39,17 @@ class MainActivity : AppCompatActivity(), IOnListFragmentInteractionListener {
         NFCService()
     }
 
+    val pendingIntent: PendingIntent by lazy {
+        PendingIntent.getActivity(this, 0, Intent(this, AppCompatActivity::class.java), 0)
+    }
+
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
-            R.id.navigation_home -> {
+            R.id.navigation_following -> {
                 transactToFragment(FollowListFragment(), R.id.container)
                 return@OnNavigationItemSelectedListener true
             }
-            R.id.navigation_dashboard -> {
+            R.id.navigation_buddies -> {
                 transactToFragment(BuddiesListFragment(), R.id.container)
                 return@OnNavigationItemSelectedListener true
             }
@@ -71,6 +74,8 @@ class MainActivity : AppCompatActivity(), IOnListFragmentInteractionListener {
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
+        firebaseService.registerUser()
+
         handleIntent(intent)
     }
 
@@ -79,9 +84,23 @@ class MainActivity : AppCompatActivity(), IOnListFragmentInteractionListener {
 
         supportActionBar?.title = firebaseService.getCurrentUserDisplayName()
 
-        firebaseService.registerUser()
-
         transactToFragment(FollowListFragment(), R.id.container)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        NfcAdapter.getDefaultAdapter(this).enableForegroundDispatch(
+                this,
+                pendingIntent,
+                arrayOf(IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED)),
+                nfcService.getTechs())
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        NfcAdapter.getDefaultAdapter(this).disableForegroundDispatch(this)
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -97,19 +116,45 @@ class MainActivity : AppCompatActivity(), IOnListFragmentInteractionListener {
             when(intent.action) {
                 NfcAdapter.ACTION_NDEF_DISCOVERED -> {
                     val nfcTag = nfcService.parseIntent(intent)
+                    val baseTag = nfcTag.baseTag
                     showTwoChoiceCancelableDialog(
                             "TAG Scan",
                             "A new Buddy Tag was detected, what do you want to do?",
                             "Follow Buddy",
                             "Add new Buddy",
-                            { _, _ -> firebaseService.addFollowPet(nfcTag)},
-                            { _, _ -> launchNewPetActivity(nfcTag) })
+                            { _, _ -> checkPetWithAction(baseTag,
+                                    { firebaseService.addFollowPet(it) },
+                                    { Log.d(TAG, "Follow pet not found") }) },
+                            { _, _ -> checkPetWithAction(baseTag,
+                                    { firebaseService.addPetOwner(it) },
+                                    { launchNewPetActivity(it) }) })
                 }
             }
 
         } else {
             Log.d(TAG, "Intent null")
         }
+    }
+
+    fun checkPetWithAction(baseTag: BaseTag,
+                       existsAction: (BaseTag) -> Unit,
+                       notExistsAction: (BaseTag) -> Unit) {
+        Log.d(TAG, "Check pet with action " + baseTag.id)
+        val subscription = firebaseService.checkPetObservable(baseTag)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe (
+                        { foundTag ->
+                            if(foundTag.petId.isEmpty()) {
+                                Log.d(TAG, "Tag not found")
+                                notExistsAction(foundTag)
+                            } else {
+                                Log.d(TAG, "Tag found")
+                                existsAction(foundTag)
+                            }
+                        },
+                        { e -> Log.d(TAG, "Error adding pet " + e.message) })
+        subscriptions.add(subscription)
     }
 
     fun launchNewPetActivity(baseTag: BaseTag) {
@@ -139,11 +184,6 @@ class MainActivity : AppCompatActivity(), IOnListFragmentInteractionListener {
 //        frag.addBuddy(baseTag.decodedPayload)
 //
 //    }
-
-    override fun onListFragmentInteraction() {
-        progress.visibility = View.INVISIBLE
-        container.visibility = View.VISIBLE
-    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main_activity, menu)

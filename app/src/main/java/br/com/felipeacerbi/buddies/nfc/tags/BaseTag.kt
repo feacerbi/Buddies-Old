@@ -1,4 +1,4 @@
-package br.com.felipeacerbi.buddies.models
+package br.com.felipeacerbi.buddies.nfc.tags
 
 import com.google.firebase.database.DataSnapshot
 import java.io.Serializable
@@ -6,7 +6,7 @@ import java.io.Serializable
 /**
  * Created by felipe.acerbi on 05/07/2017.
  */
-data class BaseTag(
+open class BaseTag(
         var id: String = "",
         var petId: String = "") : Serializable {
 
