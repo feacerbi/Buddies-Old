@@ -17,11 +17,13 @@ import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.nfc.NFCService
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.fragments.FirebaseListFragment
+import br.com.felipeacerbi.buddies.fragments.RequestListFragment
 import br.com.felipeacerbi.buddies.nfc.tags.BaseTag
 import br.com.felipeacerbi.buddies.models.Buddy
 import br.com.felipeacerbi.buddies.models.BuddyInfo
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.Query
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
@@ -61,29 +63,33 @@ class MainActivity : RxBaseActivity() {
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_notifications -> {
-                //message.setText(R.string.title_notifications)
+                transactToFragment(
+                        RequestListFragment(),
+                        R.id.container,
+                        makeQueryBundle(queryRequests()))
                 return@OnNavigationItemSelectedListener true
             }
         }
         false
     }
 
-    fun transactToFragment(fragment: Fragment, id: Int, bundle: Bundle?) {
+    fun transactToFragment(fragment: Fragment, id: Int, bundle: Bundle) {
         val transaction = supportFragmentManager.beginTransaction()
-        if(bundle != null) fragment.arguments.putBundle(BUNDLE_ARGUMENT, bundle)
+        fragment.arguments = bundle
 
         transaction.replace(id, fragment)
         transaction.commit()
     }
 
-    fun makeQueryBundle(query: DatabaseReference): Bundle {
+    fun makeQueryBundle(query: Query): Bundle {
         val bundle = Bundle()
-        bundle.putString(FirebaseListFragment.DATABASE_REFERENCE, query.toString())
+        bundle.putString(FirebaseListFragment.DATABASE_REFERENCE, query.toString().removePrefix("https://buddies-5d07f.firebaseio.com"))
         return bundle
     }
 
     fun queryBuddies() = firebaseService.getUserPetsReference(firebaseService.getCurrentUsername())
     fun queryFollow() = firebaseService.getUserFollowReference(firebaseService.getCurrentUsername())
+    fun queryRequests() = firebaseService.getRequestsReference()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

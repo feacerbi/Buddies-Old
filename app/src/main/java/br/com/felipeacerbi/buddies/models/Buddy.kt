@@ -17,8 +17,8 @@ data class Buddy(
         val DATABASE_NAME_CHILD = "name"
         val DATABASE_BREED_CHILD = "breed"
         val DATABASE_TAG_CHILD = "tagId"
-        val DATABASE_OWNERS_CHILD = "owners"
-        val DATABASE_FOLLOWERS_CHILD = "followers"
+        val DATABASE_OWNERS_CHILD = "owns"
+        val DATABASE_FOLLOWERS_CHILD = "follows"
     }
 
     constructor(dataSnapshot: DataSnapshot): this() {

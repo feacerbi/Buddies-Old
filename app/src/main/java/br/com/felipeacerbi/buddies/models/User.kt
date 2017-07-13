@@ -16,8 +16,8 @@ data class User(
         val DATABASE_NAME_CHILD = "name"
         val DATABASE_EMAIL_CHILD = "email"
         val DATABASE_IDTOKEN_CHILD = "idToken"
-        val DATABASE_BUDDIES_CHILD = "buddies"
-        val DATABASE_FOLLOWING_CHILD = "following"
+        val DATABASE_BUDDIES_CHILD = "owns"
+        val DATABASE_FOLLOWING_CHILD = "follows"
     }
 
     constructor(dataSnapshot: DataSnapshot) : this() {

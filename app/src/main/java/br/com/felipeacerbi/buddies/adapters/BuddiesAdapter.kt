@@ -32,10 +32,6 @@ class BuddiesAdapter(val petsReference: DatabaseReference) :
 
     val firebaseService = FirebaseService()
 
-    init {
-        //mSnapshots.removeAll(mSnapshots.filter { it.value == false })
-    }
-
     override fun populateViewHolder(holder: BuddyViewHolder?, item: Boolean?, position: Int) {
         val petId = getRef(position).key
 
@@ -53,7 +49,6 @@ class BuddiesAdapter(val petsReference: DatabaseReference) :
                     with(holder.itemView) {
                         name.text = buddy.name
                         breed.text = buddy.breed
-                        tagID.text = buddy.tagId
                         remove_button.setOnClickListener { firebaseService.removePet(petsReference.key, petId) }
                     }
                 }
