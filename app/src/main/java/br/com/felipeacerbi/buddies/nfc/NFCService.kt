@@ -5,7 +5,6 @@ import android.nfc.NdefMessage
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.tech.*
-import android.util.ArrayMap
 import android.util.Log
 import br.com.felipeacerbi.buddies.nfc.tags.BaseTag
 import br.com.felipeacerbi.buddies.nfc.tags.NFCTag
@@ -68,7 +67,7 @@ class NFCService {
             // e.g. "en"
 
             try {
-                resultPayload = kotlin.text.String(payload, languageCodeLength + 1, payload.size - languageCodeLength - 1, charset(textEncoding))
+                resultPayload = String(payload, languageCodeLength + 1, payload.size - languageCodeLength - 1, charset(textEncoding))
             } catch (e: UnsupportedEncodingException) {
                 e.printStackTrace()
             }

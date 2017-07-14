@@ -34,6 +34,8 @@ class FirebaseService : FirebaseInstanceIdService() {
         val DATABASE_OWNS_CHILD = "owns"
         val DATABASE_ID_CHILD = "id"
         val DATABASE_PETID_CHILD = "petId"
+        val DATABASE_REQUESTS_CHILD = "requests"
+        val DATABASE_STATUS_CHILD = "status"
     }
 
     val firebaseAuth = FirebaseAuth.getInstance()
@@ -76,22 +78,6 @@ class FirebaseService : FirebaseInstanceIdService() {
 
         updateDB(childUpdates)
     }
-//    fun getCurrentUserPets(): Observable<ObservableSnapshotArray<Boolean>> {
-//        return Observable.create {
-//            subscriber ->
-//            getUserPetsReference(getCurrentUsername()).addListenerForSingleValueEvent(object : ValueEventListener {
-//                override fun onCancelled(error: DatabaseError?) {
-//                    Log.d(TAG, "Getting user pets cancelled: " + error.toString())
-//                }
-//
-//                override fun onDataChange(dataSnapshot: DataSnapshot?) {
-//                    if(dataSnapshot != null && dataSnapshot.childrenCount > 0) {
-//                        subscriber.onNext(ObservableSnapshotArray<Boolean>(dataSnapshot))
-//                    }
-//                }
-//            })
-//        }
-//    }
 
     // Pets API
     fun getPetReference(petId: String) = getPetsReference().child(petId)
@@ -125,38 +111,58 @@ class FirebaseService : FirebaseInstanceIdService() {
             Log.d(TAG, "Error, new pet found")
         }
     }
-    fun addPetOwner(baseTag: BaseTag) {
+    fun addPetOwnerRequest(baseTag: BaseTag) {
         if(!baseTag.petId.isEmpty()) {
             Log.d(TAG, "Adding owner pet")
-            val requestKey = getDBReference(DATABASE_REQUESTS_PATH).push().key
-            val request = Request(getCurrentUsername(), baseTag.petId)
 
-            val childUpdates = HashMap<String, Any?>()
+            getPetReference(baseTag.petId).child(DATABASE_OWNS_CHILD).addListenerForSingleValueEvent(object: ValueEventListener {
+                override fun onCancelled(error: DatabaseError?) {
+                    Log.d(TAG, "Error, owner pet cancelled " + error?.message)
+                }
 
-            with(childUpdates) {
-                put(DATABASE_REQUESTS_PATH + "/" + requestKey, request.toMap())
-            }
+                override fun onDataChange(dataSnapshot: DataSnapshot?) {
+                    val requestKey = getDBReference(DATABASE_REQUESTS_PATH).push().key
+                    val request = Request(getCurrentUsername(), baseTag.petId, Request.STATUS_OPEN)
+                    val childUpdates = HashMap<String, Any?>()
 
-            updateDB(childUpdates)
+                    with(childUpdates) {
+                        put(DATABASE_REQUESTS_PATH + "/" + requestKey, request.toMap())
+                        dataSnapshot?.children?.forEach { put(DATABASE_USERS_PATH + it.key + "/" + DATABASE_REQUESTS_CHILD + "/" + requestKey, true) }
+                    }
+
+                    updateDB(childUpdates)
+                }
+            })
+
         } else {
             Log.d(TAG, "Error, owner pet not found")
         }
     }
     fun allowPetOwner(request: Request, key: String, allow: Boolean) {
         Log.d(TAG, "Allowing owner pet")
-        val childUpdates = HashMap<String, Any?>()
-        val userPath = DATABASE_USERS_PATH + request.username + "/"
-        val petPath = DATABASE_PETS_PATH + request.petId + "/"
 
-        with(childUpdates) {
-            if(allow) {
-                put(userPath + DATABASE_OWNS_CHILD + "/" + request.petId, true)
-                put(petPath + DATABASE_OWNS_CHILD + "/" + request.username, true)
+        getPetReference(request.petId).child(DATABASE_OWNS_CHILD).addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onCancelled(error: DatabaseError?) {
+                Log.d(TAG, "Error, owner pet allow cancelled " + error?.message)
             }
-            put(DATABASE_REQUESTS_PATH + key, null)
-        }
 
-        updateDB(childUpdates)
+            override fun onDataChange(dataSnapshot: DataSnapshot?) {
+                val childUpdates = HashMap<String, Any?>()
+                val userPath = DATABASE_USERS_PATH + request.username + "/"
+                val petPath = DATABASE_PETS_PATH + request.petId + "/"
+                val status = if(allow) Request.STATUS_ACCEPTED else Request.STATUS_REFUSED
+
+                with(childUpdates) {
+                    if(allow) {
+                        put(userPath + DATABASE_OWNS_CHILD + "/" + request.petId, true)
+                        put(petPath + DATABASE_OWNS_CHILD + "/" + request.username, true)
+                    }
+                    put(DATABASE_REQUESTS_PATH + key + "/" + DATABASE_STATUS_CHILD, status)
+                }
+
+                updateDB(childUpdates)
+            }
+        })
     }
     fun addFollowPet(baseTag: BaseTag) {
         if(!baseTag.petId.isEmpty()) {
@@ -219,5 +225,10 @@ class FirebaseService : FirebaseInstanceIdService() {
     }
 
     fun getRequestsReference() = getDBReference(DATABASE_REQUESTS_PATH).orderByChild(DATABASE_PETID_CHILD).ref
+    fun getRequestReference(requestId: String) = getRequestsReference().child(requestId)
+    fun getUserRequestsReference(username: String) = getUserReference(username).child(DATABASE_REQUESTS_CHILD)
 
+    fun queryBuddies() = getUserPetsReference(getCurrentUsername())
+    fun queryFollow() = getUserFollowReference(getCurrentUsername())
+    fun queryRequests() = getUserRequestsReference(getCurrentUsername()).orderByChild(DATABASE_STATUS_CHILD).equalTo(Request.STATUS_OPEN).ref
 }

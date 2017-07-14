@@ -1,6 +1,9 @@
 package br.com.felipeacerbi.buddies.utils
 
+import android.content.Context
+import android.content.DialogInterface
 import android.support.v4.util.SparseArrayCompat
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -45,4 +48,26 @@ fun SparseArrayCompat<RecyclerView.Adapter<RecyclerView.ViewHolder>>.forEach(fun
             i++
         }
     }
+}
+
+fun AlertDialog.Builder.showTextDialog(message:String, func: (DialogInterface, Int) -> Unit) {
+    setTitle("Alert")
+    setMessage(message)
+    setPositiveButton("OK", func)
+    show()
+}
+
+fun AlertDialog.Builder.showTwoChoiceCancelableDialog(
+        title: String,
+        message: String,
+        buttonOneTitle: String,
+        buttonTwoTitle: String,
+        funcOne: (DialogInterface, Int) -> Unit,
+        funcTwo: (DialogInterface, Int) -> Unit) {
+    setTitle(title)
+    setMessage(message)
+    setPositiveButton(buttonOneTitle, funcOne)
+    setNegativeButton(buttonTwoTitle, funcTwo)
+    setNeutralButton("Cancel") { _, _ ->  }
+    show()
 }

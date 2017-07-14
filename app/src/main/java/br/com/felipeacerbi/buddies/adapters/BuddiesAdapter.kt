@@ -41,7 +41,6 @@ class BuddiesAdapter(val petsReference: DatabaseReference) :
             }
 
             override fun onDataChange(dataSnapshot: DataSnapshot?) {
-                Log.d(TAG, "New data")
                 if(dataSnapshot != null && holder != null) {
                     val buddy = Buddy(dataSnapshot)
                     Log.d(TAG, "Load buddy " + buddy.name)

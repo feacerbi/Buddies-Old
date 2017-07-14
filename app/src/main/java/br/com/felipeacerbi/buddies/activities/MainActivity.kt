@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.nfc.NFCService
 import br.com.felipeacerbi.buddies.R
@@ -21,8 +22,8 @@ import br.com.felipeacerbi.buddies.fragments.RequestListFragment
 import br.com.felipeacerbi.buddies.nfc.tags.BaseTag
 import br.com.felipeacerbi.buddies.models.Buddy
 import br.com.felipeacerbi.buddies.models.BuddyInfo
+import br.com.felipeacerbi.buddies.utils.showTwoChoiceCancelableDialog
 import com.firebase.ui.database.FirebaseRecyclerAdapter
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.Query
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -52,21 +53,21 @@ class MainActivity : RxBaseActivity() {
                 transactToFragment(
                         FirebaseListFragment(),
                         R.id.container,
-                        makeQueryBundle(queryFollow()))
+                        makeQueryBundle(firebaseService.queryFollow()))
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_buddies -> {
                 transactToFragment(
                         FirebaseListFragment(),
                         R.id.container,
-                        makeQueryBundle(queryBuddies()))
+                        makeQueryBundle(firebaseService.queryBuddies()))
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_notifications -> {
                 transactToFragment(
                         RequestListFragment(),
                         R.id.container,
-                        makeQueryBundle(queryRequests()))
+                        makeQueryBundle(firebaseService.queryRequests()))
                 return@OnNavigationItemSelectedListener true
             }
         }
@@ -83,13 +84,9 @@ class MainActivity : RxBaseActivity() {
 
     fun makeQueryBundle(query: Query): Bundle {
         val bundle = Bundle()
-        bundle.putString(FirebaseListFragment.DATABASE_REFERENCE, query.toString().removePrefix("https://buddies-5d07f.firebaseio.com"))
+        bundle.putString(FirebaseListFragment.DATABASE_REFERENCE, query.toString().removePrefix("https://buddies-5d07f.firebaseio.com/"))
         return bundle
     }
-
-    fun queryBuddies() = firebaseService.getUserPetsReference(firebaseService.getCurrentUsername())
-    fun queryFollow() = firebaseService.getUserFollowReference(firebaseService.getCurrentUsername())
-    fun queryRequests() = firebaseService.getRequestsReference()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,7 +102,7 @@ class MainActivity : RxBaseActivity() {
         transactToFragment(
                 FirebaseListFragment(),
                 R.id.container,
-                makeQueryBundle(queryFollow()))
+                makeQueryBundle(firebaseService.queryFollow()))
     }
 
     override fun onResume() {
@@ -138,7 +135,7 @@ class MainActivity : RxBaseActivity() {
                 NfcAdapter.ACTION_NDEF_DISCOVERED -> {
                     val nfcTag = nfcService.parseIntent(intent)
                     val baseTag = nfcTag.baseTag
-                    showTwoChoiceCancelableDialog(
+                    AlertDialog.Builder(this).showTwoChoiceCancelableDialog(
                             "TAG Scan",
                             "A new Buddy Tag was detected, what do you want to do?",
                             "Follow Buddy",
@@ -147,7 +144,8 @@ class MainActivity : RxBaseActivity() {
                                     { firebaseService.addFollowPet(it) },
                                     { Log.d(TAG, "Follow pet not found") }) },
                             { _, _ -> checkPetWithAction(baseTag,
-                                    { firebaseService.addPetOwner(it) },
+                                    { firebaseService.addPetOwnerRequest(it)
+                                      Toast.makeText(this, "Request sent!", Toast.LENGTH_SHORT).show() },
                                     { launchNewPetActivity(it) }) })
                 }
             }
@@ -178,12 +176,6 @@ class MainActivity : RxBaseActivity() {
         subscriptions.add(subscription)
     }
 
-    fun launchNewPetActivity(baseTag: BaseTag) {
-        val newPetActivityIntent = Intent(this, NewPetActivity::class.java)
-        newPetActivityIntent.putExtra(NewPetActivity.EXTRA_BASETAG, baseTag)
-        startActivityForResult(newPetActivityIntent, NEW_PET_RESULT)
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         super.onActivityResult(requestCode, resultCode, data)
         Log.d(TAG, "Activity result code " + requestCode)
@@ -194,17 +186,6 @@ class MainActivity : RxBaseActivity() {
             firebaseService.addNewPet(baseTag, Buddy(buddyInfo.name, buddyInfo.breed))
         }
     }
-
-//    fun showTagInfo(baseTag: BaseTag) {
-//        showTextDialog("Tag id: " + baseTag.id + "\n" +
-//                "Tag tech: " + baseTag.tagId + "\n" +
-//                "Tag message: " + baseTag.ndefMessage + "\n" +
-//                "Tag decoded: " + baseTag.decodedPayload)
-//
-//        val frag = supportFragmentManager.findFragmentById(R.id.container) as FirebaseListFragment
-//        frag.addBuddy(baseTag.decodedPayload)
-//
-//    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main_activity, menu)
@@ -226,34 +207,16 @@ class MainActivity : RxBaseActivity() {
         launchLoginActivity()
     }
 
+    fun launchNewPetActivity(baseTag: BaseTag) {
+        val newPetActivityIntent = Intent(this, NewPetActivity::class.java)
+        newPetActivityIntent.putExtra(NewPetActivity.EXTRA_BASETAG, baseTag)
+        startActivityForResult(newPetActivityIntent, NEW_PET_RESULT)
+    }
+
     private fun launchLoginActivity() {
         val mainActivityIntent = Intent(this, LoginActivity::class.java)
         startActivity(mainActivityIntent)
         finish()
-    }
-
-    fun showTextDialog(text: String, func: (DialogInterface, Int) -> Unit) {
-        val dialog = AlertDialog.Builder(this)
-        dialog.setTitle("Alert")
-                .setMessage(text)
-                .setPositiveButton("OK", func)
-                .show()
-    }
-
-    fun showTwoChoiceCancelableDialog(
-            title: String,
-            message: String,
-            buttonOneTitle: String,
-            buttonTwoTitle: String,
-            funcOne: (DialogInterface, Int) -> Unit,
-            funcTwo: (DialogInterface, Int) -> Unit) {
-        val dialog = AlertDialog.Builder(this)
-        dialog.setTitle(title)
-                .setMessage(message)
-                .setPositiveButton(buttonOneTitle, funcOne)
-                .setNegativeButton(buttonTwoTitle, funcTwo)
-                .setNeutralButton("Cancel") { _, _ ->  }
-                .show()
     }
 
     override fun onBackPressed() {
