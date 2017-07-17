@@ -1,7 +1,7 @@
 package br.com.felipeacerbi.buddies.activities
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
 
 open class RxBaseActivity : AppCompatActivity() {

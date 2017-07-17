@@ -2,8 +2,6 @@ package br.com.felipeacerbi.buddies.app
 
 import android.app.Application
 import br.com.felipeacerbi.buddies.dagger.AppComponent
-import br.com.felipeacerbi.buddies.dagger.AppModule
-import br.com.felipeacerbi.buddies.dagger.DaggerAppComponent
 
 /**
  * Created by felipe.acerbi on 06/07/2017.

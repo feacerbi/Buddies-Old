@@ -2,7 +2,6 @@ package br.com.felipeacerbi.buddies.nfc.tags
 
 import android.nfc.NdefMessage
 import android.nfc.Tag
-import java.io.Serializable
 
 /**
  * Created by felipe.acerbi on 11/07/2017.

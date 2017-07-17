@@ -1,11 +1,16 @@
 package br.com.felipeacerbi.buddies.nfc
 
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.nfc.NdefMessage
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.tech.*
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import br.com.felipeacerbi.buddies.activities.MainActivity
 import br.com.felipeacerbi.buddies.nfc.tags.BaseTag
 import br.com.felipeacerbi.buddies.nfc.tags.NFCTag
 import br.com.felipeacerbi.buddies.utils.toHexString
@@ -39,6 +44,8 @@ class NFCService {
 
         return NFCTag(tag, message, decodePayload(message), BaseTag(id))
     }
+
+    fun isNFCSupported(context: Context) = NfcAdapter.getDefaultAdapter(context) != null
 
     private fun decodePayload(ndefMessage: NdefMessage?): String {
         /*
@@ -74,6 +81,32 @@ class NFCService {
         }
 
         return resultPayload
+    }
+
+    fun activateForegroundDispatchSystem(activity: AppCompatActivity) {
+        if(isNFCSupported(activity)) {
+            NfcAdapter.getDefaultAdapter(activity).enableForegroundDispatch(
+                    activity,
+                    createPendingIntent(activity),
+                    arrayOf(getIntentFilters()),
+                    getTechs())
+        }
+    }
+
+    fun deactivateForegroundDispatchSystem(activity: AppCompatActivity) {
+        if(isNFCSupported(activity)) {
+            NfcAdapter.getDefaultAdapter(activity).disableForegroundDispatch(activity)
+        }
+    }
+
+    fun createPendingIntent(context: Context): PendingIntent {
+        return PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0)
+    }
+
+    fun getIntentFilters(): IntentFilter {
+        val intentFilter = IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED)
+        intentFilter.addDataType("text/plain")
+        return intentFilter
     }
 
     fun getTechs() = arrayOf(arrayOf(

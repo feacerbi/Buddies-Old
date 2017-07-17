@@ -1,6 +1,5 @@
 package br.com.felipeacerbi.buddies.utils
 
-import android.content.Context
 import android.content.DialogInterface
 import android.support.v4.util.SparseArrayCompat
 import android.support.v7.app.AlertDialog
@@ -8,7 +7,6 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Adapter
 
 /**
  * Created by felipe.acerbi on 04/07/2017.

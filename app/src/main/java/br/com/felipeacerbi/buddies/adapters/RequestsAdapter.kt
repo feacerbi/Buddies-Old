@@ -3,8 +3,8 @@ package br.com.felipeacerbi.buddies.adapters
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
-import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.R
+import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.models.Request
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.google.firebase.database.DataSnapshot
@@ -41,7 +41,7 @@ class RequestsAdapter(val petsReference: DatabaseReference) :
             }
 
             override fun onDataChange(dataSnapshot: DataSnapshot?) {
-                if(dataSnapshot != null && holder != null) {
+                if(dataSnapshot?.value != null && holder != null) {
                     val request = Request(dataSnapshot)
 
                     with(holder.itemView) {

@@ -3,9 +3,9 @@ package br.com.felipeacerbi.buddies.adapters
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
+import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.models.Buddy
-import br.com.felipeacerbi.buddies.R
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -41,15 +41,17 @@ class BuddiesAdapter(val petsReference: DatabaseReference) :
             }
 
             override fun onDataChange(dataSnapshot: DataSnapshot?) {
-                if(dataSnapshot != null && holder != null) {
+                if(dataSnapshot?.value != null && holder != null) {
                     val buddy = Buddy(dataSnapshot)
                     Log.d(TAG, "Load buddy " + buddy.name)
 
                     with(holder.itemView) {
                         name.text = buddy.name
                         breed.text = buddy.breed
-                        remove_button.setOnClickListener { firebaseService.removePet(petsReference.key, petId) }
+                        remove_button.setOnClickListener { firebaseService.removePetFromUser(petsReference.key, petId) }
                     }
+                } else {
+                    firebaseService.removePetFromUser(petsReference.key, petId)
                 }
             }
         })

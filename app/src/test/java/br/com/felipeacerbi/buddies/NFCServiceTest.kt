@@ -45,11 +45,7 @@ class NFCServiceTest {
         val testTag = mock(Tag::class.java)
         `when`(testTag.toString()).thenReturn(tagDescription)
 
-        val ndefRecord = mock(NdefRecord::class.java)
-        `when`(ndefRecord.payload).thenReturn(createTextRecord(testPayload))
-
-        val ndefMessage = mock(NdefMessage::class.java)
-        `when`(ndefMessage.records).thenReturn(arrayOf(ndefRecord))
+        val ndefMessage = createNdefMessage()
 
         val testIntent = mock(Intent::class.java)
         `when`(testIntent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)).thenReturn(arrayOf(ndefMessage))
@@ -62,6 +58,16 @@ class NFCServiceTest {
         Assert.assertEquals(ndefMessage.records[0].payload, resultNFCTag.message?.records?.get(0)?.payload)
         Assert.assertEquals(testPayload, resultNFCTag.payload)
         Assert.assertEquals(testId.toHexString(), resultNFCTag.baseTag.id)
+    }
+
+    fun createNdefMessage(): NdefMessage {
+        val ndefRecord = mock(NdefRecord::class.java)
+        `when`(ndefRecord.payload).thenReturn(createTextRecord(testPayload))
+
+        val ndefMessage = mock(NdefMessage::class.java)
+        `when`(ndefMessage.records).thenReturn(arrayOf(ndefRecord))
+
+        return ndefMessage
     }
 
     fun createTextRecord(payload: String): ByteArray {

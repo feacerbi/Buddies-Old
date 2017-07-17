@@ -1,11 +1,11 @@
 package br.com.felipeacerbi.buddies.activities
 
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import br.com.felipeacerbi.buddies.R
-import br.com.felipeacerbi.buddies.nfc.tags.BaseTag
 import br.com.felipeacerbi.buddies.models.BuddyInfo
+import br.com.felipeacerbi.buddies.nfc.tags.BaseTag
 import kotlinx.android.synthetic.main.activity_new_pet.*
 
 class NewPetActivity : AppCompatActivity() {
@@ -13,8 +13,6 @@ class NewPetActivity : AppCompatActivity() {
     companion object {
         val BUDDY_INFO_EXTRA = "buddy_info"
         val EXTRA_BASETAG = "basetag"
-        val RESULT_CANCEL = 1
-        val RESULT_OK = 0
     }
 
     var baseTag: BaseTag? = null
@@ -30,7 +28,7 @@ class NewPetActivity : AppCompatActivity() {
         val resultIntent = Intent(this, MainActivity::class.java)
 
         cancel_button.setOnClickListener {
-            setResult(RESULT_CANCEL, resultIntent)
+            setResult(RESULT_CANCELED, resultIntent)
             finish()
         }
         add_button.setOnClickListener {
