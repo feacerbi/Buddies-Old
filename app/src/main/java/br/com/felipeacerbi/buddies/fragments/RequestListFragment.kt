@@ -2,13 +2,14 @@ package br.com.felipeacerbi.buddies.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.adapters.RequestsAdapter
+import kotlinx.android.synthetic.main.requests_list.view.*
 
 /**
  * A fragment representing a list of Items.
@@ -23,13 +24,13 @@ open class RequestListFragment : FirebaseListFragment() {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        val view = inflater?.inflate(R.layout.buddies_list, container, false)
+        val view = inflater?.inflate(R.layout.requests_list, container, false)
 
         // Set the adapter
-        if (view is RecyclerView) {
+        if(view is ConstraintLayout) {
             with(view) {
-                layoutManager = LinearLayoutManager(context)
-                adapter = RequestsAdapter(ref)
+                list.layoutManager = LinearLayoutManager (context)
+                list.adapter = RequestsAdapter(ref, progress)
             }
         }
 

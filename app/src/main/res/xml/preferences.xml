@@ -4,9 +4,9 @@
         android:title="DISPLAY"
         android:key="layout_preference_category">
         <SwitchPreference
-            android:key="enable_qrcode_shortcut"
-            android:summary="Use a shortcut button to add new pets using QR Code reader"
-            android:title="Enable QR Code shortcut button"
+            android:key="enable_qrcode_scan"
+            android:summary="Use the camera to add new pets with the QR Code reader"
+            android:title="Enable QR Code TAG scan"
             android:defaultValue="false" />
     </PreferenceCategory>
 </PreferenceScreen>

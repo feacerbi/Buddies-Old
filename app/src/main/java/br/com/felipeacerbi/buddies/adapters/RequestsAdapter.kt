@@ -3,9 +3,11 @@ package br.com.felipeacerbi.buddies.adapters
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
+import android.widget.ProgressBar
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.models.Request
+import com.firebase.ui.database.ChangeEventListener
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -17,7 +19,7 @@ import kotlinx.android.synthetic.main.request_list_item.view.*
  * Created by felipe.acerbi on 04/07/2017.
  */
 
-class RequestsAdapter(val petsReference: DatabaseReference) :
+class RequestsAdapter(val petsReference: DatabaseReference, val progressBar: ProgressBar) :
         FirebaseRecyclerAdapter<Boolean, RequestsAdapter.RequestViewHolder>
         (
                 Boolean::class.java,
@@ -65,6 +67,20 @@ class RequestsAdapter(val petsReference: DatabaseReference) :
                 }
             }
         })
+    }
+
+    override fun onDataChanged() {
+        super.onDataChanged()
+        hideProgressBar()
+    }
+
+    override fun onChildChanged(type: ChangeEventListener.EventType?, snapshot: DataSnapshot?, index: Int, oldIndex: Int) {
+        super.onChildChanged(type, snapshot, index, oldIndex)
+        hideProgressBar()
+    }
+
+    fun hideProgressBar() {
+        progressBar.visibility = View.GONE
     }
 
     class RequestViewHolder(view: View) : RecyclerView.ViewHolder(view)

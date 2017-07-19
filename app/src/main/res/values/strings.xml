@@ -24,5 +24,21 @@
     <string name="title_activity_settings">Settings</string>
 
     <string name="firebase_query_prefix">https://buddies-5d07f.firebaseio.com/</string>
-    <string name="action_settings_title">Settings</string>
+    <string name="action_title_settings">Settings</string>
+    <string name="action_title_profile">Profile</string>
+    <string name="title_activity_profile">Profile</string>
+    <string name="profile_name_hint">Name</string>
+    <string name="profile_email_hint">Email</string>
+    <string name="navigation_string_places">Places</string>
+    <string name="navigation_string_home">Home</string>
+    <string name="action_title_requests">Requests</string>
+    <string name="title_activity_requests">Requests</string>
+    <string name="title_activity_newpet">New Buddy</string>
+    <string name="email_edit_button_description">Email edit button</string>
+    <string name="name_edit_button_description">Name edit button</string>
+    <string name="tag_options_dialog_title">TAG Scan</string>
+    <string name="tag_options_dialog_message">A new Buddy Tag was detected, what do you want to do?</string>
+    <string name="tag_options_dialog_follow_button">Follow Buddy</string>
+    <string name="tag_options_dialog_new_button">Add new Buddy</string>
+    <string name="request_toast_sent_message">Request sent!</string>
 </resources>

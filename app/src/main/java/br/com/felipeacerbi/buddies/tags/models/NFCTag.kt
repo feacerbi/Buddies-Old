@@ -1,4 +1,4 @@
-package br.com.felipeacerbi.buddies.nfc.tags
+package br.com.felipeacerbi.buddies.tags.models
 
 import android.nfc.NdefMessage
 import android.nfc.Tag

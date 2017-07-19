@@ -22,7 +22,7 @@ import kotlinx.android.synthetic.main.activity_settings.*
 class SettingsActivity : AppCompatActivity() {
 
     companion object {
-        val QR_CODE_BUTTON_SHORTCUT_KEY = "enable_qrcode_shortcut"
+        val QR_CODE_BUTTON_SHORTCUT_KEY = "enable_qrcode_scan"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

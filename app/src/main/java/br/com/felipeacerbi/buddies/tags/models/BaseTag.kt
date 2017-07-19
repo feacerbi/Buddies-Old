@@ -1,4 +1,4 @@
-package br.com.felipeacerbi.buddies.nfc.tags
+package br.com.felipeacerbi.buddies.tags.models
 
 import com.google.firebase.database.DataSnapshot
 import java.io.Serializable

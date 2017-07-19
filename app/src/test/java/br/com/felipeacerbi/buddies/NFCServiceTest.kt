@@ -7,8 +7,7 @@ import org.junit.Test
 import android.nfc.NdefRecord
 import android.nfc.NfcAdapter
 import android.util.Log
-import br.com.felipeacerbi.buddies.nfc.NFCService
-import java.util.*
+import br.com.felipeacerbi.buddies.tags.NFCService
 import org.junit.Assert
 import org.junit.Before
 import org.junit.runner.RunWith
@@ -17,8 +16,6 @@ import org.mockito.Mockito.mock
 import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.api.mockito.PowerMockito.*
 import org.powermock.modules.junit4.PowerMockRunner
-import java.nio.charset.Charset
-import android.icu.util.ULocale.getLanguage
 import br.com.felipeacerbi.buddies.utils.toHexString
 
 

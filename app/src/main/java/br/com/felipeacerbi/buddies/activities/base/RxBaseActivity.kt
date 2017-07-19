@@ -1,10 +1,13 @@
-package br.com.felipeacerbi.buddies.activities
+package br.com.felipeacerbi.buddies.activities.base
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
 
-open class RxBaseActivity : AppCompatActivity() {
+/**
+ * Created by felipe.acerbi on 19/07/2017.
+ */
+abstract class RxBaseActivity : AppCompatActivity() {
 
     var subscriptions = CompositeDisposable()
 
@@ -22,4 +25,5 @@ open class RxBaseActivity : AppCompatActivity() {
         if(!subscriptions.isDisposed) subscriptions.dispose()
         subscriptions.clear()
     }
+
 }

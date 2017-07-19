@@ -3,17 +3,23 @@ package br.com.felipeacerbi.buddies.fragments
 import android.content.Context
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.constraint.ConstraintLayout
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.SettingsActivity
 import br.com.felipeacerbi.buddies.adapters.BuddiesAdapter
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
+import br.com.felipeacerbi.buddies.utils.getFirebaseAdapter
+import br.com.felipeacerbi.buddies.utils.setUp
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.buddies_list.*
+import kotlinx.android.synthetic.main.buddies_list.view.*
 
 
 /**
@@ -47,10 +53,10 @@ open class FirebaseListFragment : Fragment() {
         val view = inflater?.inflate(R.layout.buddies_list, container, false)
 
         // Set the adapter
-        if (view is RecyclerView) {
+        if(view is ConstraintLayout) {
             with(view) {
-                layoutManager = LinearLayoutManager(context)
-                adapter = BuddiesAdapter(ref)
+                list.layoutManager = LinearLayoutManager(context)
+                list.adapter = BuddiesAdapter(ref, progress)
             }
         }
 
@@ -68,13 +74,10 @@ open class FirebaseListFragment : Fragment() {
     }
 
     fun setUpFab(show: Boolean) {
-        if(show) {
-            activity.fab?.visibility = View.VISIBLE
-            activity.fab?.setImageDrawable(resources.getDrawable(R.drawable.ic_pets_white_24dp, activity.theme))
-        } else {
-            activity.fab?.visibility = View.GONE
-        }
+        activity.fab?.setUp(activity, show, R.drawable.ic_camera_alt_white_24dp)
     }
 
-//    fun getAdapter(): BuddiesAdapter? = if(list != null && list.adapter != null) (list.adapter as BuddiesAdapter) else null
+    fun cleanUp() {
+        list?.getFirebaseAdapter()?.cleanup()
+    }
 }

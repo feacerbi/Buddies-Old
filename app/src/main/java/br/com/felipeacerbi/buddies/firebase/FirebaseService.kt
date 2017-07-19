@@ -4,7 +4,7 @@ import android.util.Log
 import br.com.felipeacerbi.buddies.models.Buddy
 import br.com.felipeacerbi.buddies.models.Request
 import br.com.felipeacerbi.buddies.models.User
-import br.com.felipeacerbi.buddies.nfc.tags.BaseTag
+import br.com.felipeacerbi.buddies.tags.models.BaseTag
 import br.com.felipeacerbi.buddies.utils.toUsername
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -52,11 +52,12 @@ class FirebaseService : FirebaseInstanceIdService() {
 
     // DB API
     fun getDatabaseReference(path: String) = firebaseDB.getReference(path)
+    fun getAppIDToken() = firebaseInstanceID.token ?: ""
+    fun signOut() = firebaseAuth.signOut()
+
     fun updateDB(childUpdates: HashMap<String, Any?>) {
         getDatabaseReference("").updateChildren(childUpdates)
     }
-    fun getAppIDToken() = firebaseInstanceID.token ?: ""
-    fun signOut() = firebaseAuth.signOut()
 
     // Users API
     fun getUserReference(username: String) = getUsersReference().child(username)
@@ -65,6 +66,8 @@ class FirebaseService : FirebaseInstanceIdService() {
     fun getCurrentUserDisplayName() = getCurrentUser()?.displayName ?: ""
     fun getCurrentUserEmail() = getCurrentUser()?.email ?: ""
     fun getCurrentUsername() = getCurrentUserEmail().toUsername()
+    fun getCurrentUserPicture() = getCurrentUser()?.photoUrl
+
     fun registerUser() {
         val user = User(
                 getCurrentUserDisplayName(),
@@ -81,15 +84,62 @@ class FirebaseService : FirebaseInstanceIdService() {
         updateDB(childUpdates)
     }
 
+    fun checkUserObservable(username: String): Observable<User> {
+        return Observable.create {
+            subscriber ->
+            getUserReference(username).addListenerForSingleValueEvent(object: ValueEventListener {
+                override fun onCancelled(error: DatabaseError?) {
+                    Log.d(TAG, "Adding user cancelled: " + error.toString())
+                }
+
+                override fun onDataChange(dataSnapshot: DataSnapshot?) {
+                    if(dataSnapshot != null && dataSnapshot.childrenCount > 0) {
+                        val foundUser = User(dataSnapshot)
+                        subscriber.onNext(foundUser)
+                        Log.d(TAG, "User found")
+                    } else {
+                        subscriber.onNext(User())
+                        Log.d(TAG, "User not found")
+                    }
+                    subscriber.onComplete()
+                }
+            })
+        }
+    }
+
     // TAGs API
     fun getTagsReference() = getDatabaseReference(DATABASE_TAGS_PATH)
     fun getTagReference(tagId: String) = getTagsReference().child(tagId)
+
+    fun checkTagObservable(baseTag: BaseTag): Observable<BaseTag> {
+        return Observable.create {
+            subscriber ->
+            getTagsReference().orderByChild(DATABASE_ID_CHILD).equalTo(baseTag.id).addListenerForSingleValueEvent(object: ValueEventListener {
+                override fun onCancelled(error: DatabaseError?) {
+                    Log.d(TAG, "Adding pet cancelled: " + error.toString())
+                }
+
+                override fun onDataChange(dataSnapshot: DataSnapshot?) {
+                    var foundTag = baseTag
+                    if(dataSnapshot != null && dataSnapshot.childrenCount > 0) {
+                        foundTag = BaseTag(dataSnapshot.children.first())
+                        Log.d(TAG, "Tag found")
+                    } else {
+                        Log.d(TAG, "Tag not found")
+                    }
+                    subscriber.onNext(foundTag)
+                    subscriber.onComplete()
+                }
+            })
+        }
+    }
 
     // Pets API
     fun getPetReference(petId: String) = getPetsReference().child(petId)
     fun getPetsReference() = getDatabaseReference(DATABASE_PETS_PATH)
     fun getUserPetsReference(username: String) = getUserReference(username).child(DATABASE_OWNS_CHILD)
     fun getUserFollowReference(username: String) = getUserReference(username).child(DATABASE_FOLLOWS_CHILD)
+
     fun addNewPet(baseTag: BaseTag, buddy: Buddy) {
         if(baseTag.petId.isEmpty()) {
             Log.d(TAG, "Adding new pet")
@@ -117,6 +167,7 @@ class FirebaseService : FirebaseInstanceIdService() {
             Log.d(TAG, "Error, new pet found")
         }
     }
+
     fun addPetOwnerRequest(baseTag: BaseTag) {
         if(!baseTag.petId.isEmpty()) {
             Log.d(TAG, "Adding owner pet")
@@ -144,6 +195,7 @@ class FirebaseService : FirebaseInstanceIdService() {
             Log.d(TAG, "Error, owner pet not found")
         }
     }
+
     fun allowPetOwner(request: Request, key: String, allow: Boolean) {
         Log.d(TAG, "Allowing owner pet")
 
@@ -170,6 +222,7 @@ class FirebaseService : FirebaseInstanceIdService() {
             }
         })
     }
+
     fun addFollowPet(baseTag: BaseTag) {
         if(!baseTag.petId.isEmpty()) {
             Log.d(TAG, "Adding follow pet")
@@ -187,28 +240,7 @@ class FirebaseService : FirebaseInstanceIdService() {
             Log.d(TAG, "Error, follow pet not found")
         }
     }
-    fun checkPetObservable(baseTag: BaseTag): Observable<BaseTag> {
-        return Observable.create {
-            subscriber ->
-            getTagsReference().orderByChild(DATABASE_ID_CHILD).equalTo(baseTag.id).addListenerForSingleValueEvent(object: ValueEventListener {
-                override fun onCancelled(error: DatabaseError?) {
-                    Log.d(TAG, "Adding pet cancelled: " + error.toString())
-                }
 
-                override fun onDataChange(dataSnapshot: DataSnapshot?) {
-                    var foundTag = baseTag
-                    if(dataSnapshot != null && dataSnapshot.childrenCount > 0) {
-                        foundTag = BaseTag(dataSnapshot.children.first())
-                        Log.d(TAG, "Tag found")
-                    } else {
-                        Log.d(TAG, "Tag not found")
-                    }
-                    subscriber.onNext(foundTag)
-                    subscriber.onComplete()
-                }
-            })
-        }
-    }
     fun removePetFromUser(ref: String, petId: String) {
         if(!petId.isEmpty()) {
             Log.d(TAG, "Removing pet from owner")
@@ -241,6 +273,7 @@ class FirebaseService : FirebaseInstanceIdService() {
             Log.d(TAG, "Error, follow pet not found")
         }
     }
+
     fun removePet(petId: String) {
         if(!petId.isEmpty()) {
             Log.d(TAG, "Removing pet")

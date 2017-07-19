@@ -1,4 +1,4 @@
-package br.com.felipeacerbi.buddies.nfc
+package br.com.felipeacerbi.buddies.tags
 
 import android.app.PendingIntent
 import android.content.Context
@@ -11,8 +11,8 @@ import android.nfc.tech.*
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import br.com.felipeacerbi.buddies.activities.MainActivity
-import br.com.felipeacerbi.buddies.nfc.tags.BaseTag
-import br.com.felipeacerbi.buddies.nfc.tags.NFCTag
+import br.com.felipeacerbi.buddies.tags.models.BaseTag
+import br.com.felipeacerbi.buddies.tags.models.NFCTag
 import br.com.felipeacerbi.buddies.utils.toHexString
 import java.io.UnsupportedEncodingException
 import kotlin.experimental.and

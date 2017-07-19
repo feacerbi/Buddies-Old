@@ -1,12 +1,10 @@
 package br.com.felipeacerbi.buddies.activities
 
-import android.Manifest.permission
+import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.PointF
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import br.com.felipeacerbi.buddies.R
 import com.dlazaro66.qrcodereaderview.QRCodeReaderView
@@ -21,37 +19,13 @@ class QRCodeActivity :
     companion object {
         val TAG = "QRCodeActivity"
         val QR_CODE_TEXT = "qr_result"
-        val CAMERA_PERMISSION_REQUEST = 1
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qrcode)
 
-        if (ContextCompat.checkSelfPermission(this, permission.CAMERA)
-                == PackageManager.PERMISSION_GRANTED) {
-            startCamera()
-        } else {
-            requestCameraPermission()
-        }
-    }
-
-    private fun requestCameraPermission() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission.CAMERA)) {
-            ActivityCompat.requestPermissions(this, arrayOf(permission.CAMERA), CAMERA_PERMISSION_REQUEST)
-        } else {
-            ActivityCompat.requestPermissions(this, arrayOf(permission.CAMERA), CAMERA_PERMISSION_REQUEST)
-        }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (requestCode != CAMERA_PERMISSION_REQUEST) {
-            return
-        }
-
-        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            startCamera()
-        }
+        startCamera()
     }
 
     fun startCamera() {
@@ -91,9 +65,14 @@ class QRCodeActivity :
 
     override fun onPause() {
         super.onPause()
-        if (ActivityCompat.checkSelfPermission(this, "android.permission.CAMERA")
-                == PackageManager.PERMISSION_GRANTED) {
-            qrdecoderview.stopCamera()
-        }
+        qrdecoderview.stopCamera()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val resultIntent = Intent(this, MainActivity::class.java)
+        setResult(Activity.RESULT_CANCELED, resultIntent)
+
+        finish()
     }
 }

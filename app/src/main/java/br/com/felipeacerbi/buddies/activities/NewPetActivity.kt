@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.models.BuddyInfo
-import br.com.felipeacerbi.buddies.nfc.tags.BaseTag
+import br.com.felipeacerbi.buddies.tags.models.BaseTag
 import kotlinx.android.synthetic.main.activity_new_pet.*
 
 class NewPetActivity : AppCompatActivity() {
