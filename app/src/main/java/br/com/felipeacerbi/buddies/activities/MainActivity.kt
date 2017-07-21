@@ -11,6 +11,7 @@ import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.base.TagHandlerActivity
 import br.com.felipeacerbi.buddies.fragments.FirebaseListFragment
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
+import br.com.felipeacerbi.buddies.utils.launchActivity
 import br.com.felipeacerbi.buddies.utils.makeQueryBundle
 import br.com.felipeacerbi.buddies.utils.showOneChoiceCancelableDialog
 import br.com.felipeacerbi.buddies.utils.transact
@@ -25,10 +26,8 @@ class MainActivity : TagHandlerActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         setUpUI()
-
-        firebaseService.registerUser()
-
         handleIntent(intent, true)
     }
 

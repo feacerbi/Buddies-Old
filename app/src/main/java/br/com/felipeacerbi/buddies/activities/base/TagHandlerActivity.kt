@@ -14,13 +14,13 @@ import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.models.Buddy
 import br.com.felipeacerbi.buddies.models.BuddyInfo
 import br.com.felipeacerbi.buddies.tags.NFCService
+import br.com.felipeacerbi.buddies.tags.SubscriptionsManager
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
-import br.com.felipeacerbi.buddies.tags.TagsManager
 import br.com.felipeacerbi.buddies.utils.PermissionsManager
+import br.com.felipeacerbi.buddies.utils.launchActivity
 import br.com.felipeacerbi.buddies.utils.showTwoChoiceCancelableDialog
-import kotlin.reflect.KClass
 
-abstract class TagHandlerActivity : RxBaseActivity() {
+abstract class TagHandlerActivity : FireListener() {
 
     companion object {
         var TAG = "TagHandlerActivity"
@@ -34,8 +34,8 @@ abstract class TagHandlerActivity : RxBaseActivity() {
         PermissionsManager(this)
     }
 
-    val tagsManager: TagsManager by lazy {
-        TagsManager(this)
+    val subscriptionsManager: SubscriptionsManager by lazy {
+        SubscriptionsManager(this)
     }
 
     val nfcService: NFCService by lazy {
@@ -54,7 +54,6 @@ abstract class TagHandlerActivity : RxBaseActivity() {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-
         handleIntent(intent, false)
     }
 
@@ -106,14 +105,14 @@ abstract class TagHandlerActivity : RxBaseActivity() {
     }
 
     fun addNewFollow(baseTag: BaseTag) {
-        subscriptions.add(tagsManager.checkTagWithActionSubscription(
+        subscriptions.add(subscriptionsManager.checkTagWithActionSubscription(
                 baseTag,
                 { firebaseService.addFollowPet(it) },
                 { Log.d(TAG, "Follow pet not found") }))
     }
 
     fun addNewBuddy(baseTag: BaseTag) {
-        subscriptions.add(tagsManager.checkTagWithActionSubscription(
+        subscriptions.add(subscriptionsManager.checkTagWithActionSubscription(
                 baseTag,
                 { firebaseService.addPetOwnerRequest(it)
                     Toast.makeText(this, getString(R.string.request_toast_sent_message), Toast.LENGTH_SHORT).show() },
@@ -128,10 +127,5 @@ abstract class TagHandlerActivity : RxBaseActivity() {
 
     fun setUpFab(fab: FloatingActionButton) {
         fab.setOnClickListener { fabAction() }
-    }
-
-    fun <T : Any> launchActivity(clazz: KClass<T>) {
-        val activityIntent = Intent(this, clazz.java)
-        startActivity(activityIntent)
     }
 }

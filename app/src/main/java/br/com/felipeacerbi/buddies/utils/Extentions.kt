@@ -1,11 +1,12 @@
 package br.com.felipeacerbi.buddies.utils
 
+import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
-import android.support.v4.util.SparseArrayCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
@@ -16,6 +17,7 @@ import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.fragments.FirebaseListFragment
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.google.firebase.database.Query
+import kotlin.reflect.KClass
 
 /**
  * Created by felipe.acerbi on 04/07/2017.
@@ -47,23 +49,6 @@ fun String.toUsername(): String {
     return this.toLowerCase().trim().replace(".", "", true).replace("@", "", true)
 }
 
-fun SparseArrayCompat<RecyclerView.Adapter<RecyclerView.ViewHolder>>.forEach(func: (adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>) -> Unit) {
-    if(size() > 0) {
-        var i = 0
-        while(i < size()) {
-            func(get(i))
-            i++
-        }
-    }
-}
-
-fun AlertDialog.Builder.showTextDialog(message:String, func: (DialogInterface, Int) -> Unit) {
-    setTitle("Alert")
-    setMessage(message)
-    setPositiveButton("OK", func)
-    show()
-}
-
 fun AlertDialog.Builder.showOneChoiceCancelableDialog(
         title: String,
         message: String,
@@ -88,6 +73,18 @@ fun AlertDialog.Builder.showTwoChoiceCancelableDialog(
     setPositiveButton(buttonOneTitle, funcOne)
     setNegativeButton(buttonTwoTitle, funcTwo)
     setNeutralButton("Cancel") { _, _ ->  }
+    show()
+}
+
+fun AlertDialog.Builder.showInputDialog(
+        title: String,
+        buttonTitle: String,
+        inputView: View,
+        func: (DialogInterface, Int) -> Unit) {
+    setView(inputView)
+    setTitle(title)
+    setPositiveButton(buttonTitle, func)
+    setNeutralButton("Cancel") { _, _ -> }
     show()
 }
 
@@ -120,3 +117,14 @@ fun Fragment.transact(activity: AppCompatActivity, id: Int, bundle: Bundle? = nu
     transaction.replace(id, this)
     transaction.commit()
 }
+
+fun <T : Any> Activity.launchActivity(clazz: KClass<T>) {
+    val intent = Intent(this, clazz.java)
+    startActivity(intent)
+}
+
+fun <T : Any> Activity.launchActivityAndFinish(clazz: KClass<T>) {
+    launchActivity(clazz)
+    finish()
+}
+

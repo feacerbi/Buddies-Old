@@ -9,13 +9,16 @@ import android.util.Log
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.base.TagHandlerActivity
 import br.com.felipeacerbi.buddies.adapters.BuddiesAdapter
+import br.com.felipeacerbi.buddies.models.User
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
 import br.com.felipeacerbi.buddies.utils.getFirebaseAdapter
 import br.com.felipeacerbi.buddies.utils.setUp
+import br.com.felipeacerbi.buddies.utils.showInputDialog
 import br.com.felipeacerbi.buddies.utils.showOneChoiceCancelableDialog
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_profile.*
 import kotlinx.android.synthetic.main.content_profile.*
+import kotlinx.android.synthetic.main.input_dialog.view.*
 
 class ProfileActivity : TagHandlerActivity() {
 
@@ -26,6 +29,12 @@ class ProfileActivity : TagHandlerActivity() {
     val sharedPreferences by lazy {
         PreferenceManager.getDefaultSharedPreferences(this)
     }
+
+    val fireBuilder by lazy {
+        FireBuilder()
+    }
+
+    val userReference = firebaseService.getUserReference(firebaseService.getCurrentUsername())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,20 +47,27 @@ class ProfileActivity : TagHandlerActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setUpFab(fab)
 
-        profile_name.text = firebaseService.getCurrentUserDisplayName()
-        profile_email.text = firebaseService.getCurrentUserEmail()
-
-        Picasso.with(this)
-                .load(firebaseService.getCurrentUserPicture())
-                .error(R.mipmap.ic_launcher)
-                .resize(400, 400)
-                .centerCrop()
-                .into(profile_picture)
-
         // Set the adapter
         with(buddies_list) {
             layoutManager = LinearLayoutManager(context)
             adapter = BuddiesAdapter(firebaseService.queryBuddies(), progress)
+        }
+
+        profile_name_edit_button.setOnClickListener {
+            val view = layoutInflater.inflate(R.layout.input_dialog, null)
+            with(view) {
+                input_field.setText(profile_name.text)
+
+                AlertDialog.Builder(context).showInputDialog(
+                        "Edit Name",
+                        "OK",
+                        this,
+                        { _, _ ->
+                            val newName = input_field.text.toString()
+                            firebaseService.updateUser(User(name = newName))
+                        }
+                )
+            }
         }
     }
 
@@ -66,10 +82,29 @@ class ProfileActivity : TagHandlerActivity() {
 
     override fun onResume() {
         super.onResume()
-        setUpFab(sharedPreferences.getBoolean(SettingsActivity.QR_CODE_BUTTON_SHORTCUT_KEY, false))
+        showFab(sharedPreferences.getBoolean(SettingsActivity.QR_CODE_BUTTON_SHORTCUT_KEY, false))
+
+        fireBuilder.onRef(userReference)
+                .mode(MODE_CONTINUOUS)
+                .complete {
+                    if(it != null) {
+                        val user = User(it)
+                        profile_name.text = user.name
+                        profile_email.text = user.email
+                    }
+                }
+                .cancel { Log.d(TAG, "User not found") }
+                .listen()
+
+        Picasso.with(this)
+                .load(firebaseService.getCurrentUserPicture()) // user.profilePicture
+                .error(R.mipmap.ic_launcher)
+                .resize(400, 400)
+                .centerCrop()
+                .into(profile_picture)
     }
 
-    fun setUpFab(show: Boolean) {
+    fun showFab(show: Boolean) {
         fab?.setUp(this, show, R.drawable.ic_camera_alt_white_24dp)
     }
 

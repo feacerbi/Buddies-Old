@@ -7,13 +7,11 @@ import br.com.felipeacerbi.buddies.models.User
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
 import br.com.felipeacerbi.buddies.utils.toUsername
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.iid.FirebaseInstanceIdService
 import io.reactivex.Observable
+import io.reactivex.ObservableEmitter
 import java.util.*
 import javax.inject.Singleton
 
@@ -68,11 +66,9 @@ class FirebaseService : FirebaseInstanceIdService() {
     fun getCurrentUsername() = getCurrentUserEmail().toUsername()
     fun getCurrentUserPicture() = getCurrentUser()?.photoUrl
 
-    fun registerUser() {
-        val user = User(
-                getCurrentUserDisplayName(),
-                getCurrentUserEmail(),
-                getAppIDToken())
+    fun registerUser(user: User) {
+        user.email = getCurrentUserEmail()
+        user.idToken = getAppIDToken()
 
         val childUpdates = HashMap<String, Any?>()
         val currentUserPath = DATABASE_USERS_PATH + getCurrentUsername() + "/"
@@ -84,7 +80,17 @@ class FirebaseService : FirebaseInstanceIdService() {
         updateDB(childUpdates)
     }
 
-    fun checkUserObservable(username: String): Observable<User> {
+    fun updateUser(user: User) {
+
+        val childUpdates = HashMap<String, Any?>()
+        val currentUserPath = DATABASE_USERS_PATH + getCurrentUsername() + "/"
+
+        childUpdates.put(currentUserPath + DATABASE_NAME_CHILD, user.name)
+
+        updateDB(childUpdates)
+    }
+
+    fun checkUserObservable(username: String): Observable<Pair<Boolean, User>> {
         return Observable.create {
             subscriber ->
             getUserReference(username).addListenerForSingleValueEvent(object: ValueEventListener {
@@ -93,18 +99,37 @@ class FirebaseService : FirebaseInstanceIdService() {
                 }
 
                 override fun onDataChange(dataSnapshot: DataSnapshot?) {
-                    if(dataSnapshot != null && dataSnapshot.childrenCount > 0) {
-                        val foundUser = User(dataSnapshot)
-                        subscriber.onNext(foundUser)
-                        Log.d(TAG, "User found")
-                    } else {
-                        subscriber.onNext(User())
-                        Log.d(TAG, "User not found")
-                    }
-                    subscriber.onComplete()
+                    handleUserSnapshot(subscriber, dataSnapshot)
                 }
             })
         }
+    }
+
+    fun getUserObservable(databaseReference: DatabaseReference): Observable<Pair<Boolean, User>> {
+        return Observable.create {
+            subscriber ->
+            databaseReference.addValueEventListener(object: ValueEventListener {
+                override fun onCancelled(error: DatabaseError?) {
+                    Log.d(TAG, "Adding user cancelled: " + error.toString())
+                }
+
+                override fun onDataChange(dataSnapshot: DataSnapshot?) {
+                    handleUserSnapshot(subscriber, dataSnapshot)
+                }
+            })
+        }
+    }
+
+    private fun  handleUserSnapshot(subscriber: ObservableEmitter<Pair<Boolean, User>>, dataSnapshot: DataSnapshot?) {
+        if(dataSnapshot != null && dataSnapshot.childrenCount > 0) {
+            val foundUser = User(dataSnapshot)
+            subscriber.onNext(Pair(true, foundUser))
+            Log.d(TAG, "User found")
+        } else {
+            subscriber.onNext(Pair(false, User()))
+            Log.d(TAG, "User not found")
+        }
+        subscriber.onComplete()
     }
 
     // TAGs API

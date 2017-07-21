@@ -3,17 +3,18 @@ package br.com.felipeacerbi.buddies.activities
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
-import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import android.widget.Toast
 import br.com.felipeacerbi.buddies.R
+import br.com.felipeacerbi.buddies.activities.base.RxBaseActivity
+import br.com.felipeacerbi.buddies.tags.SubscriptionsManager
+import br.com.felipeacerbi.buddies.utils.launchActivity
+import br.com.felipeacerbi.buddies.utils.launchActivityAndFinish
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
@@ -30,14 +31,11 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.*
 import kotlinx.android.synthetic.main.activity_login.*
 import java.lang.Exception
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
-
 
 /**
  * A login screen that offers login via email/password.
  */
-class LoginActivity : AppCompatActivity(),
+class LoginActivity : RxBaseActivity(),
         OnCompleteListener<AuthResult>,
         GoogleApiClient.OnConnectionFailedListener,
         FacebookCallback<LoginResult> {
@@ -60,6 +58,10 @@ class LoginActivity : AppCompatActivity(),
 
     val faceLoginManager: LoginManager by lazy {
         LoginManager.getInstance()
+    }
+
+    val subscriptionManager: SubscriptionsManager by lazy {
+        SubscriptionsManager(this)
     }
 
     val gso: GoogleSignInOptions by lazy {
@@ -114,7 +116,7 @@ class LoginActivity : AppCompatActivity(),
     override fun onStart() {
         super.onStart()
         if(isSignedIn()) {
-            launchMainActivity()
+            launchActivityAndFinish(MainActivity::class)
         } else {
             if (email.text.isEmpty()) {
                 email.requestFocus()
@@ -187,13 +189,20 @@ class LoginActivity : AppCompatActivity(),
                 { task ->
                     // Sign in success, update UI with the signed-in user's information
                     if (task.isSuccessful && isSignedIn()) {
-                        launchMainActivity()
+                        checkUserExists()
                     }
 
                     Log.w(TAG, "Firebase login was not succeeded")
                     // If sign in fails, display a message to the user.
                     showProgress(false)
                 }
+    }
+
+    private fun checkUserExists() {
+        subscriptions.add(subscriptionManager.checkUserWithActionSubscription(
+                { launchActivityAndFinish(MainActivity::class) },
+                { launchActivity(CreateProfileActivity::class) }
+        ))
     }
 
     fun isSignedIn() = firebaseAuth.currentUser != null
@@ -265,7 +274,7 @@ class LoginActivity : AppCompatActivity(),
         if(task.isSuccessful) {
             Log.d(TAG, "Login successful")
             if(firebaseAuth.currentUser != null) {
-                launchMainActivity()
+                checkUserExists()
             } else {
                 Toast.makeText(this, "Fail to login, user invalid", Toast.LENGTH_SHORT).show()
                 Log.w(TAG, "Login user invalid " + task.result.toString())
@@ -306,12 +315,6 @@ class LoginActivity : AppCompatActivity(),
         return password.length > 5
     }
 
-    private fun launchMainActivity() {
-        val mainActivityIntent = Intent(this, MainActivity::class.java)
-        startActivity(mainActivityIntent)
-        finish()
-    }
-
     /**
      * Shows the progress UI and hides the login form.
      */
@@ -343,21 +346,21 @@ class LoginActivity : AppCompatActivity(),
     }
 
     // Just in case
-    fun printFaceLoginHash() {
-        try {
-            val info = packageManager.getPackageInfo(
-                    "br.com.felipeacerbi.buddies",
-                    PackageManager.GET_SIGNATURES)
-            Log.w(TAG, "Print face hash")
-            for (signature in info.signatures) {
-                val md = MessageDigest.getInstance("SHA")
-                md.update(signature.toByteArray())
-                Log.d(TAG, "KeyHash: " + Base64.encodeToString(md.digest(), Base64.DEFAULT))
-            }
-        } catch (e: PackageManager.NameNotFoundException) {
-
-        } catch (e: NoSuchAlgorithmException) {
-
-        }
-    }
+//    fun printFaceLoginHash() {
+//        try {
+//            val info = packageManager.getPackageInfo(
+//                    "br.com.felipeacerbi.buddies",
+//                    PackageManager.GET_SIGNATURES)
+//            Log.w(TAG, "Print face hash")
+//            for (signature in info.signatures) {
+//                val md = MessageDigest.getInstance("SHA")
+//                md.update(signature.toByteArray())
+//                Log.d(TAG, "KeyHash: " + Base64.encodeToString(md.digest(), Base64.DEFAULT))
+//            }
+//        } catch (e: PackageManager.NameNotFoundException) {
+//
+//        } catch (e: NoSuchAlgorithmException) {
+//
+//        }
+//    }
 }

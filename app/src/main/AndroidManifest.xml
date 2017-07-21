@@ -21,7 +21,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".activities.LoginActivity"
             android:label="@string/app_name"
@@ -32,7 +31,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/app_name"
@@ -45,7 +43,6 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
-
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
@@ -57,7 +54,8 @@
 
         <service android:name=".firebase.FirebaseService" />
 
-        <activity android:name=".activities.NewPetActivity"
+        <activity
+            android:name=".activities.NewPetActivity"
             android:label="@string/title_activity_newpet"
             android:parentActivityName=".activities.MainActivity"
             android:theme="@style/AppTheme">
@@ -65,7 +63,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="br.com.felipeacerbi.buddies.activities.MainActivity" />
         </activity>
-
         <activity
             android:name=".activities.SettingsActivity"
             android:label="@string/title_activity_settings"
@@ -76,7 +73,6 @@
                 android:value="br.com.felipeacerbi.buddies.activities.MainActivity" />
         </activity>
         <activity android:name=".activities.QRCodeActivity" />
-
         <activity
             android:name=".activities.ProfileActivity"
             android:label="@string/title_activity_profile"
@@ -89,11 +85,11 @@
 
                 <data android:mimeType="text/plain" />
             </intent-filter>
+
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="br.com.felipeacerbi.buddies.activities.MainActivity" />
         </activity>
-
         <activity
             android:name=".activities.RequestsActivity"
             android:label="@string/title_activity_requests"
@@ -102,6 +98,15 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="br.com.felipeacerbi.buddies.activities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".activities.CreateProfileActivity"
+            android:label="Create User"
+            android:parentActivityName=".activities.LoginActivity"
+            android:theme="@style/AppTheme" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="br.com.felipeacerbi.buddies.activities.LoginActivity" />
         </activity>
     </application>
 

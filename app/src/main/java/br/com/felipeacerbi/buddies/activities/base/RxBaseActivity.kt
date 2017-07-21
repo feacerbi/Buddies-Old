@@ -1,6 +1,5 @@
 package br.com.felipeacerbi.buddies.activities.base
 
-import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
 
@@ -10,10 +9,6 @@ import io.reactivex.disposables.CompositeDisposable
 abstract class RxBaseActivity : AppCompatActivity() {
 
     var subscriptions = CompositeDisposable()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onResume() {
         super.onResume()
@@ -25,5 +20,4 @@ abstract class RxBaseActivity : AppCompatActivity() {
         if(!subscriptions.isDisposed) subscriptions.dispose()
         subscriptions.clear()
     }
-
 }
