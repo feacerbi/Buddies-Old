@@ -8,17 +8,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-    <TextView
-        android:id="@+id/requester_username"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin" />
+        <TextView
+            android:id="@+id/requester_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin" />
 
-    <TextView
-        android:id="@+id/requested_pet_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin" />
+        <TextView
+            android:id="@+id/requested_pet_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin" />
     </LinearLayout>
 
     <LinearLayout
@@ -28,17 +28,17 @@
         android:orientation="vertical"
         android:layout_margin="@dimen/text_margin"
         android:visibility="gone">
-    <Button
-        android:id="@+id/allow_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Accept"/>
+        <Button
+            android:id="@+id/allow_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Accept"/>
 
-    <Button
-        android:id="@+id/not_allow_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Refuse"/>
+        <Button
+            android:id="@+id/not_allow_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Refuse"/>
     </LinearLayout>
 
     <TextView
