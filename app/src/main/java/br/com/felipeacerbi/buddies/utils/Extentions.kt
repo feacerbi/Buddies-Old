@@ -123,6 +123,11 @@ fun <T : Any> Activity.launchActivity(clazz: KClass<T>) {
     startActivity(intent)
 }
 
+fun <T : Any> Activity.launchActivityForResult(clazz: KClass<T>, identifier: Int) {
+    val intent = Intent(this, clazz.java)
+    startActivityForResult(intent, identifier)
+}
+
 fun <T : Any> Activity.launchActivityAndFinish(clazz: KClass<T>) {
     launchActivity(clazz)
     finish()

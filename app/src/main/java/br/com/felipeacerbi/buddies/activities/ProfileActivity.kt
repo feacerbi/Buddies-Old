@@ -34,7 +34,9 @@ class ProfileActivity : TagHandlerActivity() {
         FireBuilder()
     }
 
-    val userReference = firebaseService.getUserReference(firebaseService.getCurrentUsername())
+    val userReference = firebaseService.getUserReference(firebaseService.getCurrentUserUID())
+
+    var user: User? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,7 +66,26 @@ class ProfileActivity : TagHandlerActivity() {
                         this,
                         { _, _ ->
                             val newName = input_field.text.toString()
-                            firebaseService.updateUser(User(name = newName))
+                            user?.name = newName
+                            firebaseService.updateUser(user)
+                        }
+                )
+            }
+        }
+
+        profile_email_edit_button.setOnClickListener {
+            val view = layoutInflater.inflate(R.layout.input_dialog, null)
+            with(view) {
+                input_field.setText(profile_email.text)
+
+                AlertDialog.Builder(context).showInputDialog(
+                        "Edit Email",
+                        "OK",
+                        this,
+                        { _, _ ->
+                            val newEmail = input_field.text.toString()
+                            user?.email = newEmail
+                            firebaseService.updateUser(user)
                         }
                 )
             }
@@ -87,21 +108,22 @@ class ProfileActivity : TagHandlerActivity() {
         fireBuilder.onRef(userReference)
                 .mode(MODE_CONTINUOUS)
                 .complete {
-                    if(it != null) {
-                        val user = User(it)
-                        profile_name.text = user.name
-                        profile_email.text = user.email
+                    if(it != null && it.hasChildren()) {
+                        user = User(it)
+                        profile_name.text = user?.name
+                        profile_email.text = user?.email
+
+                        Picasso.with(this)
+                                .load(user?.picPath) // user.profilePicture
+                                .error(R.mipmap.ic_launcher_round)
+                                .resize(500, 500)
+                                .centerCrop()
+                                .into(profile_picture)
                     }
                 }
                 .cancel { Log.d(TAG, "User not found") }
                 .listen()
 
-        Picasso.with(this)
-                .load(firebaseService.getCurrentUserPicture()) // user.profilePicture
-                .error(R.mipmap.ic_launcher)
-                .resize(400, 400)
-                .centerCrop()
-                .into(profile_picture)
     }
 
     fun showFab(show: Boolean) {

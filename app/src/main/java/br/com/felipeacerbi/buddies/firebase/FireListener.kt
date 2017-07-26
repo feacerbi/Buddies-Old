@@ -1,5 +1,6 @@
-package br.com.felipeacerbi.buddies.activities.base
+package br.com.felipeacerbi.buddies.firebase
 
+import br.com.felipeacerbi.buddies.activities.base.RxBaseActivity
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference

@@ -99,8 +99,8 @@ class NFCService {
         }
     }
 
-    fun createPendingIntent(context: Context): PendingIntent {
-        return PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0)
+    fun createPendingIntent(activity: AppCompatActivity): PendingIntent {
+        return PendingIntent.getActivity(activity, 0, Intent(activity, activity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0)
     }
 
     fun getIntentFilters(): IntentFilter {

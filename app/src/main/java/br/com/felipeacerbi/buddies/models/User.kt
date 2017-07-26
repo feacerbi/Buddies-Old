@@ -8,6 +8,7 @@ import com.google.firebase.database.DataSnapshot
 data class User(
         var name: String = "",
         var email: String = "",
+        var picPath: String = "",
         var idToken: String = "",
         var buddies: Map<String, Boolean> = HashMap(),
         var following: Map<String, Boolean> = HashMap()) {
@@ -15,6 +16,7 @@ data class User(
     companion object {
         val DATABASE_NAME_CHILD = "name"
         val DATABASE_EMAIL_CHILD = "email"
+        val DATABASE_PICTURE_CHILD = "picPath"
         val DATABASE_IDTOKEN_CHILD = "idToken"
         val DATABASE_BUDDIES_CHILD = "owns"
         val DATABASE_FOLLOWING_CHILD = "follows"
@@ -27,6 +29,7 @@ data class User(
     fun toMap() = mapOf(
             Pair(DATABASE_NAME_CHILD, name),
             Pair(DATABASE_EMAIL_CHILD, email),
+            Pair(DATABASE_PICTURE_CHILD, picPath),
             Pair(DATABASE_IDTOKEN_CHILD, idToken),
             Pair(DATABASE_BUDDIES_CHILD, buddies),
             Pair(DATABASE_FOLLOWING_CHILD, following))
@@ -34,6 +37,7 @@ data class User(
     fun fromMap(dataSnapshot: DataSnapshot) {
         name = dataSnapshot.child(DATABASE_NAME_CHILD).value as String
         email = dataSnapshot.child(DATABASE_EMAIL_CHILD).value as String
+        picPath = dataSnapshot.child(DATABASE_PICTURE_CHILD).value as String
         idToken = dataSnapshot.child(DATABASE_IDTOKEN_CHILD).value as String
 
         val buddiesSnapshot = dataSnapshot.child(DATABASE_BUDDIES_CHILD).value

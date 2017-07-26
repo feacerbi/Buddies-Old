@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import android.widget.RelativeLayout
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.SettingsActivity
 import br.com.felipeacerbi.buddies.adapters.BuddiesAdapter
@@ -53,7 +54,7 @@ open class FirebaseListFragment : Fragment() {
         val view = inflater?.inflate(R.layout.buddies_list, container, false)
 
         // Set the adapter
-        if(view is ConstraintLayout) {
+        if(view is RelativeLayout) {
             with(view) {
                 list.layoutManager = LinearLayoutManager(context)
                 list.adapter = BuddiesAdapter(ref, progress)

@@ -1,11 +1,10 @@
-package br.com.felipeacerbi.buddies.tags
+package br.com.felipeacerbi.buddies.utils
 
 import android.content.Context
 import android.util.Log
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.models.User
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
-import com.google.firebase.database.DatabaseReference
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -43,34 +42,10 @@ class SubscriptionsManager(val context: Context) {
 
     fun checkUserWithActionSubscription(existsAction: (Pair<Boolean, User>) -> Unit,
                                         notExistsAction: (Pair<Boolean, User>) -> Unit): Disposable {
-
-        val username = firebaseService.getCurrentUsername()
+        val username = firebaseService.getCurrentUserUID()
         Log.d(TAG, "Check user with action " + username)
 
         return firebaseService.checkUserObservable(username)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe (
-                        { pair ->
-                            if(pair.first) {
-                                existsAction(pair)
-                                Log.d(TAG, "Tag found")
-                            } else {
-                                notExistsAction(pair)
-                                Log.d(TAG, "Tag not found")
-                            }
-                        },
-                        { e -> Log.d(TAG, "Error adding pet " + e.message) })
-    }
-
-    fun getUserWithActionSubscription(databaseReference: DatabaseReference,
-                                      existsAction: (Pair<Boolean, User>) -> Unit,
-                                      notExistsAction: (Pair<Boolean, User>) -> Unit): Disposable {
-
-        val username = firebaseService.getCurrentUsername()
-        Log.d(TAG, "Check user with action " + username)
-
-        return firebaseService.getUserObservable(databaseReference)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe (

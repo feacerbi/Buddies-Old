@@ -1,19 +1,26 @@
 package br.com.felipeacerbi.buddies.firebase
 
+import android.text.TextUtils
 import android.util.Log
 import br.com.felipeacerbi.buddies.models.Buddy
 import br.com.felipeacerbi.buddies.models.Request
 import br.com.felipeacerbi.buddies.models.User
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
 import br.com.felipeacerbi.buddies.utils.toUsername
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.auth.UserInfo
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.iid.FirebaseInstanceIdService
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import java.util.*
 import javax.inject.Singleton
+import kotlin.collections.ArrayList
 
 /**
  * Created by felipe.acerbi on 06/07/2017.
@@ -30,6 +37,7 @@ class FirebaseService : FirebaseInstanceIdService() {
         val DATABASE_IDTOKEN_CHILD = "idToken"
         val DATABASE_NAME_CHILD = "name"
         val DATABASE_EMAIL_CHILD = "email"
+        val DATABASE_PICTURE_CHILD = "picPath"
         val DATABASE_FOLLOWS_CHILD = "follows"
         val DATABASE_OWNS_CHILD = "owns"
         val DATABASE_ID_CHILD = "id"
@@ -45,7 +53,7 @@ class FirebaseService : FirebaseInstanceIdService() {
     override fun onTokenRefresh() {
         super.onTokenRefresh()
 
-        getUserReference(getCurrentUsername()).child(DATABASE_IDTOKEN_CHILD).setValue(getAppIDToken())
+        getUserReference(getCurrentUserUID()).child(DATABASE_IDTOKEN_CHILD).setValue(getAppIDToken())
     }
 
     // DB API
@@ -63,52 +71,44 @@ class FirebaseService : FirebaseInstanceIdService() {
     fun getCurrentUser() = firebaseAuth.currentUser
     fun getCurrentUserDisplayName() = getCurrentUser()?.displayName ?: ""
     fun getCurrentUserEmail() = getCurrentUser()?.email ?: ""
-    fun getCurrentUsername() = getCurrentUserEmail().toUsername()
+    fun getCurrentUserUID() = getCurrentUser()?.uid ?: ""
     fun getCurrentUserPicture() = getCurrentUser()?.photoUrl
+    fun getCurrentUserProviders(): List<UserInfo> = getCurrentUser()?.providerData ?: ArrayList<UserInfo>()
 
     fun registerUser(user: User) {
-        user.email = getCurrentUserEmail()
         user.idToken = getAppIDToken()
 
         val childUpdates = HashMap<String, Any?>()
-        val currentUserPath = DATABASE_USERS_PATH + getCurrentUsername() + "/"
+        val currentUserPath = DATABASE_USERS_PATH + getCurrentUserUID() + "/"
 
-        childUpdates.put(currentUserPath + DATABASE_NAME_CHILD, user.name)
-        childUpdates.put(currentUserPath + DATABASE_EMAIL_CHILD, user.email)
-        childUpdates.put(currentUserPath + DATABASE_IDTOKEN_CHILD, user.idToken)
+        childUpdates.put(currentUserPath, user.toMap())
 
         updateDB(childUpdates)
     }
 
-    fun updateUser(user: User) {
+    fun updateUser(user: User?) {
+        if(user != null) {
 
-        val childUpdates = HashMap<String, Any?>()
-        val currentUserPath = DATABASE_USERS_PATH + getCurrentUsername() + "/"
+//            if(getCurrentUserProviders().any { it.providerId == EmailAuthProvider.PROVIDER_ID } ) {
+//                Log.d(TAG, "Updating email...")
+//                getCurrentUser()?.updateEmail(user.email)
+//            }
 
-        childUpdates.put(currentUserPath + DATABASE_NAME_CHILD, user.name)
+            val childUpdates = HashMap<String, Any?>()
+            val currentUserPath = DATABASE_USERS_PATH + getCurrentUserUID() + "/"
 
-        updateDB(childUpdates)
+            childUpdates.put(currentUserPath + DATABASE_NAME_CHILD, user.name)
+            childUpdates.put(currentUserPath + DATABASE_EMAIL_CHILD, user.email)
+            childUpdates.put(currentUserPath + DATABASE_PICTURE_CHILD, user.picPath)
+
+            updateDB(childUpdates)
+        }
     }
 
     fun checkUserObservable(username: String): Observable<Pair<Boolean, User>> {
         return Observable.create {
             subscriber ->
             getUserReference(username).addListenerForSingleValueEvent(object: ValueEventListener {
-                override fun onCancelled(error: DatabaseError?) {
-                    Log.d(TAG, "Adding user cancelled: " + error.toString())
-                }
-
-                override fun onDataChange(dataSnapshot: DataSnapshot?) {
-                    handleUserSnapshot(subscriber, dataSnapshot)
-                }
-            })
-        }
-    }
-
-    fun getUserObservable(databaseReference: DatabaseReference): Observable<Pair<Boolean, User>> {
-        return Observable.create {
-            subscriber ->
-            databaseReference.addValueEventListener(object: ValueEventListener {
                 override fun onCancelled(error: DatabaseError?) {
                     Log.d(TAG, "Adding user cancelled: " + error.toString())
                 }
@@ -174,10 +174,10 @@ class FirebaseService : FirebaseInstanceIdService() {
             baseTag.petId = petKey
             buddy.tagId = baseTag.id
 
-            (buddy.owners as HashMap).put(getCurrentUsername(), true)
+            (buddy.owners as HashMap).put(getCurrentUserUID(), true)
 
             val childUpdates = HashMap<String, Any?>()
-            val currentUserPath = DATABASE_USERS_PATH + getCurrentUsername() + "/"
+            val currentUserPath = DATABASE_USERS_PATH + getCurrentUserUID() + "/"
             val tagPath = DATABASE_TAGS_PATH + tagKey + "/"
             val petPath = DATABASE_PETS_PATH + petKey + "/"
 
@@ -204,7 +204,7 @@ class FirebaseService : FirebaseInstanceIdService() {
 
                 override fun onDataChange(dataSnapshot: DataSnapshot?) {
                     val requestKey = getDatabaseReference(DATABASE_REQUESTS_PATH).push().key
-                    val request = Request(getCurrentUsername(), baseTag.petId, Request.STATUS_OPEN)
+                    val request = Request(getCurrentUserUID(), baseTag.petId, Request.STATUS_OPEN)
                     val childUpdates = HashMap<String, Any?>()
 
                     with(childUpdates) {
@@ -252,12 +252,12 @@ class FirebaseService : FirebaseInstanceIdService() {
         if(!baseTag.petId.isEmpty()) {
             Log.d(TAG, "Adding follow pet")
             val childUpdates = HashMap<String, Any?>()
-            val currentUserPath = DATABASE_USERS_PATH + getCurrentUsername() + "/"
+            val currentUserPath = DATABASE_USERS_PATH + getCurrentUserUID() + "/"
             val currentPetPath = DATABASE_PETS_PATH + baseTag.petId + "/"
 
             with(childUpdates) {
                 put(currentUserPath + DATABASE_FOLLOWS_CHILD + "/" + baseTag.petId, true)
-                put(currentPetPath + DATABASE_FOLLOWS_CHILD + "/" + getCurrentUsername(), true)
+                put(currentPetPath + DATABASE_FOLLOWS_CHILD + "/" + getCurrentUserUID(), true)
             }
 
             updateDB(childUpdates)
@@ -270,8 +270,8 @@ class FirebaseService : FirebaseInstanceIdService() {
         if(!petId.isEmpty()) {
             Log.d(TAG, "Removing pet from owner")
             val childUpdates = HashMap<String, Any?>()
-            val currentUserPath = DATABASE_USERS_PATH + getCurrentUsername() + "/" + ref + "/" + petId
-            val currentPetPath = DATABASE_PETS_PATH + petId + "/" + ref + "/" + getCurrentUsername()
+            val currentUserPath = DATABASE_USERS_PATH + getCurrentUserUID() + "/" + ref + "/" + petId
+            val currentPetPath = DATABASE_PETS_PATH + petId + "/" + ref + "/" + getCurrentUserUID()
 
             with(childUpdates) {
                 put(currentUserPath, null)
@@ -323,7 +323,7 @@ class FirebaseService : FirebaseInstanceIdService() {
     fun getRequestReference(requestId: String) = getRequestsReference().child(requestId)
     fun getUserRequestsReference(username: String) = getUserReference(username).child(DATABASE_REQUESTS_CHILD)
 
-    fun queryBuddies() = getUserPetsReference(getCurrentUsername())
-    fun queryFollow() = getUserFollowReference(getCurrentUsername())
-    fun queryRequests() = getUserRequestsReference(getCurrentUsername()).orderByChild(DATABASE_STATUS_CHILD).equalTo(Request.STATUS_OPEN).ref
+    fun queryBuddies() = getUserPetsReference(getCurrentUserUID())
+    fun queryFollow() = getUserFollowReference(getCurrentUserUID())
+    fun queryRequests() = getUserRequestsReference(getCurrentUserUID()).orderByChild(DATABASE_STATUS_CHILD).equalTo(Request.STATUS_OPEN).ref
 }
