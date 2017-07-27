@@ -42,4 +42,5 @@
     <string name="tag_options_dialog_follow_button">Follow Buddy</string>
     <string name="tag_options_dialog_new_button">Add new Buddy</string>
     <string name="request_toast_sent_message">Request sent!</string>
+    <string name="activity_title_buddy_profile">Buddy</string>
 </resources>

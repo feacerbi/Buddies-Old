@@ -19,10 +19,6 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.google.firebase.database.Query
 import kotlin.reflect.KClass
 
-/**
- * Created by felipe.acerbi on 04/07/2017.
- */
-
 fun ViewGroup.inflate(layoutId: Int, attachToRoot: Boolean = false): View {
     return LayoutInflater.from(context).inflate(layoutId, this, attachToRoot)
 }
@@ -43,10 +39,6 @@ fun ByteArray.toHexString(): String {
         j++
     }
     return out
-}
-
-fun String.toUsername(): String {
-    return this.toLowerCase().trim().replace(".", "", true).replace("@", "", true)
 }
 
 fun AlertDialog.Builder.showOneChoiceCancelableDialog(
@@ -120,6 +112,12 @@ fun Fragment.transact(activity: AppCompatActivity, id: Int, bundle: Bundle? = nu
 
 fun <T : Any> Activity.launchActivity(clazz: KClass<T>) {
     val intent = Intent(this, clazz.java)
+    startActivity(intent)
+}
+
+fun <T : Any> Activity.launchActivityWithStringExtra(clazz: KClass<T>, identifier: String, extra: String) {
+    val intent = Intent(this, clazz.java)
+    intent.putExtra(identifier, extra)
     startActivity(intent)
 }
 

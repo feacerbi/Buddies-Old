@@ -1,13 +1,10 @@
 package br.com.felipeacerbi.buddies.firebase
 
-import android.text.TextUtils
 import android.util.Log
 import br.com.felipeacerbi.buddies.models.Buddy
 import br.com.felipeacerbi.buddies.models.Request
 import br.com.felipeacerbi.buddies.models.User
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
-import br.com.felipeacerbi.buddies.utils.toUsername
-import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserInfo
 import com.google.firebase.database.DataSnapshot
@@ -22,9 +19,6 @@ import java.util.*
 import javax.inject.Singleton
 import kotlin.collections.ArrayList
 
-/**
- * Created by felipe.acerbi on 06/07/2017.
- */
 @Singleton
 class FirebaseService : FirebaseInstanceIdService() {
 
@@ -37,7 +31,8 @@ class FirebaseService : FirebaseInstanceIdService() {
         val DATABASE_IDTOKEN_CHILD = "idToken"
         val DATABASE_NAME_CHILD = "name"
         val DATABASE_EMAIL_CHILD = "email"
-        val DATABASE_PICTURE_CHILD = "picPath"
+        val DATABASE_PHOTO_CHILD = "photo"
+        val DATABASE_BREED_CHILD = "breed"
         val DATABASE_FOLLOWS_CHILD = "follows"
         val DATABASE_OWNS_CHILD = "owns"
         val DATABASE_ID_CHILD = "id"
@@ -59,7 +54,6 @@ class FirebaseService : FirebaseInstanceIdService() {
     // DB API
     fun getDatabaseReference(path: String) = firebaseDB.getReference(path)
     fun getAppIDToken() = firebaseInstanceID.token ?: ""
-    fun signOut() = firebaseAuth.signOut()
 
     fun updateDB(childUpdates: HashMap<String, Any?>) {
         getDatabaseReference("").updateChildren(childUpdates)
@@ -89,17 +83,12 @@ class FirebaseService : FirebaseInstanceIdService() {
     fun updateUser(user: User?) {
         if(user != null) {
 
-//            if(getCurrentUserProviders().any { it.providerId == EmailAuthProvider.PROVIDER_ID } ) {
-//                Log.d(TAG, "Updating email...")
-//                getCurrentUser()?.updateEmail(user.email)
-//            }
-
             val childUpdates = HashMap<String, Any?>()
             val currentUserPath = DATABASE_USERS_PATH + getCurrentUserUID() + "/"
 
             childUpdates.put(currentUserPath + DATABASE_NAME_CHILD, user.name)
             childUpdates.put(currentUserPath + DATABASE_EMAIL_CHILD, user.email)
-            childUpdates.put(currentUserPath + DATABASE_PICTURE_CHILD, user.picPath)
+            childUpdates.put(currentUserPath + DATABASE_PHOTO_CHILD, user.photo)
 
             updateDB(childUpdates)
         }
@@ -315,6 +304,20 @@ class FirebaseService : FirebaseInstanceIdService() {
 
                 }
             })
+        }
+    }
+
+    fun updatePet(buddy: Buddy?, petId: String) {
+        if(buddy != null) {
+
+            val childUpdates = HashMap<String, Any?>()
+            val currentUserPath = DATABASE_PETS_PATH + petId + "/"
+
+            childUpdates.put(currentUserPath + DATABASE_NAME_CHILD, buddy.name)
+            childUpdates.put(currentUserPath + DATABASE_BREED_CHILD, buddy.breed)
+            childUpdates.put(currentUserPath + DATABASE_PHOTO_CHILD, buddy.photo)
+
+            updateDB(childUpdates)
         }
     }
 

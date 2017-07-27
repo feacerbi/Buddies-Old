@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    tools:context="br.com.felipeacerbi.buddies.activities.NewPetActivity">
+    tools:context="br.com.felipeacerbi.buddies.activities.NewBuddyActivity">
 
     <FrameLayout
         android:id="@+id/picture_back"

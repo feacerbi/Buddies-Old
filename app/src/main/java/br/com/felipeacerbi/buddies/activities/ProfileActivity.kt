@@ -1,26 +1,26 @@
 package br.com.felipeacerbi.buddies.activities
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+import android.view.View
+import br.com.felipeacerbi.buddies.adapters.listeners.IListClickListener
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.base.TagHandlerActivity
 import br.com.felipeacerbi.buddies.adapters.BuddiesAdapter
 import br.com.felipeacerbi.buddies.models.User
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
-import br.com.felipeacerbi.buddies.utils.getFirebaseAdapter
-import br.com.felipeacerbi.buddies.utils.setUp
-import br.com.felipeacerbi.buddies.utils.showInputDialog
-import br.com.felipeacerbi.buddies.utils.showOneChoiceCancelableDialog
+import br.com.felipeacerbi.buddies.utils.*
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_profile.*
 import kotlinx.android.synthetic.main.content_profile.*
 import kotlinx.android.synthetic.main.input_dialog.view.*
 
-class ProfileActivity : TagHandlerActivity() {
+class ProfileActivity : TagHandlerActivity(), IListClickListener {
 
     companion object {
         val TAG = "ProfileActivity"
@@ -34,9 +34,13 @@ class ProfileActivity : TagHandlerActivity() {
         FireBuilder()
     }
 
+    var user: User? = null
+
     val userReference = firebaseService.getUserReference(firebaseService.getCurrentUserUID())
 
-    var user: User? = null
+    val inputView: View by lazy {
+        layoutInflater.inflate(R.layout.input_dialog, null)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,43 +56,32 @@ class ProfileActivity : TagHandlerActivity() {
         // Set the adapter
         with(buddies_list) {
             layoutManager = LinearLayoutManager(context)
-            adapter = BuddiesAdapter(firebaseService.queryBuddies(), progress)
+            adapter = BuddiesAdapter(this@ProfileActivity, firebaseService.queryBuddies(), progress)
         }
 
         profile_name_edit_button.setOnClickListener {
-            val view = layoutInflater.inflate(R.layout.input_dialog, null)
-            with(view) {
-                input_field.setText(profile_name.text)
-
-                AlertDialog.Builder(context).showInputDialog(
-                        "Edit Name",
-                        "OK",
-                        this,
-                        { _, _ ->
-                            val newName = input_field.text.toString()
-                            user?.name = newName
-                            firebaseService.updateUser(user)
-                        }
-                )
-            }
+            showEditDialog("Edit name", profile_name.text.toString(), { user?.name = it })
         }
 
         profile_email_edit_button.setOnClickListener {
-            val view = layoutInflater.inflate(R.layout.input_dialog, null)
-            with(view) {
-                input_field.setText(profile_email.text)
+            showEditDialog("Edit email", profile_email.text.toString(), { user?.email = it })
+        }
+    }
 
-                AlertDialog.Builder(context).showInputDialog(
-                        "Edit Email",
-                        "OK",
-                        this,
-                        { _, _ ->
-                            val newEmail = input_field.text.toString()
-                            user?.email = newEmail
-                            firebaseService.updateUser(user)
-                        }
-                )
-            }
+    fun showEditDialog(title: String, editValue: String, setFunc: (String) -> Unit) {
+        with(inputView) {
+            input_field.setText(editValue)
+
+            AlertDialog.Builder(context).showInputDialog(
+                    title,
+                    "OK",
+                    this,
+                    { _, _ ->
+                        val newValue = input_field.text.toString()
+                        setFunc(newValue)
+                        firebaseService.updateUser(user)
+                    }
+            )
         }
     }
 
@@ -114,7 +107,7 @@ class ProfileActivity : TagHandlerActivity() {
                         profile_email.text = user?.email
 
                         Picasso.with(this)
-                                .load(user?.picPath) // user.profilePicture
+                                .load(user?.photo)
                                 .error(R.mipmap.ic_launcher_round)
                                 .resize(500, 500)
                                 .centerCrop()
@@ -126,8 +119,16 @@ class ProfileActivity : TagHandlerActivity() {
 
     }
 
+    override fun onListClick(identifier: String) {
+        launchActivityWithStringExtra(BuddyProfileActivity::class, BuddyProfileActivity.EXTRA_PETID, identifier)
+    }
+
     fun showFab(show: Boolean) {
         fab?.setUp(this, show, R.drawable.ic_camera_alt_white_24dp)
+    }
+
+    override fun getContext(): Context {
+        return this
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {

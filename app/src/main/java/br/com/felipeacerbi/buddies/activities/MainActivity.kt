@@ -15,7 +15,10 @@ import br.com.felipeacerbi.buddies.activities.base.TagHandlerActivity
 import br.com.felipeacerbi.buddies.fragments.FirebaseListFragment
 import br.com.felipeacerbi.buddies.models.User
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
-import br.com.felipeacerbi.buddies.utils.*
+import br.com.felipeacerbi.buddies.utils.launchActivity
+import br.com.felipeacerbi.buddies.utils.makeQueryBundle
+import br.com.felipeacerbi.buddies.utils.showOneChoiceCancelableDialog
+import br.com.felipeacerbi.buddies.utils.transact
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
@@ -68,7 +71,7 @@ class MainActivity : TagHandlerActivity() {
                     val user = User(
                             name = firebaseService.getCurrentUserDisplayName(),
                             email = firebaseService.getCurrentUserEmail(),
-                            picPath = firebaseService.getCurrentUserPicture().toString())
+                            photo = firebaseService.getCurrentUserPicture().toString())
 
                     firebaseService.registerUser(user) }
         ))

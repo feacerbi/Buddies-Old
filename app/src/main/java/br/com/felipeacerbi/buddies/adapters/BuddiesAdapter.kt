@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import br.com.felipeacerbi.buddies.R
+import br.com.felipeacerbi.buddies.adapters.listeners.IListClickListener
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.models.Buddy
 import com.firebase.ui.database.ChangeEventListener
@@ -13,13 +14,10 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.buddy_list_item.view.*
 
-/**
- * Created by felipe.acerbi on 04/07/2017.
- */
-
-class BuddiesAdapter(val petsReference: DatabaseReference, val progressBar: ProgressBar) :
+class BuddiesAdapter(val listener: IListClickListener, val petsReference: DatabaseReference, val progressBar: ProgressBar) :
         FirebaseRecyclerAdapter<Boolean, BuddiesAdapter.BuddyViewHolder>
         (
                 Boolean::class.java,
@@ -50,7 +48,18 @@ class BuddiesAdapter(val petsReference: DatabaseReference, val progressBar: Prog
                     with(holder.itemView) {
                         name.text = buddy.name
                         breed.text = buddy.breed
+                        followers.text = buddy.followers.size.toString()
+                        followers_text.text = if(buddy.followers.size == 1) " follower" else " followers"
+
+                        Picasso.with(listener.getContext())
+                                .load(buddy.photo)
+                                .error(R.mipmap.ic_launcher_round)
+                                .resize(500, 500)
+                                .centerCrop()
+                                .into(picture)
+
                         remove_button.setOnClickListener { firebaseService.removePetFromUser(petsReference.key, petId) }
+                        click_profile_layout.setOnClickListener { listener.onListClick(petId) }
                     }
                 } else {
                     firebaseService.removePetFromUser(petsReference.key, petId)

@@ -71,11 +71,4 @@ dependencies {
     implementation 'cn.gavinliu.android.lib:ShapedImageView:0.8.4'
 }
 
-
-
-
-
-
-
-
 apply plugin: 'com.google.gms.google-services'

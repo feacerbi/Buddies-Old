@@ -3,20 +3,20 @@ package br.com.felipeacerbi.buddies.fragments
 import android.content.Context
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.constraint.ConstraintLayout
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import br.com.felipeacerbi.buddies.R
+import br.com.felipeacerbi.buddies.activities.BuddyProfileActivity
 import br.com.felipeacerbi.buddies.activities.SettingsActivity
 import br.com.felipeacerbi.buddies.adapters.BuddiesAdapter
+import br.com.felipeacerbi.buddies.adapters.listeners.IListClickListener
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.utils.getFirebaseAdapter
+import br.com.felipeacerbi.buddies.utils.launchActivityWithStringExtra
 import br.com.felipeacerbi.buddies.utils.setUp
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.buddies_list.*
@@ -31,7 +31,7 @@ import kotlinx.android.synthetic.main.buddies_list.view.*
  * Mandatory empty constructor for the fragment manager to instantiate the
  * fragment (e.g. upon screen orientation changes).
  */
-open class FirebaseListFragment : Fragment() {
+open class FirebaseListFragment : Fragment(), IListClickListener {
 
     val firebaseService = FirebaseService()
 
@@ -57,11 +57,15 @@ open class FirebaseListFragment : Fragment() {
         if(view is RelativeLayout) {
             with(view) {
                 list.layoutManager = LinearLayoutManager(context)
-                list.adapter = BuddiesAdapter(ref, progress)
+                list.adapter = BuddiesAdapter(this@FirebaseListFragment, ref, progress)
             }
         }
 
         return view
+    }
+
+    override fun onListClick(identifier: String) {
+        activity.launchActivityWithStringExtra(BuddyProfileActivity::class, BuddyProfileActivity.EXTRA_PETID, identifier)
     }
 
     override fun onAttach(context: Context?) {

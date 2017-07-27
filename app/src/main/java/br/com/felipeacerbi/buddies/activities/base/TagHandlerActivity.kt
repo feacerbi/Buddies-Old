@@ -8,15 +8,13 @@ import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.widget.Toast
 import br.com.felipeacerbi.buddies.R
-import br.com.felipeacerbi.buddies.activities.NewPetActivity
+import br.com.felipeacerbi.buddies.activities.NewBuddyActivity
 import br.com.felipeacerbi.buddies.activities.ProfileActivity
 import br.com.felipeacerbi.buddies.activities.QRCodeActivity
 import br.com.felipeacerbi.buddies.firebase.FireListener
-import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.models.Buddy
 import br.com.felipeacerbi.buddies.models.BuddyInfo
 import br.com.felipeacerbi.buddies.tags.NFCService
-import br.com.felipeacerbi.buddies.utils.SubscriptionsManager
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
 import br.com.felipeacerbi.buddies.utils.PermissionsManager
 import br.com.felipeacerbi.buddies.utils.launchActivity
@@ -29,8 +27,6 @@ abstract class TagHandlerActivity : FireListener() {
         val NEW_PET_RESULT = 100
         val QR_CODE_RESULT = 101
     }
-
-    val firebaseService = FirebaseService()
 
     val permissionsManager: PermissionsManager by lazy {
         PermissionsManager(this)
@@ -81,9 +77,9 @@ abstract class TagHandlerActivity : FireListener() {
         if(resultCode == RESULT_OK) {
             when(requestCode) {
                 NEW_PET_RESULT -> {
-                    val buddyInfo = data.extras.getSerializable(NewPetActivity.BUDDY_INFO_EXTRA) as BuddyInfo
-                    val baseTag = data.extras.getSerializable(NewPetActivity.EXTRA_BASETAG) as BaseTag
-                    firebaseService.addNewPet(baseTag, Buddy(buddyInfo.name, buddyInfo.breed))
+                    val buddyInfo = data.extras.getSerializable(NewBuddyActivity.BUDDY_INFO_EXTRA) as BuddyInfo
+                    val baseTag = data.extras.getSerializable(NewBuddyActivity.EXTRA_BASETAG) as BaseTag
+                    firebaseService.addNewPet(baseTag, Buddy(buddyInfo))
                 }
                 QR_CODE_RESULT -> { showTagOptionsDialog(BaseTag(data.extras.getString(QRCodeActivity.QR_CODE_TEXT))) }
             }
@@ -119,8 +115,8 @@ abstract class TagHandlerActivity : FireListener() {
     }
 
     fun launchNewPetActivity(baseTag: BaseTag) {
-        val newPetActivityIntent = Intent(this, NewPetActivity::class.java)
-        newPetActivityIntent.putExtra(NewPetActivity.EXTRA_BASETAG, baseTag)
+        val newPetActivityIntent = Intent(this, NewBuddyActivity::class.java)
+        newPetActivityIntent.putExtra(NewBuddyActivity.EXTRA_BASETAG, baseTag)
         startActivityForResult(newPetActivityIntent, NEW_PET_RESULT)
     }
 

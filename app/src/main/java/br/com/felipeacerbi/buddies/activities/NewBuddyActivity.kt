@@ -8,7 +8,7 @@ import br.com.felipeacerbi.buddies.models.BuddyInfo
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
 import kotlinx.android.synthetic.main.activity_new_pet.*
 
-class NewPetActivity : AppCompatActivity() {
+class NewBuddyActivity : AppCompatActivity() {
 
     companion object {
         val BUDDY_INFO_EXTRA = "buddy_info"
@@ -16,6 +16,7 @@ class NewPetActivity : AppCompatActivity() {
     }
 
     var baseTag: BaseTag? = null
+    var photoUrl: String = "http://lorempixel.com/500/500/animals/"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +36,7 @@ class NewPetActivity : AppCompatActivity() {
             val name = pet_name.text.toString()
             val breed = breed.text.toString()
 
-            resultIntent.putExtra(BUDDY_INFO_EXTRA, BuddyInfo(name, breed))
+            resultIntent.putExtra(BUDDY_INFO_EXTRA, BuddyInfo(name, breed, photoUrl))
             resultIntent.putExtra(EXTRA_BASETAG, baseTag)
             setResult(RESULT_OK, resultIntent)
 
@@ -48,6 +49,4 @@ class NewPetActivity : AppCompatActivity() {
             baseTag = intent.extras.getSerializable(EXTRA_BASETAG) as BaseTag
         }
     }
-
-
 }
