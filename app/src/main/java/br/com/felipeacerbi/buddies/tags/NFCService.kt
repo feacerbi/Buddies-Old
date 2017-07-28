@@ -10,7 +10,6 @@ import android.nfc.Tag
 import android.nfc.tech.*
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import br.com.felipeacerbi.buddies.activities.MainActivity
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
 import br.com.felipeacerbi.buddies.tags.models.NFCTag
 import br.com.felipeacerbi.buddies.utils.toHexString

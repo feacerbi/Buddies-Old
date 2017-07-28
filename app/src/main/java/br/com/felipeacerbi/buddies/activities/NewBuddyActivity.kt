@@ -1,5 +1,6 @@
 package br.com.felipeacerbi.buddies.activities
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -13,10 +14,11 @@ class NewBuddyActivity : AppCompatActivity() {
     companion object {
         val BUDDY_INFO_EXTRA = "buddy_info"
         val EXTRA_BASETAG = "basetag"
+        val RC_PHOTO_PICKER = 1
     }
 
     var baseTag: BaseTag? = null
-    var photoUrl: String = "http://lorempixel.com/500/500/animals/"
+    var photoUrl: String = "http://lorempixel.com/600/600/animals/"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +29,13 @@ class NewBuddyActivity : AppCompatActivity() {
         handleIntent(intent)
 
         val resultIntent = Intent(this, MainActivity::class.java)
+
+        picture_edit_button.setOnClickListener {
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            intent.type = "image/jpeg"
+            intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
+            startActivityForResult(Intent.createChooser(intent, "Complete action using"), RC_PHOTO_PICKER)
+        }
 
         cancel_button.setOnClickListener {
             setResult(RESULT_CANCELED, resultIntent)
@@ -42,6 +51,18 @@ class NewBuddyActivity : AppCompatActivity() {
             setResult(RESULT_OK, resultIntent)
             finish()
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        if(resultCode == Activity.RESULT_OK) {
+            when(requestCode) {
+                RC_PHOTO_PICKER -> {
+                    photoUrl = data.data.toString()
+                    picture.setImageURI(data.data)
+                }
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun  handleIntent(intent: Intent?) {

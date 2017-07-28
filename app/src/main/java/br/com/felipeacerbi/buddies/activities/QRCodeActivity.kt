@@ -9,7 +9,7 @@ import android.support.v7.app.AppCompatActivity
 import br.com.felipeacerbi.buddies.R
 import com.dlazaro66.qrcodereaderview.QRCodeReaderView
 import kotlinx.android.synthetic.main.activity_qrcode.*
-import kotlinx.android.synthetic.main.content_qrcode.*
+import kotlinx.android.synthetic.main.qrcode_reader_view.*
 
 class QRCodeActivity :
         AppCompatActivity(),
@@ -29,7 +29,7 @@ class QRCodeActivity :
     }
 
     fun startCamera() {
-        layoutInflater.inflate(R.layout.content_qrcode, constraint)
+        layoutInflater.inflate(R.layout.qrcode_reader_view, constraint)
 
         qrdecoderview.setOnQRCodeReadListener(this)
 

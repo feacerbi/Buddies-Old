@@ -1,7 +1,9 @@
 package br.com.felipeacerbi.buddies.firebase
 
+import android.net.Uri
 import android.util.Log
 import br.com.felipeacerbi.buddies.models.Buddy
+import br.com.felipeacerbi.buddies.models.BuddyInfo
 import br.com.felipeacerbi.buddies.models.Request
 import br.com.felipeacerbi.buddies.models.User
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
@@ -31,6 +33,7 @@ class FirebaseService : FirebaseInstanceIdService() {
     val firebaseAuth = FirebaseAuth.getInstance()
     val firebaseInstanceID = FirebaseInstanceId.getInstance()
     val firebaseDB = FirebaseDatabase.getInstance()
+    val firebaseStoreService = FirebaseStorageService()
 
     override fun onTokenRefresh() {
         super.onTokenRefresh()
@@ -141,29 +144,35 @@ class FirebaseService : FirebaseInstanceIdService() {
     fun getUserPetsReference(username: String) = getUserReference(username).child(User.DATABASE_OWNS_CHILD)
     fun getUserFollowReference(username: String) = getUserReference(username).child(User.DATABASE_FOLLOWS_CHILD)
 
-    fun addNewPet(baseTag: BaseTag, buddy: Buddy) {
+    fun addNewPet(baseTag: BaseTag, buddyInfo: BuddyInfo) {
         if(baseTag.petId.isEmpty()) {
             Log.d(TAG, "Adding new pet")
             val petKey = getPetsReference().push().key
             val tagKey = getTagsReference().push().key
 
-            baseTag.petId = petKey
-            buddy.tagId = baseTag.id
+            uploadPetFile(petKey, Uri.parse(buddyInfo.photo)) {
+                downloadUrl ->
+                val buddy = Buddy(buddyInfo)
+                buddy.photo = downloadUrl.toString()
 
-            (buddy.owners as HashMap).put(getCurrentUserUID(), true)
+                baseTag.petId = petKey
+                buddy.tagId = baseTag.id
 
-            val childUpdates = HashMap<String, Any?>()
-            val currentUserPath = DATABASE_USERS_PATH + getCurrentUserUID() + "/"
-            val tagPath = DATABASE_TAGS_PATH + tagKey + "/"
-            val petPath = DATABASE_PETS_PATH + petKey + "/"
+                (buddy.owners as HashMap).put(getCurrentUserUID(), true)
 
-            with(childUpdates) {
-                put(currentUserPath + User.DATABASE_OWNS_CHILD + "/" + petKey, true)
-                put(tagPath, baseTag.toMap())
-                put(petPath, buddy.toMap())
+                val childUpdates = HashMap<String, Any?>()
+                val currentUserPath = DATABASE_USERS_PATH + getCurrentUserUID() + "/"
+                val tagPath = DATABASE_TAGS_PATH + tagKey + "/"
+                val petPath = DATABASE_PETS_PATH + petKey + "/"
+
+                with(childUpdates) {
+                    put(currentUserPath + User.DATABASE_OWNS_CHILD + "/" + petKey, true)
+                    put(tagPath, baseTag.toMap())
+                    put(petPath, buddy.toMap())
+                }
+
+                updateDB(childUpdates)
             }
-
-            updateDB(childUpdates)
         } else {
             Log.d(TAG, "Error, new pet found")
         }
@@ -306,6 +315,29 @@ class FirebaseService : FirebaseInstanceIdService() {
 
             updateDB(childUpdates)
         }
+    }
+
+    // Storage
+    fun uploadPersonalFile(path: Uri, onSuccess: (Uri) -> Unit) {
+        firebaseStoreService.getUserStorageReference(getCurrentUserUID()).child(path.lastPathSegment).putFile(path)
+                .addOnSuccessListener {
+                    val downloadUrl = it.downloadUrl
+
+                    if(downloadUrl != null) {
+                        onSuccess(downloadUrl)
+                    }
+                }
+    }
+
+    fun uploadPetFile(petId: String, path: Uri, onSuccess: (Uri) -> Unit) {
+        firebaseStoreService.getPetStorageReference(petId).child(path.lastPathSegment).putFile(path)
+                .addOnSuccessListener {
+                    val downloadUrl = it.downloadUrl
+
+                    if(downloadUrl != null) {
+                        onSuccess(downloadUrl)
+                    }
+                }
     }
 
     // Requests API

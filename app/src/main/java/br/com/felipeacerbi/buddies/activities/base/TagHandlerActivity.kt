@@ -12,7 +12,6 @@ import br.com.felipeacerbi.buddies.activities.NewBuddyActivity
 import br.com.felipeacerbi.buddies.activities.ProfileActivity
 import br.com.felipeacerbi.buddies.activities.QRCodeActivity
 import br.com.felipeacerbi.buddies.firebase.FireListener
-import br.com.felipeacerbi.buddies.models.Buddy
 import br.com.felipeacerbi.buddies.models.BuddyInfo
 import br.com.felipeacerbi.buddies.tags.NFCService
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
@@ -79,7 +78,7 @@ abstract class TagHandlerActivity : FireListener() {
                 NEW_PET_RESULT -> {
                     val buddyInfo = data.extras.getSerializable(NewBuddyActivity.BUDDY_INFO_EXTRA) as BuddyInfo
                     val baseTag = data.extras.getSerializable(NewBuddyActivity.EXTRA_BASETAG) as BaseTag
-                    firebaseService.addNewPet(baseTag, Buddy(buddyInfo))
+                    firebaseService.addNewPet(baseTag, buddyInfo)
                     launchActivity(ProfileActivity::class)
                 }
                 QR_CODE_RESULT -> { showTagOptionsDialog(BaseTag(data.extras.getString(QRCodeActivity.QR_CODE_TEXT))) }

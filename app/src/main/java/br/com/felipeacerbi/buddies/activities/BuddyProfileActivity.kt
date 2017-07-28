@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.firebase.FireListener
 import br.com.felipeacerbi.buddies.models.Buddy
@@ -23,6 +24,7 @@ class BuddyProfileActivity : FireListener() {
     companion object {
         val TAG = "BuddyProfileActivity"
         val EXTRA_PETID = "extra_petid"
+        val RC_PHOTO_PICKER = 1
     }
 
     val fireBuilder by lazy {
@@ -30,7 +32,6 @@ class BuddyProfileActivity : FireListener() {
     }
 
     var buddy: Buddy? = null
-    var photoUrl: String? = ""
     var petId = ""
 
     var buddyReference: DatabaseReference? = null
@@ -58,6 +59,13 @@ class BuddyProfileActivity : FireListener() {
         buddy_breed_edit_button.setOnClickListener {
             showEditDialog("Edit breed", buddy_breed.text.toString(), { buddy?.breed = it })
         }
+
+        picture_edit_button.setOnClickListener {
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            intent.type = "image/jpeg"
+            intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
+            startActivityForResult(Intent.createChooser(intent, "Complete action using"), RC_PHOTO_PICKER)
+        }
     }
 
     fun showEditDialog(title: String, editValue: String, setFunc: (String) -> Unit) {
@@ -70,8 +78,7 @@ class BuddyProfileActivity : FireListener() {
                     "OK",
                     this,
                     { _, _ ->
-                        val newValue = input_field.text.toString()
-                        setFunc(newValue)
+                        setFunc(input_field.text.toString())
                         firebaseService.updatePet(buddy, petId)
                     }
             )
@@ -89,18 +96,34 @@ class BuddyProfileActivity : FireListener() {
                         buddy_name.text = buddy?.name
                         actionBar?.title = buddy?.name
                         buddy_breed.text = buddy?.breed
-                        photoUrl = buddy?.photo
 
                         Picasso.with(this)
-                                .load(photoUrl)
+                                .load(buddy?.photo)
                                 .error(R.mipmap.ic_launcher_round)
-                                .resize(500, 500)
+                                .resize(600, 600)
                                 .centerCrop()
                                 .into(picture)
                     }
                 }
                 .cancel { Log.d(TAG, "Buddy not found") }
                 .listen()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        if(resultCode == RESULT_OK) {
+            when(requestCode) {
+                RC_PHOTO_PICKER -> {
+                    val path = data.data
+                    firebaseService.uploadPetFile(petId, path) {
+                        downloadUrl ->
+                        buddy?.photo = downloadUrl.toString()
+                        firebaseService.updatePet(buddy, petId)
+                        Toast.makeText(this, "Uploading...", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

@@ -1,7 +1,6 @@
 package br.com.felipeacerbi.buddies.models
 
 import com.google.firebase.database.DataSnapshot
-import java.io.Serializable
 
 data class Buddy(
         var name: String = "",

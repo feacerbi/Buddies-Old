@@ -1,5 +1,6 @@
 package br.com.felipeacerbi.buddies.activities
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -9,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.base.TagHandlerActivity
 import br.com.felipeacerbi.buddies.adapters.BuddiesAdapter
@@ -18,13 +20,13 @@ import br.com.felipeacerbi.buddies.tags.models.BaseTag
 import br.com.felipeacerbi.buddies.utils.*
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_profile.*
-import kotlinx.android.synthetic.main.content_profile.*
 import kotlinx.android.synthetic.main.input_dialog.view.*
 
 class ProfileActivity : TagHandlerActivity(), IListClickListener {
 
     companion object {
         val TAG = "ProfileActivity"
+        val RC_PHOTO_PICKER = 1
     }
 
     val sharedPreferences by lazy {
@@ -63,6 +65,13 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
         profile_email_edit_button.setOnClickListener {
             showEditDialog("Edit email", profile_email.text.toString(), { user?.email = it })
         }
+
+        profile_picture_edit_button.setOnClickListener {
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            intent.type = "image/jpeg"
+            intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
+            startActivityForResult(Intent.createChooser(intent, "Complete action using"), RC_PHOTO_PICKER)
+        }
     }
 
     fun showEditDialog(title: String, editValue: String, setFunc: (String) -> Unit) {
@@ -75,8 +84,7 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
                     "OK",
                     this,
                     { _, _ ->
-                        val newValue = input_field.text.toString()
-                        setFunc(newValue)
+                        setFunc(input_field.text.toString())
                         firebaseService.updateUser(user)
                     }
             )
@@ -107,7 +115,7 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
                         Picasso.with(this)
                                 .load(user?.photo)
                                 .error(R.mipmap.ic_launcher_round)
-                                .resize(500, 500)
+                                .resize(600, 600)
                                 .centerCrop()
                                 .into(profile_picture)
                     }
@@ -146,6 +154,20 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         super.onActivityResult(requestCode, resultCode, data)
         Log.d(TAG, "Activity result code " + requestCode)
+
+        if(resultCode == Activity.RESULT_OK) {
+            when(requestCode) {
+                RC_PHOTO_PICKER -> {
+                    val path = data.data
+                    firebaseService.uploadPersonalFile(path) {
+                        downloadUrl ->
+                        user?.photo = downloadUrl.toString()
+                        firebaseService.updateUser(user)
+                        Toast.makeText(this, "Uploading...", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
     }
 
     override fun onDestroy() {
