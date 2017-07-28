@@ -30,7 +30,7 @@ open class RequestListFragment : FirebaseListFragment() {
         if(view is ConstraintLayout) {
             with(view) {
                 list.layoutManager = LinearLayoutManager (context)
-                list.adapter = RequestsAdapter(ref, progress)
+                list.adapter = RequestsAdapter(activity, ref, progress)
             }
         }
 

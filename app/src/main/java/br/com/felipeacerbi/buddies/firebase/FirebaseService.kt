@@ -193,11 +193,11 @@ class FirebaseService : FirebaseInstanceIdService() {
 
                 override fun onDataChange(dataSnapshot: DataSnapshot?) {
                     val requestKey = getDatabaseReference(DATABASE_REQUESTS_PATH).push().key
-                    val request = Request(getCurrentUserUID(), baseTag.petId, Request.STATUS_OPEN)
+                    val request = Request(getCurrentUserUID(), baseTag.petId, Calendar.getInstance().timeInMillis.toString())
                     val childUpdates = HashMap<String, Any?>()
 
                     with(childUpdates) {
-                        put(DATABASE_REQUESTS_PATH + "/" + requestKey, request.toMap())
+                        put(DATABASE_REQUESTS_PATH + requestKey, request.toMap())
                         dataSnapshot?.children?.forEach { put(DATABASE_USERS_PATH + it.key + "/" + DATABASE_REQUESTS_CHILD + "/" + requestKey, true) }
                     }
 
@@ -222,14 +222,14 @@ class FirebaseService : FirebaseInstanceIdService() {
                 val childUpdates = HashMap<String, Any?>()
                 val userPath = DATABASE_USERS_PATH + request.username + "/"
                 val petPath = DATABASE_PETS_PATH + request.petId + "/"
-                val status = if(allow) Request.STATUS_ACCEPTED else Request.STATUS_REFUSED
 
                 with(childUpdates) {
                     if(allow) {
                         put(userPath + DATABASE_OWNS_CHILD + "/" + request.petId, true)
                         put(petPath + DATABASE_OWNS_CHILD + "/" + request.username, true)
                     }
-                    put(DATABASE_REQUESTS_PATH + key + "/" + DATABASE_STATUS_CHILD, status)
+                    put(DATABASE_REQUESTS_PATH + key, null)
+                    dataSnapshot?.children?.forEach { put(DATABASE_USERS_PATH + it.key + "/" + DATABASE_REQUESTS_CHILD + "/" + key, null) }
                 }
 
                 updateDB(childUpdates)
@@ -328,5 +328,5 @@ class FirebaseService : FirebaseInstanceIdService() {
 
     fun queryBuddies() = getUserPetsReference(getCurrentUserUID())
     fun queryFollow() = getUserFollowReference(getCurrentUserUID())
-    fun queryRequests() = getUserRequestsReference(getCurrentUserUID()).orderByChild(DATABASE_STATUS_CHILD).equalTo(Request.STATUS_OPEN).ref
+    fun queryRequests() = getUserRequestsReference(getCurrentUserUID())
 }

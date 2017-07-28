@@ -17,6 +17,7 @@ import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.fragments.FirebaseListFragment
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.google.firebase.database.Query
+import java.util.*
 import kotlin.reflect.KClass
 
 fun ViewGroup.inflate(layoutId: Int, attachToRoot: Boolean = false): View {
@@ -39,6 +40,12 @@ fun ByteArray.toHexString(): String {
         j++
     }
     return out
+}
+
+fun String.toFormatedDate(): String {
+    val reqTime = Calendar.getInstance()
+    reqTime.timeInMillis = this.toLong()
+    return reqTime.time.toString().substringBeforeLast(" GMT")
 }
 
 fun AlertDialog.Builder.showOneChoiceCancelableDialog(

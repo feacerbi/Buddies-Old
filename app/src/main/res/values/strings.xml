@@ -43,4 +43,7 @@
     <string name="tag_options_dialog_new_button">Add new Buddy</string>
     <string name="request_toast_sent_message">Request sent!</string>
     <string name="activity_title_buddy_profile">Buddy</string>
+    <string name="request_description">requested to be owner of </string>
+    <string name="decline_button_text">Decline</string>
+    <string name="accept_button_text">Accept</string>
 </resources>
