@@ -6,7 +6,6 @@ import br.com.felipeacerbi.buddies.models.Request
 import br.com.felipeacerbi.buddies.models.User
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.UserInfo
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -17,7 +16,6 @@ import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import java.util.*
 import javax.inject.Singleton
-import kotlin.collections.ArrayList
 
 @Singleton
 class FirebaseService : FirebaseInstanceIdService() {
@@ -28,17 +26,6 @@ class FirebaseService : FirebaseInstanceIdService() {
         val DATABASE_PETS_PATH = "pets/"
         val DATABASE_TAGS_PATH = "tags/"
         val DATABASE_REQUESTS_PATH = "requests/"
-        val DATABASE_IDTOKEN_CHILD = "idToken"
-        val DATABASE_NAME_CHILD = "name"
-        val DATABASE_EMAIL_CHILD = "email"
-        val DATABASE_PHOTO_CHILD = "photo"
-        val DATABASE_BREED_CHILD = "breed"
-        val DATABASE_FOLLOWS_CHILD = "follows"
-        val DATABASE_OWNS_CHILD = "owns"
-        val DATABASE_ID_CHILD = "id"
-        val DATABASE_PETID_CHILD = "petId"
-        val DATABASE_REQUESTS_CHILD = "requests"
-        val DATABASE_STATUS_CHILD = "status"
     }
 
     val firebaseAuth = FirebaseAuth.getInstance()
@@ -48,7 +35,7 @@ class FirebaseService : FirebaseInstanceIdService() {
     override fun onTokenRefresh() {
         super.onTokenRefresh()
 
-        getUserReference(getCurrentUserUID()).child(DATABASE_IDTOKEN_CHILD).setValue(getAppIDToken())
+        getUserReference(getCurrentUserUID()).child(User.DATABASE_IDTOKEN_CHILD).setValue(getAppIDToken())
     }
 
     // DB API
@@ -67,7 +54,7 @@ class FirebaseService : FirebaseInstanceIdService() {
     fun getCurrentUserEmail() = getCurrentUser()?.email ?: ""
     fun getCurrentUserUID() = getCurrentUser()?.uid ?: ""
     fun getCurrentUserPicture() = getCurrentUser()?.photoUrl
-    fun getCurrentUserProviders(): List<UserInfo> = getCurrentUser()?.providerData ?: ArrayList<UserInfo>()
+//    fun getCurrentUserProviders(): List<UserInfo> = getCurrentUser()?.providerData ?: ArrayList<UserInfo>()
 
     fun registerUser(user: User) {
         user.idToken = getAppIDToken()
@@ -86,9 +73,9 @@ class FirebaseService : FirebaseInstanceIdService() {
             val childUpdates = HashMap<String, Any?>()
             val currentUserPath = DATABASE_USERS_PATH + getCurrentUserUID() + "/"
 
-            childUpdates.put(currentUserPath + DATABASE_NAME_CHILD, user.name)
-            childUpdates.put(currentUserPath + DATABASE_EMAIL_CHILD, user.email)
-            childUpdates.put(currentUserPath + DATABASE_PHOTO_CHILD, user.photo)
+            childUpdates.put(currentUserPath + User.DATABASE_NAME_CHILD, user.name)
+            childUpdates.put(currentUserPath + User.DATABASE_EMAIL_CHILD, user.email)
+            childUpdates.put(currentUserPath + User.DATABASE_PHOTO_CHILD, user.photo)
 
             updateDB(childUpdates)
         }
@@ -128,7 +115,7 @@ class FirebaseService : FirebaseInstanceIdService() {
     fun checkTagObservable(baseTag: BaseTag): Observable<BaseTag> {
         return Observable.create {
             subscriber ->
-            getTagsReference().orderByChild(DATABASE_ID_CHILD).equalTo(baseTag.id).addListenerForSingleValueEvent(object: ValueEventListener {
+            getTagsReference().orderByChild(BaseTag.DATABASE_ID_CHILD).equalTo(baseTag.id).addListenerForSingleValueEvent(object: ValueEventListener {
                 override fun onCancelled(error: DatabaseError?) {
                     Log.d(TAG, "Adding pet cancelled: " + error.toString())
                 }
@@ -151,8 +138,8 @@ class FirebaseService : FirebaseInstanceIdService() {
     // Pets API
     fun getPetReference(petId: String) = getPetsReference().child(petId)
     fun getPetsReference() = getDatabaseReference(DATABASE_PETS_PATH)
-    fun getUserPetsReference(username: String) = getUserReference(username).child(DATABASE_OWNS_CHILD)
-    fun getUserFollowReference(username: String) = getUserReference(username).child(DATABASE_FOLLOWS_CHILD)
+    fun getUserPetsReference(username: String) = getUserReference(username).child(User.DATABASE_OWNS_CHILD)
+    fun getUserFollowReference(username: String) = getUserReference(username).child(User.DATABASE_FOLLOWS_CHILD)
 
     fun addNewPet(baseTag: BaseTag, buddy: Buddy) {
         if(baseTag.petId.isEmpty()) {
@@ -171,7 +158,7 @@ class FirebaseService : FirebaseInstanceIdService() {
             val petPath = DATABASE_PETS_PATH + petKey + "/"
 
             with(childUpdates) {
-                put(currentUserPath + DATABASE_OWNS_CHILD + "/" + petKey, true)
+                put(currentUserPath + User.DATABASE_OWNS_CHILD + "/" + petKey, true)
                 put(tagPath, baseTag.toMap())
                 put(petPath, buddy.toMap())
             }
@@ -186,7 +173,7 @@ class FirebaseService : FirebaseInstanceIdService() {
         if(!baseTag.petId.isEmpty()) {
             Log.d(TAG, "Adding owner pet")
 
-            getPetReference(baseTag.petId).child(DATABASE_OWNS_CHILD).addListenerForSingleValueEvent(object: ValueEventListener {
+            getPetReference(baseTag.petId).child(Buddy.DATABASE_OWNS_CHILD).addListenerForSingleValueEvent(object: ValueEventListener {
                 override fun onCancelled(error: DatabaseError?) {
                     Log.d(TAG, "Error, owner pet cancelled " + error?.message)
                 }
@@ -198,7 +185,7 @@ class FirebaseService : FirebaseInstanceIdService() {
 
                     with(childUpdates) {
                         put(DATABASE_REQUESTS_PATH + requestKey, request.toMap())
-                        dataSnapshot?.children?.forEach { put(DATABASE_USERS_PATH + it.key + "/" + DATABASE_REQUESTS_CHILD + "/" + requestKey, true) }
+                        dataSnapshot?.children?.forEach { put(DATABASE_USERS_PATH + it.key + "/" + User.DATABASE_REQUESTS_CHILD + "/" + requestKey, true) }
                     }
 
                     updateDB(childUpdates)
@@ -213,7 +200,7 @@ class FirebaseService : FirebaseInstanceIdService() {
     fun allowPetOwner(request: Request, key: String, allow: Boolean) {
         Log.d(TAG, "Allowing owner pet")
 
-        getPetReference(request.petId).child(DATABASE_OWNS_CHILD).addListenerForSingleValueEvent(object: ValueEventListener {
+        getPetReference(request.petId).child(Buddy.DATABASE_OWNS_CHILD).addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onCancelled(error: DatabaseError?) {
                 Log.d(TAG, "Error, owner pet allow cancelled " + error?.message)
             }
@@ -225,11 +212,11 @@ class FirebaseService : FirebaseInstanceIdService() {
 
                 with(childUpdates) {
                     if(allow) {
-                        put(userPath + DATABASE_OWNS_CHILD + "/" + request.petId, true)
-                        put(petPath + DATABASE_OWNS_CHILD + "/" + request.username, true)
+                        put(userPath + User.DATABASE_OWNS_CHILD + "/" + request.petId, true)
+                        put(petPath + Buddy.DATABASE_OWNS_CHILD + "/" + request.username, true)
                     }
                     put(DATABASE_REQUESTS_PATH + key, null)
-                    dataSnapshot?.children?.forEach { put(DATABASE_USERS_PATH + it.key + "/" + DATABASE_REQUESTS_CHILD + "/" + key, null) }
+                    dataSnapshot?.children?.forEach { put(DATABASE_USERS_PATH + it.key + "/" + User.DATABASE_REQUESTS_CHILD + "/" + key, null) }
                 }
 
                 updateDB(childUpdates)
@@ -245,8 +232,8 @@ class FirebaseService : FirebaseInstanceIdService() {
             val currentPetPath = DATABASE_PETS_PATH + baseTag.petId + "/"
 
             with(childUpdates) {
-                put(currentUserPath + DATABASE_FOLLOWS_CHILD + "/" + baseTag.petId, true)
-                put(currentPetPath + DATABASE_FOLLOWS_CHILD + "/" + getCurrentUserUID(), true)
+                put(currentUserPath + User.DATABASE_FOLLOWS_CHILD + "/" + baseTag.petId, true)
+                put(currentPetPath + Buddy.DATABASE_FOLLOWS_CHILD + "/" + getCurrentUserUID(), true)
             }
 
             updateDB(childUpdates)
@@ -269,7 +256,7 @@ class FirebaseService : FirebaseInstanceIdService() {
 
             updateDB(childUpdates)
 
-            getPetReference(petId).child(DATABASE_OWNS_CHILD).addListenerForSingleValueEvent(object: ValueEventListener {
+            getPetReference(petId).child(Buddy.DATABASE_OWNS_CHILD).addListenerForSingleValueEvent(object: ValueEventListener {
                 override fun onCancelled(error: DatabaseError?) {
                     Log.d(TAG, "Checking pet cancelled: " + error.toString())
                 }
@@ -292,7 +279,7 @@ class FirebaseService : FirebaseInstanceIdService() {
         if(!petId.isEmpty()) {
             Log.d(TAG, "Removing pet")
             getPetReference(petId).removeValue()
-            getTagsReference().orderByChild(DATABASE_PETID_CHILD).equalTo(petId).addListenerForSingleValueEvent(object: ValueEventListener {
+            getTagsReference().orderByChild(BaseTag.DATABASE_PETID_CHILD).equalTo(petId).addListenerForSingleValueEvent(object: ValueEventListener {
                 override fun onCancelled(error: DatabaseError?) {
                     Log.d(TAG, "Removing cancelled: " + error.toString())
                 }
@@ -313,9 +300,9 @@ class FirebaseService : FirebaseInstanceIdService() {
             val childUpdates = HashMap<String, Any?>()
             val currentUserPath = DATABASE_PETS_PATH + petId + "/"
 
-            childUpdates.put(currentUserPath + DATABASE_NAME_CHILD, buddy.name)
-            childUpdates.put(currentUserPath + DATABASE_BREED_CHILD, buddy.breed)
-            childUpdates.put(currentUserPath + DATABASE_PHOTO_CHILD, buddy.photo)
+            childUpdates.put(currentUserPath + Buddy.DATABASE_NAME_CHILD, buddy.name)
+            childUpdates.put(currentUserPath + Buddy.DATABASE_BREED_CHILD, buddy.breed)
+            childUpdates.put(currentUserPath + Buddy.DATABASE_PHOTO_CHILD, buddy.photo)
 
             updateDB(childUpdates)
         }
@@ -324,7 +311,7 @@ class FirebaseService : FirebaseInstanceIdService() {
     // Requests API
     fun getRequestsReference() = getDatabaseReference(DATABASE_REQUESTS_PATH)
     fun getRequestReference(requestId: String) = getRequestsReference().child(requestId)
-    fun getUserRequestsReference(username: String) = getUserReference(username).child(DATABASE_REQUESTS_CHILD)
+    fun getUserRequestsReference(username: String) = getUserReference(username).child(User.DATABASE_REQUESTS_CHILD)
 
     fun queryBuddies() = getUserPetsReference(getCurrentUserUID())
     fun queryFollow() = getUserFollowReference(getCurrentUserUID())

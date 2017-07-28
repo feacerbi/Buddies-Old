@@ -80,6 +80,7 @@ abstract class TagHandlerActivity : FireListener() {
                     val buddyInfo = data.extras.getSerializable(NewBuddyActivity.BUDDY_INFO_EXTRA) as BuddyInfo
                     val baseTag = data.extras.getSerializable(NewBuddyActivity.EXTRA_BASETAG) as BaseTag
                     firebaseService.addNewPet(baseTag, Buddy(buddyInfo))
+                    launchActivity(ProfileActivity::class)
                 }
                 QR_CODE_RESULT -> { showTagOptionsDialog(BaseTag(data.extras.getString(QRCodeActivity.QR_CODE_TEXT))) }
             }
@@ -95,8 +96,7 @@ abstract class TagHandlerActivity : FireListener() {
                 getString(R.string.tag_options_dialog_follow_button),
                 getString(R.string.tag_options_dialog_new_button),
                 { _, _ -> addNewFollow(baseTag) },
-                { _, _ -> addNewBuddy(baseTag)
-                    launchActivity(ProfileActivity::class)})
+                { _, _ -> addNewBuddy(baseTag)})
     }
 
     fun addNewFollow(baseTag: BaseTag) {

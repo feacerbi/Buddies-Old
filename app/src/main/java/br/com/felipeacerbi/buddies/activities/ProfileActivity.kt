@@ -7,11 +7,12 @@ import android.preference.PreferenceManager
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
-import android.view.View
-import br.com.felipeacerbi.buddies.adapters.listeners.IListClickListener
+import android.view.Menu
+import android.view.MenuItem
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.base.TagHandlerActivity
 import br.com.felipeacerbi.buddies.adapters.BuddiesAdapter
+import br.com.felipeacerbi.buddies.adapters.listeners.IListClickListener
 import br.com.felipeacerbi.buddies.models.User
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
 import br.com.felipeacerbi.buddies.utils.*
@@ -37,10 +38,6 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
     var user: User? = null
 
     val userReference = firebaseService.getUserReference(firebaseService.getCurrentUserUID())
-
-    val inputView: View by lazy {
-        layoutInflater.inflate(R.layout.input_dialog, null)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,6 +66,7 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
     }
 
     fun showEditDialog(title: String, editValue: String, setFunc: (String) -> Unit) {
+        val inputView = layoutInflater.inflate(R.layout.input_dialog, null)
         with(inputView) {
             input_field.setText(editValue)
 
@@ -119,6 +117,20 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
 
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_default_activity, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when(item?.itemId) {
+            R.id.action_settings -> launchActivity(SettingsActivity::class)
+            R.id.action_requests -> launchActivity(RequestsActivity::class)
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onListClick(identifier: String) {
         launchActivityWithStringExtra(BuddyProfileActivity::class, BuddyProfileActivity.EXTRA_PETID, identifier)
     }
@@ -141,4 +153,8 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
         buddies_list.getFirebaseAdapter()?.cleanup()
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        navigateUpTo(parentActivityIntent)
+    }
 }

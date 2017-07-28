@@ -9,9 +9,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
-/**
- * Created by felipe.acerbi on 18/07/2017.
- */
 class SubscriptionsManager(val context: Context) {
 
     val firebaseService = FirebaseService()
@@ -52,13 +49,13 @@ class SubscriptionsManager(val context: Context) {
                         { pair ->
                             if(pair.first) {
                                 existsAction(pair)
-                                Log.d(TAG, "Tag found")
+                                Log.d(TAG, "User found")
                             } else {
                                 notExistsAction(pair)
-                                Log.d(TAG, "Tag not found")
+                                Log.d(TAG, "User not found")
                             }
                         },
-                        { e -> Log.d(TAG, "Error adding pet " + e.message) })
+                        { e -> Log.d(TAG, "Error adding user " + e.message) })
     }
 
 }

@@ -5,11 +5,7 @@ import android.app.Activity
 import android.content.pm.PackageManager
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import io.reactivex.Observable
 
-/**
- * Created by felipe.acerbi on 18/07/2017.
- */
 class PermissionsManager(val activity: Activity) : ActivityCompat.OnRequestPermissionsResultCallback {
 
     companion object {

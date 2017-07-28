@@ -1,6 +1,5 @@
 package br.com.felipeacerbi.buddies.activities
 
-import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceActivity
 import android.support.v7.app.AppCompatActivity
@@ -44,7 +43,7 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when(item?.itemId) {
-            R.id.home -> startActivity(Intent(this, MainActivity::class.java))
+            R.id.home -> finish()
         }
         return super.onOptionsItemSelected(item)
     }

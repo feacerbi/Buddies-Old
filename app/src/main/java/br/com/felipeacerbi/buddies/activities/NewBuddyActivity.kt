@@ -38,8 +38,8 @@ class NewBuddyActivity : AppCompatActivity() {
 
             resultIntent.putExtra(BUDDY_INFO_EXTRA, BuddyInfo(name, breed, photoUrl))
             resultIntent.putExtra(EXTRA_BASETAG, baseTag)
-            setResult(RESULT_OK, resultIntent)
 
+            setResult(RESULT_OK, resultIntent)
             finish()
         }
     }

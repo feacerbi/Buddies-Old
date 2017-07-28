@@ -9,15 +9,15 @@ data class Buddy(
         var photo: String = "",
         var tagId: String = "",
         var owners: Map<String, Boolean> = HashMap(),
-        var followers: Map<String, Boolean> = HashMap()) : Serializable {
+        var followers: Map<String, Boolean> = HashMap()) {
 
     companion object {
         val DATABASE_NAME_CHILD = "name"
         val DATABASE_BREED_CHILD = "breed"
         val DATABASE_PHOTO_CHILD = "photo"
         val DATABASE_TAG_CHILD = "tagId"
-        val DATABASE_OWNERS_CHILD = "owns"
-        val DATABASE_FOLLOWERS_CHILD = "follows"
+        val DATABASE_OWNS_CHILD = "owns"
+        val DATABASE_FOLLOWS_CHILD = "follows"
     }
 
     constructor(dataSnapshot: DataSnapshot): this() {
@@ -35,8 +35,8 @@ data class Buddy(
             Pair(DATABASE_BREED_CHILD, breed),
             Pair(DATABASE_PHOTO_CHILD, photo),
             Pair(DATABASE_TAG_CHILD, tagId),
-            Pair(DATABASE_OWNERS_CHILD, owners),
-            Pair(DATABASE_FOLLOWERS_CHILD, followers))
+            Pair(DATABASE_OWNS_CHILD, owners),
+            Pair(DATABASE_FOLLOWS_CHILD, followers))
 
     fun fromMap(dataSnapshot: DataSnapshot) {
         name = dataSnapshot.child(DATABASE_NAME_CHILD).value as String
@@ -44,10 +44,10 @@ data class Buddy(
         photo = dataSnapshot.child(DATABASE_PHOTO_CHILD).value as String
         tagId = dataSnapshot.child(DATABASE_TAG_CHILD).value as String
 
-        val ownersSnapshot = dataSnapshot.child(DATABASE_OWNERS_CHILD).value
+        val ownersSnapshot = dataSnapshot.child(DATABASE_OWNS_CHILD).value
         if(checkNull(ownersSnapshot)) owners = ownersSnapshot as Map<String, Boolean>
 
-        val followersSnapshot = dataSnapshot.child(DATABASE_FOLLOWERS_CHILD).value
+        val followersSnapshot = dataSnapshot.child(DATABASE_FOLLOWS_CHILD).value
         if(checkNull(followersSnapshot)) followers = followersSnapshot as Map<String, Boolean>
     }
 

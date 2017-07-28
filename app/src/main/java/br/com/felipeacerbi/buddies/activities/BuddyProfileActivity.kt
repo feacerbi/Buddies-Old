@@ -5,11 +5,13 @@ import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
-import android.view.View
+import android.view.Menu
+import android.view.MenuItem
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.firebase.FireListener
 import br.com.felipeacerbi.buddies.models.Buddy
 import br.com.felipeacerbi.buddies.utils.getFirebaseAdapter
+import br.com.felipeacerbi.buddies.utils.launchActivity
 import br.com.felipeacerbi.buddies.utils.showInputDialog
 import com.google.firebase.database.DatabaseReference
 import com.squareup.picasso.Picasso
@@ -32,10 +34,6 @@ class BuddyProfileActivity : FireListener() {
     var petId = ""
 
     var buddyReference: DatabaseReference? = null
-
-    val inputView: View by lazy {
-        layoutInflater.inflate(R.layout.input_dialog, null)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +61,7 @@ class BuddyProfileActivity : FireListener() {
     }
 
     fun showEditDialog(title: String, editValue: String, setFunc: (String) -> Unit) {
+        val inputView = layoutInflater.inflate(R.layout.input_dialog, null)
         with(inputView) {
             input_field.setText(editValue)
 
@@ -88,6 +87,7 @@ class BuddyProfileActivity : FireListener() {
                     if(it != null && it.hasChildren()) {
                         buddy = Buddy(it)
                         buddy_name.text = buddy?.name
+                        actionBar?.title = buddy?.name
                         buddy_breed.text = buddy?.breed
                         photoUrl = buddy?.photo
 
@@ -101,6 +101,20 @@ class BuddyProfileActivity : FireListener() {
                 }
                 .cancel { Log.d(TAG, "Buddy not found") }
                 .listen()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_default_activity, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when(item?.itemId) {
+            android.R.id.home -> finish()
+            R.id.action_settings -> launchActivity(SettingsActivity::class)
+            R.id.action_requests -> launchActivity(RequestsActivity::class)
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun  handleIntent(intent: Intent?) {

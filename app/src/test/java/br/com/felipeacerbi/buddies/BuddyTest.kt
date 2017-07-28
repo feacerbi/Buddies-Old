@@ -4,16 +4,14 @@ import br.com.felipeacerbi.buddies.models.Buddy
 import com.google.firebase.database.DataSnapshot
 import org.junit.Assert
 import org.junit.Test
-import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
+import org.mockito.Mockito.mock
 
-/**
- * Created by felipe.acerbi on 14/07/2017.
- */
 class BuddyTest {
 
     val testName = "Test Name"
     val testBreed = "Test Breed"
+    val testPhoto = "testphotopath"
     val testTagId = "testtagid123"
     val testUsername = "testusername"
     val testUsernameTwo = "testusernametwo"
@@ -22,7 +20,7 @@ class BuddyTest {
     val testOwnsMap = mapOf(Pair(testUsername, true), Pair(testUsernameTwo, false))
     val testFollowsMap = mapOf(Pair(testUsernameThree, false), Pair(testUsernameFour, true))
 
-    fun createTestBuddy() = Buddy(testName, testBreed, testTagId, testOwnsMap, testFollowsMap)
+    fun createTestBuddy() = Buddy(testName, testBreed, testPhoto, testTagId, testOwnsMap, testFollowsMap)
 
     @Test
     fun test_cleanConstructor() {
@@ -51,18 +49,18 @@ class BuddyTest {
         `when`(mockData.child(Buddy.DATABASE_NAME_CHILD)).thenReturn(nameMockData)
         `when`(mockData.child(Buddy.DATABASE_BREED_CHILD)).thenReturn(breedMockData)
         `when`(mockData.child(Buddy.DATABASE_TAG_CHILD)).thenReturn(tagIdMockData)
-        `when`(mockData.child(Buddy.DATABASE_OWNERS_CHILD)).thenReturn(ownsMockData)
-        `when`(mockData.child(Buddy.DATABASE_FOLLOWERS_CHILD)).thenReturn(followsMockData)
+        `when`(mockData.child(Buddy.DATABASE_OWNS_CHILD)).thenReturn(ownsMockData)
+        `when`(mockData.child(Buddy.DATABASE_FOLLOWS_CHILD)).thenReturn(followsMockData)
 
         val buddy = Buddy(mockData)
 
         Assert.assertTrue(testName == buddy.name)
         Assert.assertTrue(testBreed == buddy.breed)
         Assert.assertTrue(testTagId == buddy.tagId)
-        Assert.assertTrue(testOwnsMap.get(testUsername) == buddy.owners.get(testUsername))
-        Assert.assertTrue(testOwnsMap.get(testUsernameTwo) == buddy.owners.get(testUsernameTwo))
-        Assert.assertTrue(testFollowsMap.get(testUsernameThree) == buddy.followers.get(testUsernameThree))
-        Assert.assertTrue(testFollowsMap.get(testUsernameFour) == buddy.followers.get(testUsernameFour))
+        Assert.assertTrue(testOwnsMap[testUsername] == buddy.owners[testUsername])
+        Assert.assertTrue(testOwnsMap[testUsernameTwo] == buddy.owners[testUsernameTwo])
+        Assert.assertTrue(testFollowsMap[testUsernameThree] == buddy.followers[testUsernameThree])
+        Assert.assertTrue(testFollowsMap[testUsernameFour] == buddy.followers[testUsernameFour])
     }
 
     @Test
@@ -71,13 +69,13 @@ class BuddyTest {
 
         val resultMap = buddy.toMap()
 
-        Assert.assertTrue(testName == resultMap.get(Buddy.DATABASE_NAME_CHILD))
-        Assert.assertTrue(testBreed == resultMap.get(Buddy.DATABASE_BREED_CHILD))
-        Assert.assertTrue(testTagId == resultMap.get(Buddy.DATABASE_TAG_CHILD))
-        Assert.assertTrue((resultMap.get(Buddy.DATABASE_OWNERS_CHILD) as Map<String, Boolean>).get(testUsername) == true)
-        Assert.assertTrue((resultMap.get(Buddy.DATABASE_OWNERS_CHILD) as Map<String, Boolean>).get(testUsernameTwo) == false)
-        Assert.assertTrue((resultMap.get(Buddy.DATABASE_FOLLOWERS_CHILD) as Map<String, Boolean>).get(testUsernameThree) == false)
-        Assert.assertTrue((resultMap.get(Buddy.DATABASE_FOLLOWERS_CHILD) as Map<String, Boolean>).get(testUsernameFour) == true)
+        Assert.assertTrue(testName == resultMap[Buddy.DATABASE_NAME_CHILD])
+        Assert.assertTrue(testBreed == resultMap[Buddy.DATABASE_BREED_CHILD])
+        Assert.assertTrue(testTagId == resultMap[Buddy.DATABASE_TAG_CHILD])
+        Assert.assertTrue((resultMap.get(Buddy.DATABASE_OWNS_CHILD) as Map<String, Boolean>)[testUsername] == true)
+        Assert.assertTrue((resultMap.get(Buddy.DATABASE_OWNS_CHILD) as Map<String, Boolean>)[testUsernameTwo] == false)
+        Assert.assertTrue((resultMap.get(Buddy.DATABASE_FOLLOWS_CHILD) as Map<String, Boolean>)[testUsernameThree] == false)
+        Assert.assertTrue((resultMap.get(Buddy.DATABASE_FOLLOWS_CHILD) as Map<String, Boolean>)[testUsernameFour] == true)
     }
 
     @Test

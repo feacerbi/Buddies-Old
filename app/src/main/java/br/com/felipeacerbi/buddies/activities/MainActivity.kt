@@ -187,7 +187,6 @@ class MainActivity : TagHandlerActivity() {
             R.id.action_profile -> launchActivity(ProfileActivity::class)
             R.id.action_requests -> launchActivity(RequestsActivity::class)
         }
-
         return super.onOptionsItemSelected(item)
     }
 
