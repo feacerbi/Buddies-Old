@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp">
+
+    <ImageView
+        android:id="@+id/place_photo"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="16dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/villa_grano"/>
+
+    <ProgressBar
+        android:id="@+id/place_meter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:progress="65"
+        style="@android:style/Widget.Material.ProgressBar.Horizontal"
+        app:layout_constraintBottom_toBottomOf="@id/place_photo" />
+
+    <TextView
+        android:id="@+id/item1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:background="@color/colorAccent"
+        android:alpha="0.6"
+        android:text="Snacks"
+        android:padding="4dp"
+        app:layout_constraintBottom_toTopOf="@id/place_meter"/>
+
+    <TextView
+        android:id="@+id/item2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:textSize="14sp"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:background="@color/colorAccent"
+        android:alpha="0.6"
+        android:text="Water"
+        android:padding="4dp"
+        app:layout_constraintBottom_toTopOf="@id/place_meter"
+        app:layout_constraintStart_toEndOf="@id/item1"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:textSize="14sp"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:background="@color/colorAccent"
+        android:alpha="0.6"
+        android:text="Reserved place"
+        android:padding="4dp"
+        app:layout_constraintBottom_toTopOf="@id/place_meter"
+        app:layout_constraintStart_toEndOf="@id/item2"/>
+
+    <TextView
+        android:id="@+id/place_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:text="Villa Grano"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/place_photo"/>
+
+    <TextView
+        android:id="@+id/place_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:text="Bakery"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintTop_toBottomOf="@id/place_name"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <TextView
+        android:id="@+id/place_distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:text="350 m"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/place_name"/>
+
+</android.support.constraint.ConstraintLayout>

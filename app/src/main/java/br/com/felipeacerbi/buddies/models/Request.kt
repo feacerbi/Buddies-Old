@@ -1,12 +1,11 @@
 package br.com.felipeacerbi.buddies.models
 
 import com.google.firebase.database.DataSnapshot
-import java.io.Serializable
 
 data class Request(
         var username: String = "",
         var petId: String = "",
-        var timestamp: String = "") : Serializable {
+        var timestamp: String = "") {
 
     companion object {
         val DATABASE_USERNAME_CHILD = "username"
