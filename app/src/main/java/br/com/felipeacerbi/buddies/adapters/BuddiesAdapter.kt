@@ -53,13 +53,16 @@ class BuddiesAdapter(val listener: IListClickListener, val petsReference: Databa
 
                         Picasso.with(listener.getContext())
                                 .load(buddy.photo)
-                                .error(R.mipmap.ic_launcher_round)
-                                .resize(500, 500)
+                                .placeholder(R.drawable.no_phototn)
+                                .error(R.drawable.no_phototn)
+                                .fit()
                                 .centerCrop()
                                 .into(picture)
 
+                        val editable = petsReference.key == Buddy.DATABASE_OWNS_CHILD
+
                         remove_button.setOnClickListener { firebaseService.removePetFromUser(petsReference.key, petId) }
-                        click_profile_layout.setOnClickListener { listener.onListClick(petId) }
+                        click_profile_layout.setOnClickListener { listener.onListClick(arrayOf(petId, editable)) }
                     }
                 } else {
                     firebaseService.removePetFromUser(petsReference.key, petId)

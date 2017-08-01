@@ -15,26 +15,27 @@
         android:background="@color/profile_picture_background">
     </FrameLayout>
 
-        <cn.gavinliu.android.lib.shapedimageview.ShapedImageView
-            android:id="@+id/picture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:shape_mode="circle"
-            app:stroke_width="3dp"
-            app:stroke_color="@color/colorPrimary"
-            app:layout_constraintStart_toStartOf="@id/picture_back"
-            app:layout_constraintEnd_toEndOf="@id/picture_back"
-            app:layout_constraintTop_toTopOf="@id/picture_back"
-            app:layout_constraintBottom_toBottomOf="@id/picture_back"
-            android:src="@mipmap/ic_launcher_round"/>
+    <cn.gavinliu.android.lib.shapedimageview.ShapedImageView
+        android:id="@+id/picture"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:scaleType="centerCrop"
+        app:shape_mode="circle"
+        app:stroke_width="3dp"
+        app:stroke_color="@color/colorPrimary"
+        app:layout_constraintStart_toStartOf="@id/picture_back"
+        app:layout_constraintEnd_toEndOf="@id/picture_back"
+        app:layout_constraintTop_toTopOf="@id/picture_back"
+        app:layout_constraintBottom_toBottomOf="@id/picture_back"
+        android:src="@drawable/no_phototn"/>
 
     <cn.gavinliu.android.lib.shapedimageview.ShapedImageView
         android:id="@+id/picture_edit_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="#FFFFFF"
         app:shape_mode="circle"
         app:stroke_width="3dp"
-        android:background="#FFFFFF"
         android:padding="8dp"
         app:stroke_color="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="@id/picture"
@@ -45,9 +46,10 @@
         android:id="@+id/buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingTop="2dp"
         android:elevation="8dp"
         android:orientation="horizontal"
-        android:padding="16dp"
+        android:background="@color/profile_picture_background"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <TextView
@@ -55,17 +57,24 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:padding="14dp"
             android:gravity="center"
+            android:background="@android:color/background_light"
             android:text="Cancel"
             android:textColor="@color/colorAccent"
             android:textSize="16sp"
             android:textStyle="bold" />
+        <FrameLayout
+            android:layout_width="2dp"
+            android:layout_height="match_parent" />
         <TextView
             android:id="@+id/add_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:padding="14dp"
             android:gravity="center"
+            android:background="@android:color/background_light"
             android:text="OK"
             android:textColor="@color/colorAccent"
             android:textSize="16sp"

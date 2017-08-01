@@ -156,7 +156,7 @@ class MainActivity : TagHandlerActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         super.onActivityResult(requestCode, resultCode, data)
-        Log.d(TAG, "Activity result code " + requestCode)
+        Log.d(TAG, "Activity request code " + requestCode)
 
         when(requestCode) {
             RC_SIGN_IN -> {

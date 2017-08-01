@@ -1,6 +1,7 @@
 package br.com.felipeacerbi.buddies.fragments
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
@@ -16,7 +17,7 @@ import br.com.felipeacerbi.buddies.adapters.BuddiesAdapter
 import br.com.felipeacerbi.buddies.adapters.listeners.IListClickListener
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.utils.getFirebaseAdapter
-import br.com.felipeacerbi.buddies.utils.launchActivityWithStringExtra
+import br.com.felipeacerbi.buddies.utils.launchActivityWithExtras
 import br.com.felipeacerbi.buddies.utils.setUp
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.buddies_list.*
@@ -64,8 +65,16 @@ open class FirebaseListFragment : Fragment(), IListClickListener {
         return view
     }
 
-    override fun onListClick(identifier: String) {
-        activity.launchActivityWithStringExtra(BuddyProfileActivity::class, BuddyProfileActivity.EXTRA_PETID, identifier)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onListClick(identifiers: Array<Any>) {
+        activity.launchActivityWithExtras(
+                BuddyProfileActivity::class,
+                arrayOf(BuddyProfileActivity.EXTRA_PETID,
+                        BuddyProfileActivity.EXTRA_EDITABLE),
+                identifiers)
     }
 
     override fun onAttach(context: Context?) {

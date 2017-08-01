@@ -2,7 +2,9 @@ package br.com.felipeacerbi.buddies.activities
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.provider.MediaStore
 import android.support.v7.app.AppCompatActivity
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.models.BuddyInfo
@@ -28,23 +30,23 @@ class NewBuddyActivity : AppCompatActivity() {
 
         handleIntent(intent)
 
-        val resultIntent = Intent(this, MainActivity::class.java)
-
         picture_edit_button.setOnClickListener {
             val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.type = "image/jpeg"
+            intent.type = "image/"
             intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
             startActivityForResult(Intent.createChooser(intent, "Complete action using"), RC_PHOTO_PICKER)
         }
 
         cancel_button.setOnClickListener {
-            setResult(RESULT_CANCELED, resultIntent)
+            setResult(RESULT_CANCELED)
             finish()
         }
+
         add_button.setOnClickListener {
             val name = pet_name.text.toString()
             val breed = breed.text.toString()
 
+            val resultIntent = Intent(this, MainActivity::class.java)
             resultIntent.putExtra(BUDDY_INFO_EXTRA, BuddyInfo(name, breed, photoUrl))
             resultIntent.putExtra(EXTRA_BASETAG, baseTag)
 
@@ -58,7 +60,7 @@ class NewBuddyActivity : AppCompatActivity() {
             when(requestCode) {
                 RC_PHOTO_PICKER -> {
                     photoUrl = data.data.toString()
-                    picture.setImageURI(data.data)
+                    picture.setImageBitmap(MediaStore.Images.Media.getBitmap(contentResolver, data.data))
                 }
             }
         }
@@ -69,5 +71,11 @@ class NewBuddyActivity : AppCompatActivity() {
         if(intent != null) {
             baseTag = intent.extras.getSerializable(EXTRA_BASETAG) as BaseTag
         }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        setResult(RESULT_CANCELED)
+        finish()
     }
 }

@@ -68,7 +68,7 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
 
         profile_picture_edit_button.setOnClickListener {
             val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.type = "image/jpeg"
+            intent.type = "image/"
             intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
             startActivityForResult(Intent.createChooser(intent, "Complete action using"), RC_PHOTO_PICKER)
         }
@@ -114,19 +114,19 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
 
                         Picasso.with(this)
                                 .load(user?.photo)
-                                .error(R.mipmap.ic_launcher_round)
-                                .resize(600, 600)
+                                .error(R.drawable.no_phototn)
+                                .placeholder(R.drawable.no_phototn)
+                                .fit()
                                 .centerCrop()
                                 .into(profile_picture)
                     }
                 }
                 .cancel { Log.d(TAG, "User not found") }
                 .listen()
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_default_activity, menu)
+        menuInflater.inflate(R.menu.menu_profile_activity, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -139,8 +139,12 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onListClick(identifier: String) {
-        launchActivityWithStringExtra(BuddyProfileActivity::class, BuddyProfileActivity.EXTRA_PETID, identifier)
+    override fun onListClick(identifiers: Array<Any>) {
+        launchActivityWithExtras(
+                BuddyProfileActivity::class,
+                arrayOf(BuddyProfileActivity.EXTRA_PETID,
+                        BuddyProfileActivity.EXTRA_EDITABLE),
+                identifiers)
     }
 
     fun showFab(show: Boolean) {
@@ -153,17 +157,18 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         super.onActivityResult(requestCode, resultCode, data)
-        Log.d(TAG, "Activity result code " + requestCode)
+        Log.d(TAG, "Activity request code " + requestCode)
 
+        Log.d(TAG, "Activity result code " + resultCode + " " + Activity.RESULT_OK)
         if(resultCode == Activity.RESULT_OK) {
             when(requestCode) {
                 RC_PHOTO_PICKER -> {
                     val path = data.data
+                    Toast.makeText(this, "Uploading...", Toast.LENGTH_SHORT).show()
                     firebaseService.uploadPersonalFile(path) {
                         downloadUrl ->
                         user?.photo = downloadUrl.toString()
                         firebaseService.updateUser(user)
-                        Toast.makeText(this, "Uploading...", Toast.LENGTH_SHORT).show()
                     }
                 }
             }

@@ -122,9 +122,19 @@ fun <T : Any> Activity.launchActivity(clazz: KClass<T>) {
     startActivity(intent)
 }
 
-fun <T : Any> Activity.launchActivityWithStringExtra(clazz: KClass<T>, identifier: String, extra: String) {
+fun <T : Any> Activity.launchActivityWithExtras(clazz: KClass<T>, identifiers: Array<String>, extras: Array<Any>) {
     val intent = Intent(this, clazz.java)
-    intent.putExtra(identifier, extra)
+
+    for(extra in extras) {
+        if(extra is String) {
+            intent.putExtra(identifiers[extras.indexOf(extra)], extra)
+        } else if(extra is Int) {
+            intent.putExtra(identifiers[extras.indexOf(extra)], extra)
+        } else if(extra is Boolean) {
+            intent.putExtra(identifiers[extras.indexOf(extra)], extra)
+        }
+    }
+
     startActivity(intent)
 }
 

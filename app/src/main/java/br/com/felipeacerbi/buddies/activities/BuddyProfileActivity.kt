@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.firebase.FireListener
@@ -24,11 +25,16 @@ class BuddyProfileActivity : FireListener() {
     companion object {
         val TAG = "BuddyProfileActivity"
         val EXTRA_PETID = "extra_petid"
+        val EXTRA_EDITABLE = "extra_editable"
         val RC_PHOTO_PICKER = 1
     }
 
     val fireBuilder by lazy {
         FireBuilder()
+    }
+
+    val editViewList by lazy {
+        arrayOf(buddy_name_edit_button, buddy_breed_edit_button, picture_edit_button)
     }
 
     var buddy: Buddy? = null
@@ -50,21 +56,6 @@ class BuddyProfileActivity : FireListener() {
         with(posts_list) {
             layoutManager = LinearLayoutManager(context)
 //            adapter =
-        }
-
-        buddy_name_edit_button.setOnClickListener {
-            showEditDialog("Edit name", buddy_name.text.toString(), { buddy?.name = it })
-        }
-
-        buddy_breed_edit_button.setOnClickListener {
-            showEditDialog("Edit breed", buddy_breed.text.toString(), { buddy?.breed = it })
-        }
-
-        picture_edit_button.setOnClickListener {
-            val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.type = "image/jpeg"
-            intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
-            startActivityForResult(Intent.createChooser(intent, "Complete action using"), RC_PHOTO_PICKER)
         }
     }
 
@@ -99,8 +90,9 @@ class BuddyProfileActivity : FireListener() {
 
                         Picasso.with(this)
                                 .load(buddy?.photo)
-                                .error(R.mipmap.ic_launcher_round)
-                                .resize(600, 600)
+                                .error(R.drawable.no_phototn)
+                                .placeholder(R.drawable.no_phototn)
+                                .fit()
                                 .centerCrop()
                                 .into(picture)
                     }
@@ -110,20 +102,22 @@ class BuddyProfileActivity : FireListener() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Log.d(TAG, "Activity request code " + requestCode)
+
         if(resultCode == RESULT_OK) {
             when(requestCode) {
                 RC_PHOTO_PICKER -> {
                     val path = data.data
+                    Toast.makeText(this, "Uploading...", Toast.LENGTH_SHORT).show()
                     firebaseService.uploadPetFile(petId, path) {
                         downloadUrl ->
                         buddy?.photo = downloadUrl.toString()
                         firebaseService.updatePet(buddy, petId)
-                        Toast.makeText(this, "Uploading...", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
         }
-        super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -143,7 +137,31 @@ class BuddyProfileActivity : FireListener() {
     private fun  handleIntent(intent: Intent?) {
         if(intent != null) {
             petId = intent.extras.getString(EXTRA_PETID)
+            setEditable(intent.extras.getBoolean(EXTRA_EDITABLE))
             buddyReference = firebaseService.getPetReference(petId)
+        }
+    }
+
+    fun setEditable(isEditable: Boolean) {
+        for(view in editViewList) {
+            view.visibility = if(isEditable) View.VISIBLE else View.GONE
+        }
+
+        if(isEditable) {
+            buddy_name_edit_button.setOnClickListener {
+                showEditDialog("Edit name", buddy_name.text.toString(), { buddy?.name = it })
+            }
+
+            buddy_breed_edit_button.setOnClickListener {
+                showEditDialog("Edit breed", buddy_breed.text.toString(), { buddy?.breed = it })
+            }
+
+            picture_edit_button.setOnClickListener {
+                val intent = Intent(Intent.ACTION_GET_CONTENT)
+                intent.type = "image/"
+                intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
+                startActivityForResult(Intent.createChooser(intent, "Complete action using"), RC_PHOTO_PICKER)
+            }
         }
     }
 

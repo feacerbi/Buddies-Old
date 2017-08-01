@@ -70,9 +70,7 @@ class QRCodeActivity :
 
     override fun onBackPressed() {
         super.onBackPressed()
-        val resultIntent = Intent(this, MainActivity::class.java)
-        setResult(Activity.RESULT_CANCELED, resultIntent)
-
+        setResult(Activity.RESULT_CANCELED)
         finish()
     }
 }

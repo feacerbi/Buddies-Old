@@ -4,9 +4,6 @@ import android.support.v7.app.AppCompatActivity
 import br.com.felipeacerbi.buddies.utils.SubscriptionsManager
 import io.reactivex.disposables.CompositeDisposable
 
-/**
- * Created by felipe.acerbi on 19/07/2017.
- */
 abstract class RxBaseActivity : AppCompatActivity() {
 
     var subscriptions = CompositeDisposable()
