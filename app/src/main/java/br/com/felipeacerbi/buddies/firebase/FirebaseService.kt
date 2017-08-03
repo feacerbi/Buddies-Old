@@ -2,10 +2,7 @@ package br.com.felipeacerbi.buddies.firebase
 
 import android.net.Uri
 import android.util.Log
-import br.com.felipeacerbi.buddies.models.Buddy
-import br.com.felipeacerbi.buddies.models.BuddyInfo
-import br.com.felipeacerbi.buddies.models.Request
-import br.com.felipeacerbi.buddies.models.User
+import br.com.felipeacerbi.buddies.models.*
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -28,6 +25,7 @@ class FirebaseService : FirebaseInstanceIdService() {
         val DATABASE_PETS_PATH = "pets/"
         val DATABASE_TAGS_PATH = "tags/"
         val DATABASE_REQUESTS_PATH = "requests/"
+        val DATABASE_PLACES_PATH = "places/"
     }
 
     val firebaseAuth = FirebaseAuth.getInstance()
@@ -150,36 +148,43 @@ class FirebaseService : FirebaseInstanceIdService() {
             val petKey = getPetsReference().push().key
             val tagKey = getTagsReference().push().key
 
-            uploadPetFile(petKey, Uri.parse(buddyInfo.photo)) {
-                downloadUrl ->
-                val buddy = Buddy(buddyInfo)
-                buddy.photo = downloadUrl.toString()
+            val buddy = Buddy(buddyInfo)
 
-                baseTag.petId = petKey
-                buddy.tagId = baseTag.id
+            baseTag.petId = petKey
+            buddy.tagId = baseTag.id
 
-                (buddy.owners as HashMap).put(getCurrentUserUID(), true)
+            (buddy.owners as HashMap).put(getCurrentUserUID(), true)
 
-                val childUpdates = HashMap<String, Any?>()
-                val currentUserPath = DATABASE_USERS_PATH + getCurrentUserUID() + "/"
-                val tagPath = DATABASE_TAGS_PATH + tagKey + "/"
-                val petPath = DATABASE_PETS_PATH + petKey + "/"
+            val childUpdates = HashMap<String, Any?>()
+            val currentUserPath = DATABASE_USERS_PATH + getCurrentUserUID() + "/"
+            val tagPath = DATABASE_TAGS_PATH + tagKey + "/"
+            val petPath = DATABASE_PETS_PATH + petKey + "/"
 
-                with(childUpdates) {
-                    put(currentUserPath + User.DATABASE_OWNS_CHILD + "/" + petKey, true)
-                    put(tagPath, baseTag.toMap())
-                    put(petPath, buddy.toMap())
+            with(childUpdates) {
+                put(currentUserPath + User.DATABASE_OWNS_CHILD + "/" + petKey, true)
+                put(tagPath, baseTag.toMap())
+            }
+
+            if(buddyInfo.photo.isNotEmpty()) {
+                uploadPetFile(petKey, Uri.parse(buddyInfo.photo)) {
+                    downloadUrl ->
+                    buddy.photo = downloadUrl.toString()
+
+                    childUpdates.put(petPath, buddy.toMap())
+                    updateDB(childUpdates)
                 }
-
+            } else {
+                childUpdates.put(petPath, buddy.toMap())
                 updateDB(childUpdates)
             }
+
         } else {
             Log.d(TAG, "Error, new pet found")
         }
     }
 
     fun addPetOwnerRequest(baseTag: BaseTag) {
-        if(!baseTag.petId.isEmpty()) {
+        if(baseTag.petId.isNotEmpty()) {
             Log.d(TAG, "Adding owner pet")
 
             getPetReference(baseTag.petId).child(Buddy.DATABASE_OWNS_CHILD).addListenerForSingleValueEvent(object: ValueEventListener {
@@ -317,6 +322,28 @@ class FirebaseService : FirebaseInstanceIdService() {
         }
     }
 
+    // Places
+    fun getPlaceReference(placeId: String) = getPlacesReference().child(placeId)
+    fun getPlacesReference() = getDatabaseReference(DATABASE_PLACES_PATH)
+    fun addPlace(place: Place) {
+        Log.d(TAG, "Adding new place")
+        val placeKey = getPlacesReference().push().key
+        val childUpdates = HashMap<String, Any?>()
+
+        if(place.photo.isNotEmpty()) {
+            uploadPlaceFile(placeKey, Uri.parse(place.photo)) {
+                downloadUrl ->
+                place.photo = downloadUrl.toString()
+
+                childUpdates.put(DATABASE_PLACES_PATH + placeKey, place.toMap())
+                updateDB(childUpdates)
+            }
+        } else {
+            childUpdates.put(DATABASE_PLACES_PATH + placeKey, place.toMap())
+            updateDB(childUpdates)
+        }
+    }
+
     // Storage
     fun uploadPersonalFile(path: Uri, onSuccess: (Uri) -> Unit) {
         firebaseStoreService.getUserStorageReference(getCurrentUserUID()).child(path.lastPathSegment).putFile(path)
@@ -340,6 +367,17 @@ class FirebaseService : FirebaseInstanceIdService() {
                 }
     }
 
+    fun uploadPlaceFile(placeId: String, path: Uri, onSuccess: (Uri) -> Unit) {
+        firebaseStoreService.getPlaceStorageService(placeId).child(path.lastPathSegment).putFile(path)
+                .addOnSuccessListener {
+                    val downloadUrl = it.downloadUrl
+
+                    if(downloadUrl != null) {
+                        onSuccess(downloadUrl)
+                    }
+                }
+    }
+
     // Requests API
     fun getRequestsReference() = getDatabaseReference(DATABASE_REQUESTS_PATH)
     fun getRequestReference(requestId: String) = getRequestsReference().child(requestId)
@@ -348,4 +386,5 @@ class FirebaseService : FirebaseInstanceIdService() {
     fun queryBuddies() = getUserPetsReference(getCurrentUserUID())
     fun queryFollow() = getUserFollowReference(getCurrentUserUID())
     fun queryRequests() = getUserRequestsReference(getCurrentUserUID())
+    fun queryPlaces() = getPlacesReference()//.orderByChild(Place.DATABASE_ADDRESS_CHILD)
 }

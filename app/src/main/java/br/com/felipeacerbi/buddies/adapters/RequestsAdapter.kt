@@ -61,8 +61,9 @@ class RequestsAdapter(val context: Context, requestsReference: DatabaseReference
 
                                     Picasso.with(context)
                                             .load(user.photo)
-                                            .error(R.mipmap.ic_launcher_round)
-                                            .resize(56, 56)
+                                            .placeholder(R.drawable.no_phototn)
+                                            .error(R.drawable.no_phototn)
+                                            .fit()
                                             .centerCrop()
                                             .into(requester_picture)
                                 }

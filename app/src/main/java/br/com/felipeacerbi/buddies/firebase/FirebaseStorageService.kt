@@ -13,4 +13,7 @@ class FirebaseStorageService {
 
     fun getPetsStorageReference() = getStorageReference("pets")
     fun getPetStorageReference(petId: String) = getPetsStorageReference().child(petId)
+
+    fun getPlacesStorageReference() = getStorageReference("places")
+    fun getPlaceStorageService(placeId: String) = getPlacesStorageReference().child(placeId)
 }

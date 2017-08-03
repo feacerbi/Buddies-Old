@@ -1,9 +1,7 @@
 package br.com.felipeacerbi.buddies.activities.base
 
-import android.Manifest
 import android.content.Intent
 import android.nfc.NfcAdapter
-import android.support.design.widget.FloatingActionButton
 import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.widget.Toast
@@ -62,10 +60,6 @@ abstract class TagHandlerActivity : FireListener() {
         }
     }
 
-    fun fabAction() {
-        permissionsManager.launchWithPermission(Manifest.permission.CAMERA) { launchActivity(QRCodeActivity::class) }
-    }
-
     fun isNFCIntent(intent: Intent?): Boolean {
         return intent != null && intent.action == NfcAdapter.ACTION_NDEF_DISCOVERED
     }
@@ -117,9 +111,5 @@ abstract class TagHandlerActivity : FireListener() {
         val newPetActivityIntent = Intent(this, NewBuddyActivity::class.java)
         newPetActivityIntent.putExtra(NewBuddyActivity.EXTRA_BASETAG, baseTag)
         startActivityForResult(newPetActivityIntent, NEW_PET_RESULT)
-    }
-
-    fun setUpFab(fab: FloatingActionButton) {
-        fab.setOnClickListener { fabAction() }
     }
 }

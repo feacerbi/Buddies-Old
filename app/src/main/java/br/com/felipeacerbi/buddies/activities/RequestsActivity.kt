@@ -6,7 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
-import br.com.felipeacerbi.buddies.fragments.RequestListFragment
+import br.com.felipeacerbi.buddies.fragments.RequestsListFragment
 import br.com.felipeacerbi.buddies.utils.launchActivity
 import br.com.felipeacerbi.buddies.utils.makeQueryBundle
 import br.com.felipeacerbi.buddies.utils.transact
@@ -22,7 +22,7 @@ class RequestsActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        RequestListFragment().transact(
+        RequestsListFragment().transact(
                 this,
                 container.id,
                 Bundle().makeQueryBundle(this, firebaseService.queryRequests())

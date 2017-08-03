@@ -2,7 +2,6 @@ package br.com.felipeacerbi.buddies.activities
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.provider.MediaStore
 import android.support.v7.app.AppCompatActivity
@@ -20,7 +19,7 @@ class NewBuddyActivity : AppCompatActivity() {
     }
 
     var baseTag: BaseTag? = null
-    var photoUrl: String = "http://lorempixel.com/600/600/animals/"
+    var photoUrl: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

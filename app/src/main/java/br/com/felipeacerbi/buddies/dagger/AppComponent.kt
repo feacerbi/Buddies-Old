@@ -1,7 +1,7 @@
 package br.com.felipeacerbi.buddies.dagger
 
 import br.com.felipeacerbi.buddies.activities.MainActivity
-import br.com.felipeacerbi.buddies.fragments.FirebaseListFragment
+import br.com.felipeacerbi.buddies.fragments.PetsListFragment
 import dagger.Component
 import javax.inject.Singleton
 
@@ -13,5 +13,5 @@ import javax.inject.Singleton
 
 interface AppComponent {
     fun inject(mainActivity: MainActivity)
-    fun inject(fragment: FirebaseListFragment)
+    fun inject(fragment: PetsListFragment)
 }

@@ -12,7 +12,8 @@ import android.view.MenuItem
 import br.com.felipeacerbi.buddies.BuildConfig
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.base.TagHandlerActivity
-import br.com.felipeacerbi.buddies.fragments.FirebaseListFragment
+import br.com.felipeacerbi.buddies.fragments.PetsListFragment
+import br.com.felipeacerbi.buddies.fragments.PlacesListFragment
 import br.com.felipeacerbi.buddies.models.User
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
 import br.com.felipeacerbi.buddies.utils.launchActivity
@@ -29,7 +30,13 @@ class MainActivity : TagHandlerActivity() {
         val TAG = "MainActivity"
         val RC_SIGN_IN = 1
         val CREATE_PROFILE = 2
+
+        val FRAGMENT_POSTS = R.id.navigation_home
+        val FRAGMENT_FOLLOWS = R.id.navigation_following
+        val FRAGMENT_PLACES = R.id.navigation_places
     }
+
+    var currentFragment = FRAGMENT_POSTS
 
     val authUI by lazy {
         AuthUI.getInstance()
@@ -92,6 +99,7 @@ class MainActivity : TagHandlerActivity() {
     override fun onResume() {
         super.onResume()
         firebaseAuth.addAuthStateListener(firebaseAuthStateListener)
+        navigation.selectedItemId = currentFragment
     }
 
     override fun onPause() {
@@ -101,26 +109,30 @@ class MainActivity : TagHandlerActivity() {
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
-            R.id.navigation_home -> {
+            FRAGMENT_POSTS -> {
 //                transactToFragment(
-//                        FirebaseListFragment(),
+//                        PetsListFragment(),
 //                        container.id,
 //                        makeQueryBundle(firebaseService.queryFollow()))
+                currentFragment = FRAGMENT_POSTS
                 return@OnNavigationItemSelectedListener true
             }
-            R.id.navigation_following -> {
-                FirebaseListFragment().transact(
+            FRAGMENT_FOLLOWS -> {
+                PetsListFragment().transact(
                         this,
                         container.id,
                         Bundle().makeQueryBundle(this, firebaseService.queryFollow())
                 )
+                currentFragment = FRAGMENT_FOLLOWS
                 return@OnNavigationItemSelectedListener true
             }
-            R.id.navigation_places -> {
-//                transactToFragment(
-//                        RequestListFragment(),
-//                        container.id,
-//                        makeQueryBundle(firebaseService.queryRequests()))
+            FRAGMENT_PLACES -> {
+                PlacesListFragment().transact(
+                        this,
+                        container.id,
+                        Bundle().makeQueryBundle(this, firebaseService.queryPlaces())
+                )
+                currentFragment = FRAGMENT_PLACES
                 return@OnNavigationItemSelectedListener true
             }
         }
@@ -130,13 +142,6 @@ class MainActivity : TagHandlerActivity() {
     fun setUpUI() {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         supportActionBar?.title = resources.getString(R.string.app_name)
-        setUpFab(fab)
-
-        FirebaseListFragment().transact(
-                this,
-                container.id,
-                Bundle().makeQueryBundle(this, firebaseService.queryFollow())
-        )
 
         if(!sharedPreferences.contains(SettingsActivity.QR_CODE_BUTTON_SHORTCUT_KEY)) {
             sharedPreferences.edit()
@@ -197,7 +202,7 @@ class MainActivity : TagHandlerActivity() {
     override fun onDestroy() {
         super.onDestroy()
         supportFragmentManager.fragments?.forEach {
-            if(it is FirebaseListFragment) {
+            if(it is PetsListFragment) {
                 it.cleanUp()
             }
         }

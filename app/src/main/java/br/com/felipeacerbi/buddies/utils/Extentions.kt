@@ -14,7 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import br.com.felipeacerbi.buddies.R
-import br.com.felipeacerbi.buddies.fragments.FirebaseListFragment
+import br.com.felipeacerbi.buddies.fragments.PetsListFragment
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.google.firebase.database.Query
 import java.util.*
@@ -87,10 +87,11 @@ fun AlertDialog.Builder.showInputDialog(
     show()
 }
 
-fun FloatingActionButton.setUp(context: Context, show: Boolean, resource: Int) {
+fun FloatingActionButton.setUp(context: Context, show: Boolean, resource: Int, action: () -> Unit) {
     if(show) {
         visibility = View.VISIBLE
         setImageDrawable(resources.getDrawable(resource, context.theme))
+        setOnClickListener { action() }
     } else {
         visibility = View.GONE
     }
@@ -104,7 +105,7 @@ fun RecyclerView.getFirebaseAdapter(): FirebaseRecyclerAdapter<*, *>? {
 }
 
 fun Bundle.makeQueryBundle(context: Context, query: Query): Bundle {
-    putString(FirebaseListFragment.DATABASE_REFERENCE, query.toString().removePrefix(context.getString(R.string.firebase_query_prefix)))
+    putString(PetsListFragment.DATABASE_REFERENCE, query.toString().removePrefix(context.getString(R.string.firebase_query_prefix)))
     return this
 }
 

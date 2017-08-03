@@ -1,7 +1,7 @@
 package br.com.felipeacerbi.buddies.fragments
 
+import android.Manifest
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
@@ -12,13 +12,12 @@ import android.view.ViewGroup
 import android.widget.RelativeLayout
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.BuddyProfileActivity
+import br.com.felipeacerbi.buddies.activities.QRCodeActivity
 import br.com.felipeacerbi.buddies.activities.SettingsActivity
 import br.com.felipeacerbi.buddies.adapters.BuddiesAdapter
 import br.com.felipeacerbi.buddies.adapters.listeners.IListClickListener
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
-import br.com.felipeacerbi.buddies.utils.getFirebaseAdapter
-import br.com.felipeacerbi.buddies.utils.launchActivityWithExtras
-import br.com.felipeacerbi.buddies.utils.setUp
+import br.com.felipeacerbi.buddies.utils.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.buddies_list.*
 import kotlinx.android.synthetic.main.buddies_list.view.*
@@ -32,9 +31,13 @@ import kotlinx.android.synthetic.main.buddies_list.view.*
  * Mandatory empty constructor for the fragment manager to instantiate the
  * fragment (e.g. upon screen orientation changes).
  */
-open class FirebaseListFragment : Fragment(), IListClickListener {
+open class PetsListFragment : Fragment(), IListClickListener {
 
     val firebaseService = FirebaseService()
+
+    val permissionsManager: PermissionsManager by lazy {
+        PermissionsManager(activity)
+    }
 
     val sharedPreferences by lazy {
         PreferenceManager.getDefaultSharedPreferences(activity)
@@ -45,7 +48,7 @@ open class FirebaseListFragment : Fragment(), IListClickListener {
     }
 
     companion object {
-        val TAG = "FirebaseListFragment"
+        val TAG = "PetsListFragment"
         val DATABASE_REFERENCE = "database_reference"
     }
 
@@ -58,15 +61,11 @@ open class FirebaseListFragment : Fragment(), IListClickListener {
         if(view is RelativeLayout) {
             with(view) {
                 list.layoutManager = LinearLayoutManager(context)
-                list.adapter = BuddiesAdapter(this@FirebaseListFragment, ref, progress)
+                list.adapter = BuddiesAdapter(this@PetsListFragment, ref, progress)
             }
         }
 
         return view
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onListClick(identifiers: Array<Any>) {
@@ -87,8 +86,10 @@ open class FirebaseListFragment : Fragment(), IListClickListener {
         setUpFab(sharedPreferences.getBoolean(SettingsActivity.QR_CODE_BUTTON_SHORTCUT_KEY, false))
     }
 
-    fun setUpFab(show: Boolean) {
-        activity.fab?.setUp(activity, show, R.drawable.ic_camera_alt_white_24dp)
+    open fun setUpFab(show: Boolean) {
+        activity.fab?.setUp(activity, show, R.drawable.ic_camera_alt_white_24dp) {
+            permissionsManager.launchWithPermission(Manifest.permission.CAMERA) { activity.launchActivity(QRCodeActivity::class) }
+        }
     }
 
     fun cleanUp() {

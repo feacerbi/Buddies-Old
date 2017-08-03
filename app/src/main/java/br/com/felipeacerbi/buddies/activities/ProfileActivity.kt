@@ -1,5 +1,6 @@
 package br.com.felipeacerbi.buddies.activities
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -50,7 +51,6 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
 
     fun setUpUI() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        setUpFab(fab)
 
         // Set the adapter
         with(buddies_list) {
@@ -148,7 +148,9 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
     }
 
     fun showFab(show: Boolean) {
-        fab?.setUp(this, show, R.drawable.ic_camera_alt_white_24dp)
+        fab?.setUp(this, show, R.drawable.ic_camera_alt_white_24dp) {
+            permissionsManager.launchWithPermission(Manifest.permission.CAMERA) { launchActivity(QRCodeActivity::class) }
+        }
     }
 
     override fun getContext(): Context {

@@ -8,16 +8,18 @@ data class Place(
         var photo: String = "",
         var description: String = "",
         var category: String = "",
+        var rating: Int = 0,
         var items: Map<String, Boolean> = HashMap()) {
 
-        companion object {
-            val DATABASE_NAME_CHILD = "name"
-            val DATABASE_ADDRESS_CHILD = "address"
-            val DATABASE_PHOTO_CHILD = "photo"
-            val DATABASE_DESCRIPTION_CHILD = "description"
-            val DATABASE_CATEGORY_CHILD = "category"
-            val DATABASE_ITEMS_CHILD = "items"
-        }
+    companion object {
+        val DATABASE_NAME_CHILD = "name"
+        val DATABASE_ADDRESS_CHILD = "address"
+        val DATABASE_PHOTO_CHILD = "photo"
+        val DATABASE_DESCRIPTION_CHILD = "description"
+        val DATABASE_CATEGORY_CHILD = "category"
+        val DATABASE_RATING_CHILD = "rating"
+        val DATABASE_ITEMS_CHILD = "items"
+    }
 
     constructor(dataSnapshot: DataSnapshot): this() {
         fromMap(dataSnapshot)
@@ -28,6 +30,7 @@ data class Place(
         address = dataSnapshot.child(DATABASE_ADDRESS_CHILD) as String
         photo = dataSnapshot.child(DATABASE_PHOTO_CHILD) as String
         description = dataSnapshot.child(DATABASE_DESCRIPTION_CHILD) as String
+        rating = dataSnapshot.child(DATABASE_RATING_CHILD) as Int
         category = dataSnapshot.child(DATABASE_CATEGORY_CHILD) as String
 
         items = dataSnapshot.child(DATABASE_ITEMS_CHILD) as Map<String, Boolean>
@@ -39,5 +42,6 @@ data class Place(
             Pair(DATABASE_PHOTO_CHILD, photo),
             Pair(DATABASE_DESCRIPTION_CHILD, description),
             Pair(DATABASE_CATEGORY_CHILD, category),
+            Pair(DATABASE_RATING_CHILD, rating),
             Pair(DATABASE_ITEMS_CHILD, items))
 }

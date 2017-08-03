@@ -19,7 +19,7 @@ import kotlinx.android.synthetic.main.requests_list.view.*
  * Mandatory empty constructor for the fragment manager to instantiate the
  * fragment (e.g. upon screen orientation changes).
  */
-open class RequestListFragment : FirebaseListFragment() {
+open class RequestsListFragment : PetsListFragment() {
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
