@@ -139,7 +139,7 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onListClick(identifiers: Array<Any>) {
+    override fun onListClick(identifiers: Array<Any>?) {
         launchActivityWithExtras(
                 BuddyProfileActivity::class,
                 arrayOf(BuddyProfileActivity.EXTRA_PETID,

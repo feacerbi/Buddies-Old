@@ -5,15 +5,12 @@ import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.firebase.FireListener
 import br.com.felipeacerbi.buddies.models.Buddy
 import br.com.felipeacerbi.buddies.utils.getFirebaseAdapter
-import br.com.felipeacerbi.buddies.utils.launchActivity
 import br.com.felipeacerbi.buddies.utils.showInputDialog
 import com.google.firebase.database.DatabaseReference
 import com.squareup.picasso.Picasso
@@ -120,19 +117,18 @@ class BuddyProfileActivity : FireListener() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_default_activity, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when(item?.itemId) {
-            android.R.id.home -> finish()
-            R.id.action_settings -> launchActivity(SettingsActivity::class)
-            R.id.action_requests -> launchActivity(RequestsActivity::class)
-        }
-        return super.onOptionsItemSelected(item)
-    }
+//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+//        menuInflater.inflate(R.menu.menu_default_activity, menu)
+//        return super.onCreateOptionsMenu(menu)
+//    }
+//
+//    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+//        when(item?.itemId) {
+//            android.R.id.home -> finish()
+//            R.id.action_settings -> launchActivity(SettingsActivity::class)
+//        }
+//        return super.onOptionsItemSelected(item)
+//    }
 
     private fun  handleIntent(intent: Intent?) {
         if(intent != null) {

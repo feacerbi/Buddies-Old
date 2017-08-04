@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.preference.PreferenceActivity
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.Menu
 import android.view.MenuItem
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.fragments.SettingsFragment
@@ -42,11 +41,6 @@ class SettingsActivity : AppCompatActivity() {
     private fun setupActionBar() {
         Log.d("Settings", "actionBar null: " + (actionBar == null).toString())
         actionBar?.setDisplayHomeAsUpEnabled(true)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_default_activity, menu)
-        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {

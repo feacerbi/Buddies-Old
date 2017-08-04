@@ -68,7 +68,7 @@ open class PetsListFragment : Fragment(), IListClickListener {
         return view
     }
 
-    override fun onListClick(identifiers: Array<Any>) {
+    override fun onListClick(identifiers: Array<Any>?) {
         activity.launchActivityWithExtras(
                 BuddyProfileActivity::class,
                 arrayOf(BuddyProfileActivity.EXTRA_PETID,

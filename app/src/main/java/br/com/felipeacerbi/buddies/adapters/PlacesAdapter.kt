@@ -46,6 +46,8 @@ class PlacesAdapter(val listener: IListClickListener, val placesReference: Datab
                             .centerCrop()
                             .into(place_photo)
                 }
+
+                setOnClickListener { listener.onListClick(null) }
             }
         }
     }
