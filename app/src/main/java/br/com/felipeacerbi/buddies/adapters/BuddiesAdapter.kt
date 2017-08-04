@@ -35,7 +35,7 @@ class BuddiesAdapter(val listener: IListClickListener, val petsReference: Databa
     override fun populateViewHolder(holder: BuddyViewHolder?, item: Boolean?, position: Int) {
         val petId = getRef(position).key
 
-        firebaseService.getPetReference(petId).addValueEventListener(object: ValueEventListener {
+        firebaseService.getPetReference(petId).addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onCancelled(p0: DatabaseError?) {
                 Log.d(TAG, "Fail to retrieve pet")
             }
@@ -64,8 +64,6 @@ class BuddiesAdapter(val listener: IListClickListener, val petsReference: Databa
                         remove_button.setOnClickListener { firebaseService.removePetFromUser(petsReference.key, petId) }
                         click_profile_layout.setOnClickListener { listener.onListClick(arrayOf(petId, editable)) }
                     }
-                } else {
-                    firebaseService.removePetFromUser(petsReference.key, petId)
                 }
             }
         })

@@ -177,6 +177,8 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
         }
     }
 
+    override fun getViewInflater() = layoutInflater
+
     override fun onDestroy() {
         super.onDestroy()
         buddies_list.getFirebaseAdapter()?.cleanup()

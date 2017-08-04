@@ -12,11 +12,11 @@
         android:icon="@drawable/ic_notifications_white_24dp"
         app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/action_sign_out"
-        android:title="@string/action_title_sign_out"
-        app:showAsAction="never"/>
-
     <item android:id="@+id/action_settings"
         android:title="@string/action_title_settings"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/action_sign_out"
+        android:title="@string/action_title_sign_out"
         app:showAsAction="never"/>
 </menu>

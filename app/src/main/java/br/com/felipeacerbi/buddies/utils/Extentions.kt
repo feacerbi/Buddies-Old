@@ -89,11 +89,11 @@ fun AlertDialog.Builder.showInputDialog(
 
 fun FloatingActionButton.setUp(context: Context, show: Boolean, resource: Int, action: () -> Unit) {
     if(show) {
-        visibility = View.VISIBLE
+        show()
         setImageDrawable(resources.getDrawable(resource, context.theme))
         setOnClickListener { action() }
     } else {
-        visibility = View.GONE
+        hide()
     }
 }
 

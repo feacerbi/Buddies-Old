@@ -41,11 +41,11 @@
         <activity
             android:name=".activities.NewBuddyActivity"
             android:label="@string/title_activity_newpet"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".activities.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
         <activity android:name=".activities.QRCodeActivity" />
         <activity
             android:name=".activities.ProfileActivity"
@@ -59,7 +59,7 @@
         <activity
             android:name=".activities.RequestsActivity"
             android:label="@string/title_activity_requests"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".activities.BuddyProfileActivity"
             android:label="@string/activity_title_buddy_profile"
@@ -67,7 +67,7 @@
         <activity
             android:name=".activities.PlaceActivity"
             android:label="@string/title_activity_place"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

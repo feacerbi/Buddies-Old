@@ -20,52 +20,18 @@
         android:id="@+id/place_meter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:progress="65"
         style="@android:style/Widget.Material.ProgressBar.Horizontal"
         app:layout_constraintBottom_toBottomOf="@id/place_photo" />
 
-    <TextView
-        android:id="@+id/item1"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/friendly_items_bottom"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:textSize="14sp"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
-        android:background="@color/colorAccent"
-        android:alpha="0.75"
-        android:text="Snacks"
-        android:padding="4dp"
-        app:layout_constraintBottom_toTopOf="@id/place_meter"/>
-
-    <TextView
-        android:id="@+id/item2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:textSize="14sp"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
-        android:background="@color/colorAccent"
-        android:alpha="0.75"
-        android:text="Water"
-        android:padding="4dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="@id/place_photo"
         app:layout_constraintBottom_toTopOf="@id/place_meter"
-        app:layout_constraintStart_toEndOf="@id/item1"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:textSize="14sp"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
-        android:background="@color/colorAccent"
-        android:alpha="0.75"
-        android:text="Reserved place"
-        android:padding="4dp"
-        app:layout_constraintBottom_toTopOf="@id/place_meter"
-        app:layout_constraintStart_toEndOf="@id/item2"/>
+        app:layout_constraintEnd_toEndOf="@id/place_photo">
+    </LinearLayout>
 
     <TextView
         android:id="@+id/place_name"

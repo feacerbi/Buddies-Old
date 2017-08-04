@@ -34,7 +34,15 @@
                 app:layout_collapseMode="parallax"/>
 
             <TextView
-                android:id="@+id/scrim"
+                android:id="@+id/scrim_top"
+                android:layout_gravity="top"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@drawable/shape_scrim">
+            </TextView>
+
+            <TextView
+                android:id="@+id/scrim_bottom"
                 android:layout_gravity="bottom"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"

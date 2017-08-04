@@ -95,4 +95,6 @@ open class PetsListFragment : Fragment(), IListClickListener {
     fun cleanUp() {
         list?.getFirebaseAdapter()?.cleanup()
     }
+
+    override fun getViewInflater() = activity.layoutInflater
 }

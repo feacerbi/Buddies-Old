@@ -32,61 +32,13 @@
                     android:layout_marginBottom="8dp"
                     android:textStyle="bold"
                     android:textSize="18sp"
-                    android:text="Friendly Items"/>
-                <RelativeLayout
+                    android:text="@string/friendly_items_title"/>
+                <LinearLayout
+                    android:id="@+id/friendly_items"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
-                    <ImageView
-                        android:id="@+id/snacks_icon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:alpha="0.7"
-                        android:src="@drawable/ic_local_dining_black_24dp"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_toEndOf="@id/snacks_icon"
-                        android:layout_alignTop="@id/snacks_icon"
-                        android:layout_alignBottom="@id/snacks_icon"
-                        android:gravity="center_vertical"
-                        android:textSize="16sp"
-                        android:text="Snacks"/>
-                    <ImageView
-                        android:id="@+id/water_icon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/snacks_icon"
-                        android:alpha="0.7"
-                        android:src="@drawable/ic_local_drink_black_24dp"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_toEndOf="@id/water_icon"
-                        android:layout_alignTop="@id/water_icon"
-                        android:layout_alignBottom="@id/water_icon"
-                        android:gravity="center_vertical"
-                        android:textSize="16sp"
-                        android:text="Water"/>
-                    <ImageView
-                        android:id="@+id/reserved_place_icon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/water_icon"
-                        android:alpha="0.7"
-                        android:src="@drawable/ic_home_black_24dp"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_toEndOf="@id/reserved_place_icon"
-                        android:layout_alignTop="@id/reserved_place_icon"
-                        android:layout_alignBottom="@id/reserved_place_icon"
-                        android:gravity="center_vertical"
-                        android:textSize="16sp"
-                        android:text="Reserved place"/>
-                </RelativeLayout>
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                </LinearLayout>
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -97,15 +49,14 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:text="8.5"/>
+                        android:layout_centerVertical="true"/>
                     <ProgressBar
+                        android:id="@+id/progress"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_toStartOf="@id/progress_number"
                         android:layout_alignTop="@id/progress_number"
                         android:layout_marginEnd="8dp"
-                        android:progress="85"
                         style="@android:style/Widget.Material.ProgressBar.Horizontal" />
                 </RelativeLayout>
             </LinearLayout>
@@ -173,6 +124,7 @@
                     android:textSize="18sp"
                     android:text="Description"/>
                 <TextView
+                    android:id="@+id/place_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="A good place to have a burger."/>

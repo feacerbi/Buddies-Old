@@ -26,6 +26,7 @@ class FirebaseService : FirebaseInstanceIdService() {
         val DATABASE_TAGS_PATH = "tags/"
         val DATABASE_REQUESTS_PATH = "requests/"
         val DATABASE_PLACES_PATH = "places/"
+        val DATABASE_FITEMS_PATH = "fitems/"
     }
 
     val firebaseAuth = FirebaseAuth.getInstance()
@@ -330,6 +331,21 @@ class FirebaseService : FirebaseInstanceIdService() {
         val placeKey = getPlacesReference().push().key
         val childUpdates = HashMap<String, Any?>()
 
+        val itemKey1 = getFriendlyItemsReference().push().key
+        val itemKey2 = getFriendlyItemsReference().push().key
+        val itemKey3 = getFriendlyItemsReference().push().key
+
+        with(childUpdates) {
+            put(DATABASE_FITEMS_PATH + itemKey1, FriendlyItem("Snacks", "Description", FriendlyItem.TYPE_FOOD).toMap())
+            put(DATABASE_FITEMS_PATH + itemKey2, FriendlyItem("Water", "Description", FriendlyItem.TYPE_WATER).toMap())
+            put(DATABASE_FITEMS_PATH + itemKey3, FriendlyItem("Reserved Place", "Description", FriendlyItem.TYPE_PLACE).toMap())
+        }
+
+        place.items = mapOf(
+                Pair(itemKey1, true),
+                Pair(itemKey2, true),
+                Pair(itemKey3, true))
+
         if(place.photo.isNotEmpty()) {
             uploadPlaceFile(placeKey, Uri.parse(place.photo)) {
                 downloadUrl ->
@@ -343,6 +359,11 @@ class FirebaseService : FirebaseInstanceIdService() {
             updateDB(childUpdates)
         }
     }
+
+    // Friendly Items
+    fun getFriendlyItemsReference() = getDatabaseReference(DATABASE_FITEMS_PATH)
+    fun getFriendlyItemReference(fitemId: String) = getFriendlyItemsReference().child(fitemId)
+    fun getPlaceFriendlyItemsReference(placeId: String) = getPlaceReference(placeId).child(Place.DATABASE_ITEMS_CHILD)
 
     // Storage
     fun uploadPersonalFile(path: Uri, onSuccess: (Uri) -> Unit) {

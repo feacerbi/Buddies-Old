@@ -8,7 +8,6 @@ data class Place(
         var photo: String = "",
         var description: String = "",
         var category: String = "",
-        var rating: Int = 0,
         var items: Map<String, Boolean> = HashMap()) {
 
     companion object {
@@ -17,7 +16,6 @@ data class Place(
         val DATABASE_PHOTO_CHILD = "photo"
         val DATABASE_DESCRIPTION_CHILD = "description"
         val DATABASE_CATEGORY_CHILD = "category"
-        val DATABASE_RATING_CHILD = "rating"
         val DATABASE_ITEMS_CHILD = "items"
     }
 
@@ -26,14 +24,13 @@ data class Place(
     }
 
     private fun fromMap(dataSnapshot: DataSnapshot) {
-        name = dataSnapshot.child(DATABASE_NAME_CHILD) as String
-        address = dataSnapshot.child(DATABASE_ADDRESS_CHILD) as String
-        photo = dataSnapshot.child(DATABASE_PHOTO_CHILD) as String
-        description = dataSnapshot.child(DATABASE_DESCRIPTION_CHILD) as String
-        rating = dataSnapshot.child(DATABASE_RATING_CHILD) as Int
-        category = dataSnapshot.child(DATABASE_CATEGORY_CHILD) as String
+        name = dataSnapshot.child(DATABASE_NAME_CHILD).value as String
+        address = dataSnapshot.child(DATABASE_ADDRESS_CHILD).value as String
+        photo = dataSnapshot.child(DATABASE_PHOTO_CHILD).value as String
+        description = dataSnapshot.child(DATABASE_DESCRIPTION_CHILD).value as String
+        category = dataSnapshot.child(DATABASE_CATEGORY_CHILD).value as String
 
-        items = dataSnapshot.child(DATABASE_ITEMS_CHILD) as Map<String, Boolean>
+        items = dataSnapshot.child(DATABASE_ITEMS_CHILD).value as Map<String, Boolean>
     }
 
     fun toMap() = mapOf(
@@ -42,6 +39,9 @@ data class Place(
             Pair(DATABASE_PHOTO_CHILD, photo),
             Pair(DATABASE_DESCRIPTION_CHILD, description),
             Pair(DATABASE_CATEGORY_CHILD, category),
-            Pair(DATABASE_RATING_CHILD, rating),
             Pair(DATABASE_ITEMS_CHILD, items))
+
+    fun calcRating() = (items.size.toFloat() / 5 * 100).toInt()
+
+    fun getRatingGrade() = (items.size.toFloat() / 5 * 10).toInt().toString()
 }

@@ -12,7 +12,7 @@ import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.PlaceActivity
 import br.com.felipeacerbi.buddies.adapters.PlacesAdapter
 import br.com.felipeacerbi.buddies.models.Place
-import br.com.felipeacerbi.buddies.utils.launchActivity
+import br.com.felipeacerbi.buddies.utils.launchActivityWithExtras
 import br.com.felipeacerbi.buddies.utils.setUp
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.places_list.view.*
@@ -78,14 +78,16 @@ open class PlacesListFragment : PetsListFragment() {
                     "Rua Wisard, 342",
                     "",
                     "Nice bakery.",
-                    "Bakery",
-                    75
+                    "Bakery"
             )
             firebaseService.addPlace(place)
         }
     }
 
     override fun onListClick(identifiers: Array<Any>?) {
-        activity.launchActivity(PlaceActivity::class)
+        activity.launchActivityWithExtras(
+                PlaceActivity::class,
+                arrayOf(PlaceActivity.EXTRA_PLACEID),
+                identifiers)
     }
 }

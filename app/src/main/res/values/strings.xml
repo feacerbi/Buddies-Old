@@ -46,4 +46,6 @@
     <string name="request_description">requested to be owner of </string>
     <string name="decline_button_text">Decline</string>
     <string name="accept_button_text">Accept</string>
+    <string name="title_activity_place">Place</string>
+    <string name="friendly_items_title">Friendly Items</string>
 </resources>
