@@ -43,8 +43,6 @@ class PlaceActivity : FireListener() {
         setUpUI()
 
         handleIntent(intent)
-
-
     }
 
     override fun onResume() {
@@ -60,9 +58,18 @@ class PlaceActivity : FireListener() {
                         place_description.text = place?.description
                         progress.progress = place?.calcRating() ?: 0
                         progress_number.text = place?.getRatingGrade()
+                        phone_text.text = place?.phone
+                        website_text.text = place?.website
 
                         maps_button.setOnClickListener {
                             openMapAddress(place?.address)
+                        }
+                        phone_button.setOnClickListener {
+                            openCall(place?.phone)
+                        }
+                        website_button.setOnClickListener {
+                            Log.d(TAG, "Opening")
+                            openWebsite(place?.website)
                         }
 
                         fireBuilder.onRef(firebaseService.getPlaceFriendlyItemsReference(it.key))
@@ -124,6 +131,23 @@ class PlaceActivity : FireListener() {
         val intent = Intent(Intent.ACTION_VIEW)
         intent.data = Uri.parse("geo:0,0?q=" + address)
         if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent)
+        }
+    }
+
+    fun openCall(number: String?) {
+        val intent = Intent(Intent.ACTION_DIAL)
+        intent.data = Uri.parse("tel:" + number)
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent)
+        }
+    }
+
+    fun openWebsite(website: String?) {
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = Uri.parse("http://" + website)
+        if (intent.resolveActivity(packageManager) != null) {
+            Log.d(TAG, "Starting")
             startActivity(intent)
         }
     }

@@ -48,4 +48,7 @@
     <string name="accept_button_text">Accept</string>
     <string name="title_activity_place">Place</string>
     <string name="friendly_items_title">Friendly Items</string>
+    <string name="place_description_title">Description</string>
+    <string name="place_address_title">Address</string>
+    <string name="place_phone_title">Phone</string>
 </resources>

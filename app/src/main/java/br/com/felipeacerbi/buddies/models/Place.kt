@@ -6,6 +6,8 @@ data class Place(
         var name: String = "",
         var address: String = "",
         var photo: String = "",
+        var phone: String = "",
+        var website: String = "",
         var description: String = "",
         var category: String = "",
         var items: Map<String, Boolean> = HashMap()) {
@@ -14,6 +16,8 @@ data class Place(
         val DATABASE_NAME_CHILD = "name"
         val DATABASE_ADDRESS_CHILD = "address"
         val DATABASE_PHOTO_CHILD = "photo"
+        val DATABASE_PHONE_CHILD = "phone"
+        val DATABASE_WEBSITE_CHILD = "website"
         val DATABASE_DESCRIPTION_CHILD = "description"
         val DATABASE_CATEGORY_CHILD = "category"
         val DATABASE_ITEMS_CHILD = "items"
@@ -27,6 +31,8 @@ data class Place(
         name = dataSnapshot.child(DATABASE_NAME_CHILD).value as String
         address = dataSnapshot.child(DATABASE_ADDRESS_CHILD).value as String
         photo = dataSnapshot.child(DATABASE_PHOTO_CHILD).value as String
+        phone = dataSnapshot.child(DATABASE_PHONE_CHILD).value as String
+        website = dataSnapshot.child(DATABASE_WEBSITE_CHILD).value as String
         description = dataSnapshot.child(DATABASE_DESCRIPTION_CHILD).value as String
         category = dataSnapshot.child(DATABASE_CATEGORY_CHILD).value as String
 
@@ -37,6 +43,8 @@ data class Place(
             Pair(DATABASE_NAME_CHILD, name),
             Pair(DATABASE_ADDRESS_CHILD, address),
             Pair(DATABASE_PHOTO_CHILD, photo),
+            Pair(DATABASE_PHONE_CHILD, phone),
+            Pair(DATABASE_WEBSITE_CHILD, website),
             Pair(DATABASE_DESCRIPTION_CHILD, description),
             Pair(DATABASE_CATEGORY_CHILD, category),
             Pair(DATABASE_ITEMS_CHILD, items))
