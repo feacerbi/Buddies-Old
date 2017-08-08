@@ -54,12 +54,12 @@ class NewBuddyActivity : AppCompatActivity() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if(resultCode == Activity.RESULT_OK) {
             when(requestCode) {
                 RC_PHOTO_PICKER -> {
-                    photoUrl = data.data.toString()
-                    picture.setImageBitmap(MediaStore.Images.Media.getBitmap(contentResolver, data.data))
+                    photoUrl = data?.data.toString()
+                    picture.setImageBitmap(MediaStore.Images.Media.getBitmap(contentResolver, data?.data))
                 }
             }
         }

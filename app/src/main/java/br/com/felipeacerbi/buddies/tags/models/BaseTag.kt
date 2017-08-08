@@ -3,9 +3,6 @@ package br.com.felipeacerbi.buddies.tags.models
 import com.google.firebase.database.DataSnapshot
 import java.io.Serializable
 
-/**
- * Created by felipe.acerbi on 05/07/2017.
- */
 open class BaseTag(
         var id: String = "",
         var petId: String = "") : Serializable {

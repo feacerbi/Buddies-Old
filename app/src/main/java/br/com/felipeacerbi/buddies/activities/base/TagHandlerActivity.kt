@@ -64,18 +64,18 @@ abstract class TagHandlerActivity : FireListener() {
         return intent != null && intent.action == NfcAdapter.ACTION_NDEF_DISCOVERED
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if(resultCode == RESULT_OK) {
             when(requestCode) {
                 NEW_PET_RESULT -> {
-                    val buddyInfo = data.extras.getSerializable(NewBuddyActivity.BUDDY_INFO_EXTRA) as BuddyInfo
+                    val buddyInfo = data?.extras?.getSerializable(NewBuddyActivity.BUDDY_INFO_EXTRA) as BuddyInfo
                     val baseTag = data.extras.getSerializable(NewBuddyActivity.EXTRA_BASETAG) as BaseTag
                     firebaseService.addNewPet(baseTag, buddyInfo)
                     launchActivity(ProfileActivity::class)
                 }
-                QR_CODE_RESULT -> { showTagOptionsDialog(BaseTag(data.extras.getString(QRCodeActivity.QR_CODE_TEXT))) }
+                QR_CODE_RESULT -> { showTagOptionsDialog(BaseTag(data?.extras?.getString(QRCodeActivity.QR_CODE_TEXT) ?: "")) }
             }
         }
     }

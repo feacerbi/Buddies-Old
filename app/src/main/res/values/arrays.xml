@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="places_categories">
+        <item>Bar</item>
+        <item>Store</item>
+        <item>Bakery</item>
+        <item>Restaurant</item>
+    </string-array>
+</resources>

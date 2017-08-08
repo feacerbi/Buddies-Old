@@ -331,20 +331,20 @@ class FirebaseService : FirebaseInstanceIdService() {
         val placeKey = getPlacesReference().push().key
         val childUpdates = HashMap<String, Any?>()
 
-        val itemKey1 = getFriendlyItemsReference().push().key
-        val itemKey2 = getFriendlyItemsReference().push().key
-        val itemKey3 = getFriendlyItemsReference().push().key
-
-        with(childUpdates) {
-            put(DATABASE_FITEMS_PATH + itemKey1, FriendlyItem("Snacks", "Description", FriendlyItem.TYPE_FOOD).toMap())
-            put(DATABASE_FITEMS_PATH + itemKey2, FriendlyItem("Water", "Description", FriendlyItem.TYPE_WATER).toMap())
-            put(DATABASE_FITEMS_PATH + itemKey3, FriendlyItem("Reserved Place", "Description", FriendlyItem.TYPE_PLACE).toMap())
-        }
-
-        place.items = mapOf(
-                Pair(itemKey1, true),
-                Pair(itemKey2, true),
-                Pair(itemKey3, true))
+//        val itemKey1 = getFriendlyItemsReference().push().key
+//        val itemKey2 = getFriendlyItemsReference().push().key
+//        val itemKey3 = getFriendlyItemsReference().push().key
+//
+//        with(childUpdates) {
+//            put(DATABASE_FITEMS_PATH + itemKey1, FriendlyItem("Snacks", "Description", FriendlyItem.TYPE_FOOD).toMap())
+//            put(DATABASE_FITEMS_PATH + itemKey2, FriendlyItem("Water", "Description", FriendlyItem.TYPE_WATER).toMap())
+//            put(DATABASE_FITEMS_PATH + itemKey3, FriendlyItem("Reserved Place", "Description", FriendlyItem.TYPE_PLACE).toMap())
+//        }
+//
+//        place.items = mapOf(
+//                Pair(itemKey1, true),
+//                Pair(itemKey2, true),
+//                Pair(itemKey3, true))
 
         if(place.photo.isNotEmpty()) {
             uploadPlaceFile(placeKey, Uri.parse(place.photo)) {

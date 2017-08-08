@@ -157,7 +157,7 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
         return this
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         Log.d(TAG, "Activity request code " + requestCode)
 
@@ -165,12 +165,14 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
         if(resultCode == Activity.RESULT_OK) {
             when(requestCode) {
                 RC_PHOTO_PICKER -> {
-                    val path = data.data
-                    Toast.makeText(this, "Uploading...", Toast.LENGTH_SHORT).show()
-                    firebaseService.uploadPersonalFile(path) {
-                        downloadUrl ->
-                        user?.photo = downloadUrl.toString()
-                        firebaseService.updateUser(user)
+                    val path = data?.data
+                    if(path != null) {
+                        Toast.makeText(this, "Uploading...", Toast.LENGTH_SHORT).show()
+                        firebaseService.uploadPersonalFile(path) {
+                            downloadUrl ->
+                            user?.photo = downloadUrl.toString()
+                            firebaseService.updateUser(user)
+                        }
                     }
                 }
             }

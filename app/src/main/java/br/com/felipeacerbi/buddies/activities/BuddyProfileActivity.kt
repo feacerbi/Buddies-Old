@@ -98,19 +98,21 @@ class BuddyProfileActivity : FireListener() {
                 .listen()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         Log.d(TAG, "Activity request code " + requestCode)
 
         if(resultCode == RESULT_OK) {
             when(requestCode) {
                 RC_PHOTO_PICKER -> {
-                    val path = data.data
-                    Toast.makeText(this, "Uploading...", Toast.LENGTH_SHORT).show()
-                    firebaseService.uploadPetFile(petId, path) {
-                        downloadUrl ->
-                        buddy?.photo = downloadUrl.toString()
-                        firebaseService.updatePet(buddy, petId)
+                    val path = data?.data
+                    if(path != null) {
+                        Toast.makeText(this, "Uploading...", Toast.LENGTH_SHORT).show()
+                        firebaseService.uploadPetFile(petId, path) {
+                            downloadUrl ->
+                            buddy?.photo = downloadUrl.toString()
+                            firebaseService.updatePet(buddy, petId)
+                        }
                     }
                 }
             }
