@@ -141,7 +141,10 @@ class MainActivity : TagHandlerActivity() {
 
     fun setUpUI() {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-        supportActionBar?.title = resources.getString(R.string.app_name)
+        setSupportActionBar(toolbar)
+        toolbar.setNavigationOnClickListener {
+            finish()
+        }
 
         if(!sharedPreferences.contains(SettingsActivity.QR_CODE_BUTTON_SHORTCUT_KEY)) {
             sharedPreferences.edit()
@@ -193,10 +196,6 @@ class MainActivity : TagHandlerActivity() {
             R.id.action_requests -> launchActivity(RequestsActivity::class)
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    override fun onBackPressed() {
-        finish()
     }
 
     override fun onDestroy() {

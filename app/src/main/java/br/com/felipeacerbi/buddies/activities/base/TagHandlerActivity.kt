@@ -15,6 +15,7 @@ import br.com.felipeacerbi.buddies.tags.NFCService
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
 import br.com.felipeacerbi.buddies.utils.PermissionsManager
 import br.com.felipeacerbi.buddies.utils.launchActivity
+import br.com.felipeacerbi.buddies.utils.launchActivityWithExtras
 import br.com.felipeacerbi.buddies.utils.showTwoChoiceCancelableDialog
 
 abstract class TagHandlerActivity : FireListener() {
@@ -104,12 +105,11 @@ abstract class TagHandlerActivity : FireListener() {
                 baseTag,
                 existsAction = { firebaseService.addPetOwnerRequest(it)
                     Toast.makeText(this, getString(R.string.request_toast_sent_message), Toast.LENGTH_SHORT).show() },
-                notExistsAction = { launchNewPetActivity(it) }))
-    }
-
-    fun launchNewPetActivity(baseTag: BaseTag) {
-        val newPetActivityIntent = Intent(this, NewBuddyActivity::class.java)
-        newPetActivityIntent.putExtra(NewBuddyActivity.EXTRA_BASETAG, baseTag)
-        startActivityForResult(newPetActivityIntent, NEW_PET_RESULT)
+                notExistsAction = { launchActivityWithExtras<NewBuddyActivity>(
+                        NewBuddyActivity::class,
+                        arrayOf(NewBuddyActivity.EXTRA_BASETAG),
+                        arrayOf(it),
+                        true,
+                        NEW_PET_RESULT) }))
     }
 }

@@ -4,6 +4,7 @@ import com.google.firebase.database.DataSnapshot
 
 data class Buddy(
         var name: String = "",
+        var animal: String = "",
         var breed: String = "",
         var photo: String = "",
         var tagId: String = "",
@@ -12,6 +13,7 @@ data class Buddy(
 
     companion object {
         val DATABASE_NAME_CHILD = "name"
+        val DATABASE_ANIMAL_CHILD = "animal"
         val DATABASE_BREED_CHILD = "breed"
         val DATABASE_PHOTO_CHILD = "photo"
         val DATABASE_TAG_CHILD = "tagId"
@@ -25,12 +27,14 @@ data class Buddy(
 
     constructor(buddyInfo: BuddyInfo): this() {
         name = buddyInfo.name
+        animal = buddyInfo.animal
         breed = buddyInfo.breed
         photo = buddyInfo.photo
     }
 
     fun toMap() = mapOf(
             Pair(DATABASE_NAME_CHILD, name),
+            Pair(DATABASE_ANIMAL_CHILD, animal),
             Pair(DATABASE_BREED_CHILD, breed),
             Pair(DATABASE_PHOTO_CHILD, photo),
             Pair(DATABASE_TAG_CHILD, tagId),
@@ -39,6 +43,7 @@ data class Buddy(
 
     fun fromMap(dataSnapshot: DataSnapshot) {
         name = dataSnapshot.child(DATABASE_NAME_CHILD).value as String
+        animal = dataSnapshot.child(DATABASE_ANIMAL_CHILD).value as String
         breed = dataSnapshot.child(DATABASE_BREED_CHILD).value as String
         photo = dataSnapshot.child(DATABASE_PHOTO_CHILD).value as String
         tagId = dataSnapshot.child(DATABASE_TAG_CHILD).value as String

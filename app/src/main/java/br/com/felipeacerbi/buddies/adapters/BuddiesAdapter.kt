@@ -47,17 +47,20 @@ class BuddiesAdapter(val listener: IListClickListener, val petsReference: Databa
 
                     with(holder.itemView) {
                         name.text = buddy.name
+                        animal.text = buddy.animal
                         breed.text = buddy.breed
                         followers.text = buddy.followers.size.toString()
                         followers_text.text = if(buddy.followers.size == 1) " follower" else " followers"
 
-                        Picasso.with(listener.getContext())
-                                .load(buddy.photo)
-                                .placeholder(R.drawable.no_phototn)
-                                .error(R.drawable.no_phototn)
-                                .fit()
-                                .centerCrop()
-                                .into(picture)
+                        if(buddy.photo.isNotEmpty()) {
+                            Picasso.with(listener.getContext())
+                                    .load(buddy.photo)
+                                    .placeholder(R.drawable.no_phototn)
+                                    .error(R.drawable.no_phototn)
+                                    .fit()
+                                    .centerCrop()
+                                    .into(picture)
+                        }
 
                         val editable = petsReference.key == Buddy.DATABASE_OWNS_CHILD
 

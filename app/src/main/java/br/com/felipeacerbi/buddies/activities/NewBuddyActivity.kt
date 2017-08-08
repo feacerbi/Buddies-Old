@@ -4,30 +4,52 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
-import android.support.v7.app.AppCompatActivity
+import android.support.v7.app.AlertDialog
+import android.util.Log
 import br.com.felipeacerbi.buddies.R
+import br.com.felipeacerbi.buddies.firebase.FireListener
 import br.com.felipeacerbi.buddies.models.BuddyInfo
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
+import br.com.felipeacerbi.buddies.utils.showListDialog
 import kotlinx.android.synthetic.main.activity_new_pet.*
 
-class NewBuddyActivity : AppCompatActivity() {
+class NewBuddyActivity : FireListener() {
 
     companion object {
+        val TAG = "NewBuddyActivity"
         val BUDDY_INFO_EXTRA = "buddy_info"
         val EXTRA_BASETAG = "basetag"
         val RC_PHOTO_PICKER = 1
     }
 
+    val fireBuilder by lazy {
+        FireBuilder()
+    }
+
     var baseTag: BaseTag? = null
     var photoUrl: String = ""
+    var petSelected = 0
+    var breedSelected = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_pet)
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        setSupportActionBar(toolbar)
+        toolbar.setNavigationOnClickListener {
+            onBackPressed()
+        }
 
         handleIntent(intent)
+
+        setUpUI()
+    }
+
+    fun setUpUI() {
+        pet_chooser.isEnabled = false
+        breed_chooser.isEnabled = false
+
+        initPetChooser()
 
         picture_edit_button.setOnClickListener {
             val intent = Intent(Intent.ACTION_GET_CONTENT)
@@ -37,21 +59,78 @@ class NewBuddyActivity : AppCompatActivity() {
         }
 
         cancel_button.setOnClickListener {
-            setResult(RESULT_CANCELED)
-            finish()
+            onBackPressed()
         }
 
         add_button.setOnClickListener {
             val name = pet_name.text.toString()
-            val breed = breed.text.toString()
+            val pet = pet_chooser.text.toString()
+            val breed = breed_chooser.text.toString()
 
             val resultIntent = Intent(this, MainActivity::class.java)
-            resultIntent.putExtra(BUDDY_INFO_EXTRA, BuddyInfo(name, breed, photoUrl))
+            resultIntent.putExtra(BUDDY_INFO_EXTRA, BuddyInfo(name, pet, breed, photoUrl))
             resultIntent.putExtra(EXTRA_BASETAG, baseTag)
 
             setResult(RESULT_OK, resultIntent)
             finish()
         }
+    }
+
+    fun initPetChooser() {
+        fireBuilder.onRef(firebaseService.getAnimalsReference())
+                .mode(MODE_SINGLE)
+                .complete {
+                    if(it != null && it.hasChildren()) {
+                        val items = it.children.map { it.key }.toTypedArray()
+
+                        pet_chooser.text = items[petSelected]
+                        initBreedChooser()
+
+                        pet_chooser.setOnClickListener {
+                            AlertDialog.Builder(this).showListDialog(
+                                    "Animal",
+                                    items,
+                                    petSelected,
+                                    { dialog, position ->
+                                        petSelected = position
+                                        pet_chooser.text = items[position]
+
+                                        dialog.dismiss()
+                                        initBreedChooser()
+                                    })
+                        }
+                        pet_chooser.isEnabled = true
+                    }
+                }
+                .cancel { Log.d(TAG, "Animals not found") }
+                .listen()
+    }
+
+    fun initBreedChooser() {
+        fireBuilder.onRef(firebaseService.getAnimalBreedsReference(pet_chooser.text.toString()))
+                .mode(MODE_SINGLE)
+                .complete {
+                    if(it != null && it.hasChildren()) {
+                        val items = it.children.map { it.key }.toTypedArray()
+
+                        breed_chooser.text = items[breedSelected]
+                        breed_chooser.setOnClickListener {
+                            AlertDialog.Builder(this).showListDialog(
+                                    "Breed",
+                                    items,
+                                    breedSelected,
+                                    { dialog, position ->
+                                        breedSelected = position
+                                        breed_chooser.text = items[position]
+
+                                        dialog.dismiss()
+                                    })
+                        }
+                        breed_chooser.isEnabled = true
+                    }
+                }
+                .cancel { Log.d(TAG, "Breeds not found") }
+                .listen()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

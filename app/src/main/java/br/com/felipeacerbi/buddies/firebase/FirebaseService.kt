@@ -27,6 +27,7 @@ class FirebaseService : FirebaseInstanceIdService() {
         val DATABASE_REQUESTS_PATH = "requests/"
         val DATABASE_PLACES_PATH = "places/"
         val DATABASE_FITEMS_PATH = "fitems/"
+        val DATABASE_ANIMALS_PATH = "animals/"
     }
 
     val firebaseAuth = FirebaseAuth.getInstance()
@@ -316,6 +317,7 @@ class FirebaseService : FirebaseInstanceIdService() {
             val currentUserPath = DATABASE_PETS_PATH + petId + "/"
 
             childUpdates.put(currentUserPath + Buddy.DATABASE_NAME_CHILD, buddy.name)
+            childUpdates.put(currentUserPath + Buddy.DATABASE_ANIMAL_CHILD, buddy.animal)
             childUpdates.put(currentUserPath + Buddy.DATABASE_BREED_CHILD, buddy.breed)
             childUpdates.put(currentUserPath + Buddy.DATABASE_PHOTO_CHILD, buddy.photo)
 
@@ -364,6 +366,10 @@ class FirebaseService : FirebaseInstanceIdService() {
     fun getFriendlyItemsReference() = getDatabaseReference(DATABASE_FITEMS_PATH)
     fun getFriendlyItemReference(fitemId: String) = getFriendlyItemsReference().child(fitemId)
     fun getPlaceFriendlyItemsReference(placeId: String) = getPlaceReference(placeId).child(Place.DATABASE_ITEMS_CHILD)
+
+    // Animals
+    fun getAnimalsReference() = getDatabaseReference(DATABASE_ANIMALS_PATH)
+    fun getAnimalBreedsReference(animal: String) = getAnimalsReference().child(animal)
 
     // Storage
     fun uploadPersonalFile(path: Uri, onSuccess: (Uri) -> Unit) {

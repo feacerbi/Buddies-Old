@@ -44,11 +44,10 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/breed"
+                android:id="@+id/animal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:layout_marginTop="2dp"
                 app:layout_constraintStart_toStartOf="@id/name"
                 app:layout_constraintTop_toBottomOf="@id/name" />
 
@@ -56,28 +55,33 @@
                 android:id="@+id/separator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                app:layout_constraintStart_toEndOf="@id/breed"
+                app:layout_constraintStart_toEndOf="@id/animal"
                 app:layout_constraintTop_toBottomOf="@id/name"
                 android:text=" • "/>
+
+            <TextView
+                android:id="@+id/breed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                app:layout_constraintStart_toEndOf="@id/separator"
+                app:layout_constraintTop_toBottomOf="@id/name" />
 
             <TextView
                 android:id="@+id/followers"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:layout_marginTop="2dp"
-                app:layout_constraintStart_toEndOf="@id/separator"
-                app:layout_constraintTop_toBottomOf="@id/name" />
+                app:layout_constraintStart_toStartOf="@id/name"
+                app:layout_constraintTop_toBottomOf="@id/animal" />
 
             <TextView
                 android:id="@+id/followers_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:layout_marginTop="2dp"
                 app:layout_constraintStart_toEndOf="@id/followers"
-                app:layout_constraintTop_toBottomOf="@id/name" />
+                app:layout_constraintTop_toBottomOf="@id/animal" />
         </android.support.constraint.ConstraintLayout>
     </android.support.constraint.ConstraintLayout>
 </RelativeLayout>

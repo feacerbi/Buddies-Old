@@ -85,13 +85,16 @@ class PlaceActivity : FireListener() {
                                 .cancel { Log.d(TAG, "Friendly item not found") }
                                 .listen()
 
-                        Picasso.with(this)
-                                .load(place?.photo)
-                                .placeholder(R.drawable.no_phototn)
-                                .error(R.drawable.no_phototn)
-                                .fit()
-                                .centerCrop()
-                                .into(place_photo)
+                        val placePhoto = place?.photo
+                        if(placePhoto != null && placePhoto.isNotEmpty()) {
+                            Picasso.with(this)
+                                    .load(place?.photo)
+                                    .placeholder(R.drawable.no_phototn)
+                                    .error(R.drawable.no_phototn)
+                                    .fit()
+                                    .centerCrop()
+                                    .into(place_photo)
+                        }
                     }
                 }
                 .cancel { Log.d(TAG, "Buddy not found") }

@@ -50,7 +50,10 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
     }
 
     fun setUpUI() {
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        setSupportActionBar(toolbar)
+        toolbar.setNavigationOnClickListener {
+            onBackPressed()
+        }
 
         // Set the adapter
         with(buddies_list) {

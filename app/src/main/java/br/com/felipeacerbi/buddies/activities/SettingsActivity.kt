@@ -3,8 +3,6 @@ package br.com.felipeacerbi.buddies.activities
 import android.os.Bundle
 import android.preference.PreferenceActivity
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
-import android.view.MenuItem
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.fragments.SettingsFragment
 import kotlinx.android.synthetic.main.activity_settings.*
@@ -39,14 +37,9 @@ class SettingsActivity : AppCompatActivity() {
      * Set up the [android.app.ActionBar], if the API is available.
      */
     private fun setupActionBar() {
-        Log.d("Settings", "actionBar null: " + (actionBar == null).toString())
-        actionBar?.setDisplayHomeAsUpEnabled(true)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when(item?.itemId) {
-            android.R.id.home -> finish()
+        setSupportActionBar(toolbar)
+        toolbar.setNavigationOnClickListener {
+            finish()
         }
-        return super.onOptionsItemSelected(item)
     }
 }

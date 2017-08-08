@@ -12,6 +12,7 @@ import br.com.felipeacerbi.buddies.firebase.FireListener
 import br.com.felipeacerbi.buddies.models.Buddy
 import br.com.felipeacerbi.buddies.utils.getFirebaseAdapter
 import br.com.felipeacerbi.buddies.utils.showInputDialog
+import br.com.felipeacerbi.buddies.utils.showListDialog
 import com.google.firebase.database.DatabaseReference
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_pet_profile.*
@@ -26,16 +27,14 @@ class BuddyProfileActivity : FireListener() {
         val RC_PHOTO_PICKER = 1
     }
 
-    val fireBuilder by lazy {
-        FireBuilder()
-    }
-
     val editViewList by lazy {
-        arrayOf(buddy_name_edit_button, buddy_breed_edit_button, picture_edit_button)
+        arrayOf(buddy_name_edit_button, picture_edit_button)
     }
 
     var buddy: Buddy? = null
     var petId = ""
+    var petSelected = 0
+    var breedSelected = 0
 
     var buddyReference: DatabaseReference? = null
 
@@ -48,7 +47,10 @@ class BuddyProfileActivity : FireListener() {
     }
 
     fun setUpUI() {
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        setSupportActionBar(toolbar)
+        toolbar.setNavigationOnClickListener {
+            finish()
+        }
 
         with(posts_list) {
             layoutManager = LinearLayoutManager(context)
@@ -67,7 +69,7 @@ class BuddyProfileActivity : FireListener() {
                     this,
                     { _, _ ->
                         setFunc(input_field.text.toString())
-                        firebaseService.updatePet(buddy, petId)
+                        updateBuddy()
                     }
             )
         }
@@ -76,22 +78,28 @@ class BuddyProfileActivity : FireListener() {
     override fun onResume() {
         super.onResume()
 
-        fireBuilder.onRef(buddyReference)
+        FireBuilder().onRef(buddyReference)
                 .mode(MODE_CONTINUOUS)
                 .complete {
                     if(it != null && it.hasChildren()) {
+                        Log.d(TAG, it.key)
                         buddy = Buddy(it)
                         buddy_name.text = buddy?.name
                         actionBar?.title = buddy?.name
-                        buddy_breed.text = buddy?.breed
+                        actionBar?.subtitle = buddy?.followers?.size.toString() + " followers"
+                        pet_chooser.text = buddy?.animal
+                        breed_chooser.text = buddy?.breed
 
-                        Picasso.with(this)
-                                .load(buddy?.photo)
-                                .error(R.drawable.no_phototn)
-                                .placeholder(R.drawable.no_phototn)
-                                .fit()
-                                .centerCrop()
-                                .into(picture)
+                        val buddyPhoto = buddy?.photo
+                        if(buddyPhoto != null && buddyPhoto.isNotEmpty()) {
+                            Picasso.with(this)
+                                    .load(buddyPhoto)
+                                    .error(R.drawable.no_phototn)
+                                    .placeholder(R.drawable.no_phototn)
+                                    .fit()
+                                    .centerCrop()
+                                    .into(picture)
+                        }
                     }
                 }
                 .cancel { Log.d(TAG, "Buddy not found") }
@@ -111,7 +119,7 @@ class BuddyProfileActivity : FireListener() {
                         firebaseService.uploadPetFile(petId, path) {
                             downloadUrl ->
                             buddy?.photo = downloadUrl.toString()
-                            firebaseService.updatePet(buddy, petId)
+                            updateBuddy()
                         }
                     }
                 }
@@ -119,39 +127,92 @@ class BuddyProfileActivity : FireListener() {
         }
     }
 
-//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-//        menuInflater.inflate(R.menu.menu_default_activity, menu)
-//        return super.onCreateOptionsMenu(menu)
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-//        when(item?.itemId) {
-//            android.R.id.home -> finish()
-//            R.id.action_settings -> launchActivity(SettingsActivity::class)
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
+    fun initPetChooser() {
+        FireBuilder().onRef(firebaseService.getAnimalsReference())
+                .mode(MODE_SINGLE)
+                .complete {
+                    if(it != null && it.hasChildren()) {
+                        val items = it.children.map { it.key }.toTypedArray()
+
+                        pet_chooser.setOnClickListener {
+                            AlertDialog.Builder(this).showListDialog(
+                                    "Animal",
+                                    items,
+                                    petSelected,
+                                    { dialog, position ->
+                                        petSelected = position
+                                        pet_chooser.text = items[position]
+                                        buddy?.animal = items[position]
+                                        updateBuddy()
+
+                                        dialog.dismiss()
+                                        initBreedChooser(true)
+                                    })
+                        }
+                    }
+                }
+                .cancel { Log.d(TAG, "Animals not found") }
+                .listen()
+    }
+
+    fun initBreedChooser(show: Boolean = false) {
+        FireBuilder().onRef(firebaseService.getAnimalBreedsReference(pet_chooser.text.toString()))
+                .mode(MODE_SINGLE)
+                .complete {
+                    if(it != null && it.hasChildren()) {
+                        val items = it.children.map { it.key }.toTypedArray()
+
+                        if(show) {
+                            breed_chooser.text = items[breedSelected]
+                            buddy?.breed = items[breedSelected]
+                            updateBuddy()
+                            showBreedDialog(items)
+                        }
+
+                        breed_chooser.setOnClickListener {
+                            showBreedDialog(items)
+                        }
+                    }
+                }
+                .cancel { Log.d(TAG, "Breeds not found") }
+                .listen()
+    }
+
+    fun showBreedDialog(items: Array<String>) {
+        AlertDialog.Builder(this).showListDialog(
+                "Breed",
+                items,
+                breedSelected,
+                { dialog, position ->
+                    breedSelected = position
+                    breed_chooser.text = items[position]
+                    buddy?.breed = items[position]
+                    updateBuddy()
+
+                    dialog.dismiss()
+                })
+    }
 
     private fun  handleIntent(intent: Intent?) {
         if(intent != null) {
             petId = intent.extras.getString(EXTRA_PETID)
-            setEditable(intent.extras.getBoolean(EXTRA_EDITABLE))
+            setEditables(intent.extras.getBoolean(EXTRA_EDITABLE))
             buddyReference = firebaseService.getPetReference(petId)
         }
     }
 
-    fun setEditable(isEditable: Boolean) {
+    fun setEditables(isEditable: Boolean) {
+        Log.d(TAG, "Editing...")
         for(view in editViewList) {
             view.visibility = if(isEditable) View.VISIBLE else View.GONE
         }
 
         if(isEditable) {
+            initPetChooser()
+            initBreedChooser()
+
             buddy_name_edit_button.setOnClickListener {
                 showEditDialog("Edit name", buddy_name.text.toString(), { buddy?.name = it })
-            }
-
-            buddy_breed_edit_button.setOnClickListener {
-                showEditDialog("Edit breed", buddy_breed.text.toString(), { buddy?.breed = it })
             }
 
             picture_edit_button.setOnClickListener {
@@ -162,6 +223,8 @@ class BuddyProfileActivity : FireListener() {
             }
         }
     }
+
+    fun updateBuddy() = firebaseService.updatePet(buddy, petId)
 
     override fun onDestroy() {
         super.onDestroy()

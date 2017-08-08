@@ -17,6 +17,7 @@ import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.fragments.PetsListFragment
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.google.firebase.database.Query
+import java.io.Serializable
 import java.util.*
 import kotlin.reflect.KClass
 
@@ -87,6 +88,16 @@ fun AlertDialog.Builder.showInputDialog(
     show()
 }
 
+fun AlertDialog.Builder.showListDialog(
+        title: String,
+        items: Array<String>,
+        selected: Int = 0,
+        func: (DialogInterface, Int) -> Unit) {
+    setTitle(title)
+    setSingleChoiceItems(items, selected, func)
+    show()
+}
+
 fun FloatingActionButton.setUp(context: Context, show: Boolean, resource: Int, action: () -> Unit) {
     if(show) {
         show()
@@ -123,7 +134,12 @@ fun <T : Any> Activity.launchActivity(clazz: KClass<T>) {
     startActivity(intent)
 }
 
-fun <T : Any> Activity.launchActivityWithExtras(clazz: KClass<T>, identifiers: Array<String>?, extras: Array<Any>?) {
+fun <T : Any> Activity.launchActivityWithExtras(
+        clazz: KClass<T>,
+        identifiers: Array<String>?,
+        extras: Array<Any>?,
+        forResult: Boolean = false,
+        resultIdentifier: Int = -1) {
     val intent = Intent(this, clazz.java)
 
     if(identifiers != null && extras != null) {
@@ -134,11 +150,17 @@ fun <T : Any> Activity.launchActivityWithExtras(clazz: KClass<T>, identifiers: A
                 intent.putExtra(identifiers[extras.indexOf(extra)], extra)
             } else if (extra is Boolean) {
                 intent.putExtra(identifiers[extras.indexOf(extra)], extra)
+            } else if(extra is Serializable) {
+                intent.putExtra(identifiers[extras.indexOf(extra)], extra)
             }
         }
     }
 
-    startActivity(intent)
+    if(forResult) {
+        startActivityForResult(intent, resultIdentifier)
+    } else {
+        startActivity(intent)
+    }
 }
 
 fun <T : Any> Activity.launchActivityForResult(clazz: KClass<T>, identifier: Int) {

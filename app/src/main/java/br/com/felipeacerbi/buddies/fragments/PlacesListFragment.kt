@@ -1,5 +1,6 @@
 package br.com.felipeacerbi.buddies.fragments
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -16,12 +17,12 @@ import android.widget.RelativeLayout
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.PlaceActivity
 import br.com.felipeacerbi.buddies.adapters.PlacesAdapter
-import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.models.FriendlyItem
 import br.com.felipeacerbi.buddies.models.Place
 import br.com.felipeacerbi.buddies.utils.launchActivityWithExtras
 import br.com.felipeacerbi.buddies.utils.setUp
 import br.com.felipeacerbi.buddies.utils.showInputDialog
+import com.google.android.gms.location.places.ui.PlacePicker
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -29,11 +30,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.friendly_item_check.view.*
 import kotlinx.android.synthetic.main.places_list.view.*
 import kotlinx.android.synthetic.main.suggest_place_dialog.view.*
-import android.support.v4.app.ShareCompat.IntentBuilder
-import com.google.android.gms.location.places.ui.PlacePicker
-import android.widget.Toast
-import android.R.attr.data
-import android.app.Activity
 
 
 /**
@@ -173,8 +169,7 @@ open class PlacesListFragment : PetsListFragment() {
                     suggestionView.place_address.setText(place.address.toString())
                     suggestionView.place_name.setText(place.name)
                     suggestionView.place_phone.setText(place.phoneNumber)
-                    suggestionView.place_website.setText(place.websiteUri.toString())
-                    suggestionView.place_description.setText(place.attributions)
+                    suggestionView.place_website.setText(place.websiteUri.path)
                 }
             }
         }
