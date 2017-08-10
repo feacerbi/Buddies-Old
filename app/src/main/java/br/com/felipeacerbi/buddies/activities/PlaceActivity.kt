@@ -148,7 +148,7 @@ class PlaceActivity : FireListener() {
 
     fun openWebsite(website: String?) {
         val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse("http://" + website)
+        intent.data = Uri.parse(website)
         if (intent.resolveActivity(packageManager) != null) {
             Log.d(TAG, "Starting")
             startActivity(intent)

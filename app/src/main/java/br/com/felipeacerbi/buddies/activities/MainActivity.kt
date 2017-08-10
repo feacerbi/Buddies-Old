@@ -9,6 +9,7 @@ import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import br.com.felipeacerbi.buddies.BuildConfig
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.base.TagHandlerActivity
@@ -30,6 +31,7 @@ class MainActivity : TagHandlerActivity() {
         val TAG = "MainActivity"
         val RC_SIGN_IN = 1
         val CREATE_PROFILE = 2
+        val SUGGEST_PLACE = 3
 
         val FRAGMENT_POSTS = R.id.navigation_home
         val FRAGMENT_FOLLOWS = R.id.navigation_following
@@ -178,6 +180,13 @@ class MainActivity : TagHandlerActivity() {
                 when(resultCode) {
                     Activity.RESULT_CANCELED -> onSignOut()
                     Activity.RESULT_OK -> Log.d(TAG, "Profile created")
+                }
+            }
+
+            SUGGEST_PLACE -> {
+                when(resultCode) {
+                    Activity.RESULT_OK -> { Toast.makeText(this, "Thank you for the suggestion!", Toast.LENGTH_SHORT).show() }
+                    Activity.RESULT_CANCELED -> { Toast.makeText(this, "Maybe another time...", Toast.LENGTH_SHORT).show() }
                 }
             }
         }

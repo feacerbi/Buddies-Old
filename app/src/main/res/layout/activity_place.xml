@@ -29,7 +29,6 @@
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
                 android:transitionName="photo"
-                android:src="@drawable/villa_grano"
                 app:layout_collapseMode="parallax"/>
 
             <TextView

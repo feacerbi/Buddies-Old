@@ -51,4 +51,6 @@
     <string name="place_description_title">Description</string>
     <string name="place_address_title">Address</string>
     <string name="place_phone_title">Phone</string>
+    <string name="new_pet_name_hint">Pet Name</string>
+    <string name="title_activity_suggest_place">Suggest Place</string>
 </resources>

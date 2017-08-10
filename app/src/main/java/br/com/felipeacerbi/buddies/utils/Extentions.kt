@@ -49,6 +49,12 @@ fun String.toFormatedDate(): String {
     return reqTime.time.toString().substringBeforeLast(" GMT")
 }
 
+fun String.toFormatedWebsite(): String {
+    if(this.contains("www") || !this.contains("//")) return this
+
+    return this.replace("//", "//www.", true)
+}
+
 fun AlertDialog.Builder.showOneChoiceCancelableDialog(
         title: String,
         message: String,

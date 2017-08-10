@@ -27,15 +27,11 @@ abstract class FireListener : RxBaseActivity() {
         listenerMap.forEach { it.key.removeEventListener(it.value) }
     }
 
-    inner class FireBuilder {
-
-        private var reference: DatabaseReference? = null
-        private var completed: (dataSnapshot: DataSnapshot?) -> Unit = this::defaultFunction
-        private var canceled: (dataSnapshot: DatabaseError?) -> Unit = this::defaultFunction
-        private var mode = MODE_CONTINUOUS
-
-        private fun defaultFunction(dataSnapshot: DataSnapshot?) {}
-        private fun defaultFunction(dataSnapshot: DatabaseError?) {}
+    inner class FireBuilder(
+        private var reference: DatabaseReference? = null,
+        private var completed: (dataSnapshot: DataSnapshot?) -> Unit = { _ -> },
+        private var canceled: (dataSnapshot: DatabaseError?) -> Unit = { _ -> },
+        private var mode: Int = MODE_CONTINUOUS) {
 
         fun onRef(dataReference: DatabaseReference?): FireBuilder {
             reference = dataReference

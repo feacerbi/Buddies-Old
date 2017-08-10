@@ -66,8 +66,8 @@
             android:id="@+id/pet_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Pet Name"
             android:textSize="16sp"
+            android:hint="@string/new_pet_name_hint"
             android:inputType="textPersonName"
             android:maxLines="1"
             android:singleLine="true" />

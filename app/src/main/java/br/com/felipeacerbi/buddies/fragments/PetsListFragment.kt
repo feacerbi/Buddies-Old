@@ -1,7 +1,6 @@
 package br.com.felipeacerbi.buddies.fragments
 
 import android.Manifest
-import android.content.Context
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
@@ -74,11 +73,6 @@ open class PetsListFragment : Fragment(), IListClickListener {
                 arrayOf(BuddyProfileActivity.EXTRA_PETID,
                         BuddyProfileActivity.EXTRA_EDITABLE),
                 identifiers)
-    }
-
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-        setUpFab(sharedPreferences.getBoolean(SettingsActivity.QR_CODE_BUTTON_SHORTCUT_KEY, false))
     }
 
     override fun onResume() {
