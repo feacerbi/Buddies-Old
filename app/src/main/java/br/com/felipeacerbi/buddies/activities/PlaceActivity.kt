@@ -49,7 +49,7 @@ class PlaceActivity : FireListener() {
         super.onResume()
 
         fireBuilder.onRef(placeReference)
-                .mode(MODE_CONTINUOUS)
+                .mode(MODE_SINGLE)
                 .complete {
                     if(it != null && it.hasChildren()) {
                         place = Place(it)
@@ -73,7 +73,7 @@ class PlaceActivity : FireListener() {
                         }
 
                         fireBuilder.onRef(firebaseService.getPlaceFriendlyItemsReference(it.key))
-                                .mode(MODE_CONTINUOUS)
+                                .mode(MODE_SINGLE)
                                 .complete {
                                     if(it?.value != null && it.hasChildren()) {
                                         friendly_items.removeAllViews()

@@ -28,7 +28,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:textStyle="bold"
-                android:textSize="18sp"
+                android:textSize="12sp"
+                android:textAllCaps="true"
                 android:text="@string/friendly_items_title"/>
             <LinearLayout
                 android:id="@+id/friendly_items"
@@ -62,8 +63,9 @@
             android:id="@+id/address_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:elevation="2dp"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
             android:background="#FFFFFF"
             android:layout_marginTop="16dp"
             app:layout_constraintTop_toBottomOf="@id/items"
@@ -74,6 +76,7 @@
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_map_black_24dp"
                 android:paddingStart="16dp"
+                android:paddingEnd="16dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"/>
             <TextView
@@ -81,11 +84,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
+                android:textAllCaps="true"
                 android:textStyle="bold"
-                android:textSize="18sp"
+                android:textSize="12sp"
                 android:text="@string/place_address_title"/>
             <TextView
                 android:id="@+id/address_text"
+                android:textSize="16sp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/address_title"
@@ -96,8 +101,9 @@
             android:id="@+id/phone_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:elevation="2dp"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
             android:background="#FFFFFF"
             android:layout_marginTop="1dp"
             app:layout_constraintTop_toBottomOf="@id/address_row"
@@ -108,6 +114,7 @@
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_phone_black_24dp"
                 android:paddingStart="16dp"
+                android:paddingEnd="16dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"/>
             <TextView
@@ -115,11 +122,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
+                android:textAllCaps="true"
                 android:textStyle="bold"
-                android:textSize="18sp"
+                android:textSize="12sp"
                 android:text="@string/place_phone_title"/>
             <TextView
                 android:id="@+id/phone_text"
+                android:textSize="16sp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/phone_title"
@@ -130,7 +139,9 @@
             android:id="@+id/website_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
             android:elevation="2dp"
             android:background="#FFFFFF"
             android:layout_marginTop="1dp"
@@ -142,6 +153,7 @@
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_open_in_browser_black_24dp"
                 android:paddingStart="16dp"
+                android:paddingEnd="16dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"/>
             <TextView
@@ -149,11 +161,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
+                android:textAllCaps="true"
                 android:textStyle="bold"
-                android:textSize="18sp"
+                android:textSize="12sp"
                 android:text="Website"/>
             <TextView
                 android:id="@+id/website_text"
+                android:textSize="16sp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/website_title"
@@ -175,15 +189,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
+                android:textAllCaps="true"
                 android:textStyle="bold"
-                android:textSize="18sp"
+                android:textSize="12sp"
                 android:text="@string/place_description_title"/>
             <TextView
                 android:id="@+id/place_description"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:textSize="16sp"/>
         </LinearLayout>
     </android.support.constraint.ConstraintLayout>
-
 
 </android.support.v4.widget.NestedScrollView>

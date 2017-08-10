@@ -100,6 +100,8 @@ class BuddyProfileActivity : FireListener() {
                                     .centerCrop()
                                     .into(picture)
                         }
+
+                        setEditables(intent.extras.getBoolean(EXTRA_EDITABLE))
                     }
                 }
                 .cancel { Log.d(TAG, "Buddy not found") }
@@ -196,7 +198,6 @@ class BuddyProfileActivity : FireListener() {
     private fun  handleIntent(intent: Intent?) {
         if(intent != null) {
             petId = intent.extras.getString(EXTRA_PETID)
-            setEditables(intent.extras.getBoolean(EXTRA_EDITABLE))
             buddyReference = firebaseService.getPetReference(petId)
         }
     }

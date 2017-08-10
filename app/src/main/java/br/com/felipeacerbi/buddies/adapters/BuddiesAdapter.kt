@@ -49,8 +49,8 @@ class BuddiesAdapter(val listener: IListClickListener, val petsReference: Databa
                         name.text = buddy.name
                         animal.text = buddy.animal
                         breed.text = buddy.breed
-                        followers.text = buddy.followers.size.toString()
-                        followers_text.text = if(buddy.followers.size == 1) " follower" else " followers"
+//                        followers.text = buddy.followers.size.toString()
+//                        followers_text.text = if(buddy.followers.size == 1) " follower" else " followers"
 
                         if(buddy.photo.isNotEmpty()) {
                             Picasso.with(listener.getContext())

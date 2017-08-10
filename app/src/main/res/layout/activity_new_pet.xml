@@ -6,37 +6,38 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
+    android:background="#FFFFFF"
     tools:context="br.com.felipeacerbi.buddies.activities.NewBuddyActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="56dp"
         android:elevation="4dp"
-        app:navigationIcon="@drawable/ic_keyboard_backspace_white_24dp"
         android:theme="@style/AppTheme.Toolbar"
+        app:navigationIcon="@drawable/ic_keyboard_backspace_white_24dp"
         app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     <FrameLayout
         android:id="@+id/picture_back"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="212dp"
         android:background="@color/profile_picture_background"
         app:layout_constraintTop_toBottomOf="@id/toolbar">
     </FrameLayout>
 
     <cn.gavinliu.android.lib.shapedimageview.ShapedImageView
         android:id="@+id/picture"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
         android:scaleType="centerCrop"
+        android:layout_marginTop="16dp"
         app:shape_mode="circle"
         app:stroke_width="3dp"
         app:stroke_color="@color/colorPrimary"
-        app:layout_constraintStart_toStartOf="@id/picture_back"
-        app:layout_constraintEnd_toEndOf="@id/picture_back"
-        app:layout_constraintTop_toTopOf="@id/picture_back"
-        app:layout_constraintBottom_toBottomOf="@id/picture_back"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintStart_toStartOf="@id/toolbar"
+        app:layout_constraintEnd_toEndOf="@id/toolbar"
         android:src="@drawable/no_phototn"/>
 
     <cn.gavinliu.android.lib.shapedimageview.ShapedImageView
@@ -52,49 +53,10 @@
         app:layout_constraintEnd_toEndOf="@id/picture"
         android:src="@drawable/ic_edit_black_24dp"/>
 
-    <LinearLayout
-        android:id="@+id/buttons"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="2dp"
-        android:elevation="8dp"
-        android:orientation="horizontal"
-        android:background="@color/profile_picture_background"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <TextView
-            android:id="@+id/cancel_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:padding="14dp"
-            android:gravity="center"
-            android:background="@android:color/background_light"
-            android:text="Cancel"
-            android:textColor="@color/colorAccent"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-        <FrameLayout
-            android:layout_width="2dp"
-            android:layout_height="match_parent" />
-        <TextView
-            android:id="@+id/add_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:padding="14dp"
-            android:gravity="center"
-            android:background="@android:color/background_light"
-            android:text="OK"
-            android:textColor="@color/colorAccent"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
     <android.support.design.widget.TextInputLayout
         android:id="@+id/pet_name_row"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:layout_marginTop="16dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
@@ -105,6 +67,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Pet Name"
+            android:textSize="16sp"
             android:inputType="textPersonName"
             android:maxLines="1"
             android:singleLine="true" />
@@ -114,19 +77,54 @@
     <TextView
         android:id="@+id/pet_chooser"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:layout_marginTop="16dp"
         android:padding="16dp"
-        android:textSize="18sp"
+        android:textSize="16sp"
         app:layout_constraintTop_toBottomOf="@id/pet_name_row" />
 
     <TextView
         android:id="@+id/breed_chooser"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:layout_marginTop="16dp"
         android:padding="16dp"
-        android:textSize="18sp"
+        android:textSize="16sp"
         app:layout_constraintTop_toBottomOf="@id/pet_chooser" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/breed_chooser">
+
+        <Button
+            android:id="@+id/add_button"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:text="ADD"
+            android:backgroundTint="@color/colorAccent"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:layout_toStartOf="@id/add_button"
+            android:text="Cancel"
+            android:backgroundTint="@color/colorAccent"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toStartOf="@id/add_button"/>
+    </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>
