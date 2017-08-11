@@ -135,6 +135,15 @@ fun Fragment.transact(activity: AppCompatActivity, id: Int, bundle: Bundle? = nu
     transaction.commit()
 }
 
+fun android.app.Fragment.transact(activity: AppCompatActivity, id: Int, bundle: Bundle? = null) {
+    val transaction = activity.fragmentManager.beginTransaction()
+
+    if(bundle != null) arguments = bundle
+
+    transaction.replace(id, this)
+    transaction.commit()
+}
+
 fun <T : Any> Activity.launchActivity(clazz: KClass<T>) {
     val intent = Intent(this, clazz.java)
     startActivity(intent)

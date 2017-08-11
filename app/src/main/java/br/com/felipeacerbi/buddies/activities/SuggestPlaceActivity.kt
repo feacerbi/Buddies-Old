@@ -31,12 +31,11 @@ class SuggestPlaceActivity : FireListener() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_suggest_place)
-
-        setUpUI()
     }
 
     override fun onResume() {
         super.onResume()
+        setUpUI()
 
         fireBuilder.onRef(firebaseService.getFriendlyItemsReference())
                 .mode(MODE_SINGLE)

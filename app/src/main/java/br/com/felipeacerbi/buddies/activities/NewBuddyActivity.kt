@@ -41,7 +41,6 @@ class NewBuddyActivity : FireListener() {
         }
 
         handleIntent(intent)
-
         setUpUI()
     }
 

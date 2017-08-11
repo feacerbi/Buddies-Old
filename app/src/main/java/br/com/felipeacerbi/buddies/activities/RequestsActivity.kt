@@ -17,15 +17,19 @@ class RequestsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_requests)
 
-        setSupportActionBar(toolbar)
-        toolbar.setNavigationOnClickListener {
-            finish()
-        }
+        setupActionBar()
 
         RequestsListFragment().transact(
                 this,
                 container.id,
                 Bundle().makeQueryBundle(this, firebaseService.queryRequests())
         )
+    }
+
+    private fun setupActionBar() {
+        setSupportActionBar(toolbar)
+        toolbar.setNavigationOnClickListener {
+            finish()
+        }
     }
 }

@@ -45,8 +45,6 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
-
-        setUpUI()
     }
 
     fun setUpUI() {
@@ -105,6 +103,7 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
 
     override fun onResume() {
         super.onResume()
+        setUpUI()
         showFab(sharedPreferences.getBoolean(SettingsActivity.QR_CODE_BUTTON_SHORTCUT_KEY, false))
 
         fireBuilder.onRef(userReference)

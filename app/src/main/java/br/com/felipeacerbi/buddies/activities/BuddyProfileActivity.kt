@@ -1,6 +1,7 @@
 package br.com.felipeacerbi.buddies.activities
 
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
@@ -42,7 +43,6 @@ class BuddyProfileActivity : FireListener() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pet_profile)
 
-        setUpUI()
         handleIntent(intent)
     }
 
@@ -77,6 +77,7 @@ class BuddyProfileActivity : FireListener() {
 
     override fun onResume() {
         super.onResume()
+        setUpUI()
 
         FireBuilder().onRef(buddyReference)
                 .mode(MODE_CONTINUOUS)
@@ -130,19 +131,20 @@ class BuddyProfileActivity : FireListener() {
     }
 
     fun initPetChooser() {
+        pet_chooser.setTypeface(null, Typeface.BOLD)
         FireBuilder().onRef(firebaseService.getAnimalsReference())
                 .mode(MODE_SINGLE)
                 .complete {
                     if(it != null && it.hasChildren()) {
                         val items = it.children.map { it.key }.toTypedArray()
 
+                        petSelected = items.indexOf(buddy?.animal)
                         pet_chooser.setOnClickListener {
                             AlertDialog.Builder(this).showListDialog(
                                     "Animal",
                                     items,
                                     petSelected,
                                     { dialog, position ->
-                                        petSelected = position
                                         pet_chooser.text = items[position]
                                         buddy?.animal = items[position]
                                         updateBuddy()
@@ -158,12 +160,14 @@ class BuddyProfileActivity : FireListener() {
     }
 
     fun initBreedChooser(show: Boolean = false) {
+        breed_chooser.setTypeface(null, Typeface.BOLD)
         FireBuilder().onRef(firebaseService.getAnimalBreedsReference(pet_chooser.text.toString()))
                 .mode(MODE_SINGLE)
                 .complete {
                     if(it != null && it.hasChildren()) {
                         val items = it.children.map { it.key }.toTypedArray()
 
+                        breedSelected = items.indexOf(buddy?.breed)
                         if(show) {
                             breed_chooser.text = items[breedSelected]
                             buddy?.breed = items[breedSelected]

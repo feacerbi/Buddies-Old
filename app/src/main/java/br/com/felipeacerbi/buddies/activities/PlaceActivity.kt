@@ -40,13 +40,12 @@ class PlaceActivity : FireListener() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_place)
 
-        setUpUI()
-
         handleIntent(intent)
     }
 
     override fun onResume() {
         super.onResume()
+        setUpUI()
 
         fireBuilder.onRef(placeReference)
                 .mode(MODE_SINGLE)

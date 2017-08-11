@@ -5,6 +5,7 @@ import android.preference.PreferenceActivity
 import android.support.v7.app.AppCompatActivity
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.fragments.SettingsFragment
+import br.com.felipeacerbi.buddies.utils.transact
 import kotlinx.android.synthetic.main.activity_settings.*
 
 /**
@@ -26,11 +27,13 @@ class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+
         setupActionBar()
 
-        val transaction = fragmentManager.beginTransaction()
-        transaction.replace(container.id, SettingsFragment())
-        transaction.commit()
+        SettingsFragment().transact(
+                this,
+                container.id,
+                null)
     }
 
     /**
