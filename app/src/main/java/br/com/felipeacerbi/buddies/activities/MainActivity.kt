@@ -74,7 +74,7 @@ class MainActivity : TagHandlerActivity() {
     }
 
     fun onSignIn() {
-        subscriptions.add(subscriptionsManager.checkUserWithActionSubscription(
+        subscriptions.add(subscriptionsManager.checkUserSubscription(
                 existsAction = { Log.d(TAG, "User exists") },
                 notExistsAction = {
                     val user = User(

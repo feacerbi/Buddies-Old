@@ -7,6 +7,7 @@ data class User(
         var email: String = "",
         var photo: String = "",
         var idToken: String = "",
+        var created: Long = System.currentTimeMillis(),
         var buddies: Map<String, Boolean> = HashMap(),
         var following: Map<String, Boolean> = HashMap(),
         var requests: Map<String, Boolean> = HashMap()) {
@@ -16,6 +17,7 @@ data class User(
         val DATABASE_EMAIL_CHILD = "email"
         val DATABASE_PHOTO_CHILD = "photo"
         val DATABASE_IDTOKEN_CHILD = "idToken"
+        val DATABASE_CREATED_CHILD = "created"
         val DATABASE_OWNS_CHILD = "owns"
         val DATABASE_FOLLOWS_CHILD = "follows"
         val DATABASE_REQUESTS_CHILD = "requests"
@@ -30,6 +32,7 @@ data class User(
             Pair(DATABASE_EMAIL_CHILD, email),
             Pair(DATABASE_PHOTO_CHILD, photo),
             Pair(DATABASE_IDTOKEN_CHILD, idToken),
+            Pair(DATABASE_CREATED_CHILD, created),
             Pair(DATABASE_OWNS_CHILD, buddies),
             Pair(DATABASE_FOLLOWS_CHILD, following),
             Pair(DATABASE_REQUESTS_CHILD, requests))
@@ -39,6 +42,7 @@ data class User(
         email = dataSnapshot.child(DATABASE_EMAIL_CHILD).value as String
         photo = dataSnapshot.child(DATABASE_PHOTO_CHILD).value as String
         idToken = dataSnapshot.child(DATABASE_IDTOKEN_CHILD).value as String
+        created = dataSnapshot.child(DATABASE_CREATED_CHILD).value as Long
 
         val buddiesSnapshot = dataSnapshot.child(DATABASE_OWNS_CHILD).value
         if(checkNull(buddiesSnapshot)) buddies = buddiesSnapshot as Map<String, Boolean>

@@ -17,9 +17,9 @@ class SubscriptionsManager(val context: Context) {
         val TAG = "SubscriptionsManager"
     }
 
-    fun checkTagWithActionSubscription(baseTag: BaseTag,
-                                       existsAction: (BaseTag) -> Unit,
-                                       notExistsAction: (BaseTag) -> Unit): Disposable {
+    fun checkTagSubscription(baseTag: BaseTag,
+                             existsAction: (BaseTag) -> Unit,
+                             notExistsAction: (BaseTag) -> Unit): Disposable {
         Log.d(TAG, "Check pet with action " + baseTag.id)
         return firebaseService.checkTagObservable(baseTag)
                 .subscribeOn(Schedulers.io())
@@ -37,8 +37,28 @@ class SubscriptionsManager(val context: Context) {
                         { e -> Log.d(TAG, "Error adding pet " + e.message) })
     }
 
-    fun checkUserWithActionSubscription(existsAction: (Pair<Boolean, User>) -> Unit,
-                                        notExistsAction: (Pair<Boolean, User>) -> Unit): Disposable {
+    fun checkOwnerRequestSubscription(baseTag: BaseTag,
+                                      ownsAction: () -> Unit,
+                                      notOwnsAction: () -> Unit): Disposable {
+        Log.d(TAG, "Check owner request action " + baseTag.id)
+        return firebaseService.addPetOwnerRequestObservable(baseTag)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe (
+                        { isOwner ->
+                            if(isOwner) {
+                                Log.d(TAG, "Is already owner")
+                                ownsAction()
+                            } else {
+                                Log.d(TAG, "Is not owner")
+                                notOwnsAction()
+                            }
+                        },
+                        { e -> Log.d(TAG, "Error adding pet " + e.message) })
+    }
+
+    fun checkUserSubscription(existsAction: (Pair<Boolean, User>) -> Unit,
+                              notExistsAction: (Pair<Boolean, User>) -> Unit): Disposable {
         val username = firebaseService.getCurrentUserUID()
         Log.d(TAG, "Check user with action " + username)
 

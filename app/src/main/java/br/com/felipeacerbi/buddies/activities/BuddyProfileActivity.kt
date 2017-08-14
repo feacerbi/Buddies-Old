@@ -137,22 +137,7 @@ class BuddyProfileActivity : FireListener() {
                 .complete {
                     if(it != null && it.hasChildren()) {
                         val items = it.children.map { it.key }.toTypedArray()
-
-                        petSelected = items.indexOf(buddy?.animal)
-                        pet_chooser.setOnClickListener {
-                            AlertDialog.Builder(this).showListDialog(
-                                    "Animal",
-                                    items,
-                                    petSelected,
-                                    { dialog, position ->
-                                        pet_chooser.text = items[position]
-                                        buddy?.animal = items[position]
-                                        updateBuddy()
-
-                                        dialog.dismiss()
-                                        initBreedChooser(true)
-                                    })
-                        }
+                        setPetChooser(items)
                     }
                 }
                 .cancel { Log.d(TAG, "Animals not found") }
@@ -166,22 +151,43 @@ class BuddyProfileActivity : FireListener() {
                 .complete {
                     if(it != null && it.hasChildren()) {
                         val items = it.children.map { it.key }.toTypedArray()
-
-                        breedSelected = items.indexOf(buddy?.breed)
-                        if(show) {
-                            breed_chooser.text = items[breedSelected]
-                            buddy?.breed = items[breedSelected]
-                            updateBuddy()
-                            showBreedDialog(items)
-                        }
-
-                        breed_chooser.setOnClickListener {
-                            showBreedDialog(items)
-                        }
+                        setBreedChooser(items, show)
                     }
                 }
                 .cancel { Log.d(TAG, "Breeds not found") }
                 .listen()
+    }
+
+    fun setPetChooser(items: Array<String>) {
+        petSelected = items.indexOf(buddy?.animal)
+        pet_chooser.setOnClickListener {
+            showPetDialog(items)
+        }
+    }
+
+    fun setBreedChooser(items: Array<String>, show: Boolean) {
+        if(show) {
+            selectBreed(items, 0)
+            showBreedDialog(items)
+        } else {
+            breedSelected = items.indexOf(buddy?.breed)
+        }
+
+        breed_chooser.setOnClickListener {
+            showBreedDialog(items)
+        }
+    }
+
+    fun showPetDialog(items: Array<String>) {
+        AlertDialog.Builder(this).showListDialog(
+                "Animal",
+                items,
+                petSelected,
+                { dialog, position ->
+                    selectPet(items, position)
+                    dialog.dismiss()
+                    initBreedChooser(true)
+                })
     }
 
     fun showBreedDialog(items: Array<String>) {
@@ -190,13 +196,23 @@ class BuddyProfileActivity : FireListener() {
                 items,
                 breedSelected,
                 { dialog, position ->
-                    breedSelected = position
-                    breed_chooser.text = items[position]
-                    buddy?.breed = items[position]
-                    updateBuddy()
-
+                    selectBreed(items, position)
                     dialog.dismiss()
                 })
+    }
+
+    fun selectPet(items: Array<String>, position: Int) {
+        petSelected = position
+        pet_chooser.text = items[position]
+        buddy?.animal = items[position]
+        updateBuddy()
+    }
+
+    fun selectBreed(items: Array<String>, position: Int) {
+        breedSelected = position
+        breed_chooser.text = items[position]
+        buddy?.breed = items[position]
+        updateBuddy()
     }
 
     private fun  handleIntent(intent: Intent?) {

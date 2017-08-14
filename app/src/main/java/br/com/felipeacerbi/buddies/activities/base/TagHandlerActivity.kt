@@ -94,18 +94,24 @@ abstract class TagHandlerActivity : FireListener() {
     }
 
     fun addNewFollow(baseTag: BaseTag) {
-        subscriptions.add(subscriptionsManager.checkTagWithActionSubscription(
+        subscriptions.add(subscriptionsManager.checkTagSubscription(
                 baseTag,
                 existsAction = { firebaseService.addFollowPet(it) },
                 notExistsAction = { Log.d(TAG, "Follow pet not found") }))
     }
 
     fun addNewBuddy(baseTag: BaseTag) {
-        subscriptions.add(subscriptionsManager.checkTagWithActionSubscription(
+        subscriptions.add(subscriptionsManager.checkTagSubscription(
                 baseTag,
-                existsAction = { firebaseService.addPetOwnerRequest(it)
-                    Toast.makeText(this, getString(R.string.request_toast_sent_message), Toast.LENGTH_SHORT).show() },
-                notExistsAction = { launchActivityWithExtras<NewBuddyActivity>(
+                existsAction = {
+                    subscriptions.add(subscriptionsManager.checkOwnerRequestSubscription(
+                            it,
+                            ownsAction = { Toast.makeText(this, getString(R.string.request_toast_already_owns), Toast.LENGTH_SHORT).show() },
+                            notOwnsAction = { Toast.makeText(this, getString(R.string.request_toast_sent_message), Toast.LENGTH_SHORT).show() }
+                    ))
+                },
+                notExistsAction = {
+                    launchActivityWithExtras<NewBuddyActivity>(
                         NewBuddyActivity::class,
                         arrayOf(NewBuddyActivity.EXTRA_BASETAG),
                         arrayOf(it),

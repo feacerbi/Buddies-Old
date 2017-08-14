@@ -1,7 +1,9 @@
 package br.com.felipeacerbi.buddies.firebase
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import br.com.felipeacerbi.buddies.models.*
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
 import com.google.firebase.auth.FirebaseAuth
@@ -84,19 +86,17 @@ class FirebaseService : FirebaseInstanceIdService() {
         }
     }
 
-    fun checkUserObservable(username: String): Observable<Pair<Boolean, User>> {
-        return Observable.create {
-            subscriber ->
-            getUserReference(username).addListenerForSingleValueEvent(object: ValueEventListener {
-                override fun onCancelled(error: DatabaseError?) {
-                    Log.d(TAG, "Adding user cancelled: " + error.toString())
-                }
+    fun checkUserObservable(username: String): Observable<Pair<Boolean, User>> = Observable.create {
+        subscriber ->
+        getUserReference(username).addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onCancelled(error: DatabaseError?) {
+                Log.d(TAG, "Adding user cancelled: " + error.toString())
+            }
 
-                override fun onDataChange(dataSnapshot: DataSnapshot?) {
-                    handleUserSnapshot(subscriber, dataSnapshot)
-                }
-            })
-        }
+            override fun onDataChange(dataSnapshot: DataSnapshot?) {
+                handleUserSnapshot(subscriber, dataSnapshot)
+            }
+        })
     }
 
     private fun  handleUserSnapshot(subscriber: ObservableEmitter<Pair<Boolean, User>>, dataSnapshot: DataSnapshot?) {
@@ -115,27 +115,25 @@ class FirebaseService : FirebaseInstanceIdService() {
     fun getTagsReference() = getDatabaseReference(DATABASE_TAGS_PATH)
     fun getTagReference(tagId: String) = getTagsReference().child(tagId)
 
-    fun checkTagObservable(baseTag: BaseTag): Observable<BaseTag> {
-        return Observable.create {
-            subscriber ->
-            getTagsReference().orderByChild(BaseTag.DATABASE_ID_CHILD).equalTo(baseTag.id).addListenerForSingleValueEvent(object: ValueEventListener {
-                override fun onCancelled(error: DatabaseError?) {
-                    Log.d(TAG, "Adding pet cancelled: " + error.toString())
-                }
+    fun checkTagObservable(baseTag: BaseTag): Observable<BaseTag> = Observable.create {
+        subscriber ->
+        getTagsReference().orderByChild(BaseTag.DATABASE_ID_CHILD).equalTo(baseTag.id).addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onCancelled(error: DatabaseError?) {
+                Log.d(TAG, "Adding pet cancelled: " + error.toString())
+            }
 
-                override fun onDataChange(dataSnapshot: DataSnapshot?) {
-                    var foundTag = baseTag
-                    if(dataSnapshot != null && dataSnapshot.childrenCount > 0) {
-                        foundTag = BaseTag(dataSnapshot.children.first())
-                        Log.d(TAG, "Tag found")
-                    } else {
-                        Log.d(TAG, "Tag not found")
-                    }
-                    subscriber.onNext(foundTag)
-                    subscriber.onComplete()
+            override fun onDataChange(dataSnapshot: DataSnapshot?) {
+                var foundTag = baseTag
+                if(dataSnapshot != null && dataSnapshot.childrenCount > 0) {
+                    foundTag = BaseTag(dataSnapshot.children.first())
+                    Log.d(TAG, "Tag found")
+                } else {
+                    Log.d(TAG, "Tag not found")
                 }
-            })
-        }
+                subscriber.onNext(foundTag)
+                subscriber.onComplete()
+            }
+        })
     }
 
     // Pets API
@@ -185,7 +183,8 @@ class FirebaseService : FirebaseInstanceIdService() {
         }
     }
 
-    fun addPetOwnerRequest(baseTag: BaseTag) {
+    fun addPetOwnerRequestObservable(baseTag: BaseTag): Observable<Boolean> = Observable.create {
+        subscriber ->
         if(baseTag.petId.isNotEmpty()) {
             Log.d(TAG, "Adding owner pet")
 
@@ -195,16 +194,24 @@ class FirebaseService : FirebaseInstanceIdService() {
                 }
 
                 override fun onDataChange(dataSnapshot: DataSnapshot?) {
-                    val requestKey = getDatabaseReference(DATABASE_REQUESTS_PATH).push().key
-                    val request = Request(getCurrentUserUID(), baseTag.petId, Calendar.getInstance().timeInMillis.toString())
-                    val childUpdates = HashMap<String, Any?>()
+                    if(dataSnapshot != null && dataSnapshot.hasChildren()) {
+                        if (dataSnapshot.children.any { it.key == getCurrentUserUID() }) {
+                            subscriber.onNext(true)
+                        } else {
+                            subscriber.onNext(false)
+                            val requestKey = getDatabaseReference(DATABASE_REQUESTS_PATH).push().key
+                            val request = Request(getCurrentUserUID(), baseTag.petId, Calendar.getInstance().timeInMillis.toString())
+                            val childUpdates = HashMap<String, Any?>()
 
-                    with(childUpdates) {
-                        put(DATABASE_REQUESTS_PATH + requestKey, request.toMap())
-                        dataSnapshot?.children?.forEach { put(DATABASE_USERS_PATH + it.key + "/" + User.DATABASE_REQUESTS_CHILD + "/" + requestKey, true) }
+                            with(childUpdates) {
+                                put(DATABASE_REQUESTS_PATH + requestKey, request.toMap())
+                                dataSnapshot.children.forEach { put(DATABASE_USERS_PATH + it.key + "/" + User.DATABASE_REQUESTS_CHILD + "/" + requestKey, true) }
+                            }
+
+                            updateDB(childUpdates)
+                        }
+                        subscriber.onComplete()
                     }
-
-                    updateDB(childUpdates)
                 }
             })
 
@@ -215,6 +222,7 @@ class FirebaseService : FirebaseInstanceIdService() {
 
     fun allowPetOwner(request: Request, key: String, allow: Boolean) {
         Log.d(TAG, "Allowing owner pet")
+        getUserRequestsReference(getCurrentUserUID()).child(key).setValue(null)
 
         getPetReference(request.petId).child(Buddy.DATABASE_OWNS_CHILD).addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onCancelled(error: DatabaseError?) {
