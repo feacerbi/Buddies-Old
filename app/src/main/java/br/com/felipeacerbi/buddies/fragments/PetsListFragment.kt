@@ -81,7 +81,7 @@ open class PetsListFragment : Fragment(), IListClickListener {
     }
 
     open fun setUpFab(show: Boolean) {
-        activity.fab?.setUp(activity, show, R.drawable.ic_camera_alt_white_24dp) {
+        activity.fab?.setUp(activity, show, R.drawable.ic_add_a_photo_white_24dp) {
             permissionsManager.launchWithPermission(Manifest.permission.CAMERA) { activity.launchActivity(QRCodeActivity::class) }
         }
     }

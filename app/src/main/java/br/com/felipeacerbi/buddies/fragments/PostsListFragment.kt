@@ -1,21 +1,18 @@
 package br.com.felipeacerbi.buddies.fragments
 
 import android.os.Bundle
+import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RelativeLayout
 import br.com.felipeacerbi.buddies.R
-import br.com.felipeacerbi.buddies.activities.PlaceActivity
-import br.com.felipeacerbi.buddies.activities.SuggestPlaceActivity
-import br.com.felipeacerbi.buddies.adapters.PlacesAdapter
-import br.com.felipeacerbi.buddies.utils.launchActivityForResult
-import br.com.felipeacerbi.buddies.utils.launchActivityWithExtras
+import br.com.felipeacerbi.buddies.adapters.PostsAdapter
+import br.com.felipeacerbi.buddies.models.Post
 import br.com.felipeacerbi.buddies.utils.setUp
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.places_list.view.*
+import kotlinx.android.synthetic.main.buddies_list.view.*
 
 
 /**
@@ -26,34 +23,35 @@ import kotlinx.android.synthetic.main.places_list.view.*
  * Mandatory empty constructor for the fragment manager to instantiate the
  * fragment (e.g. upon screen orientation changes).
  */
-open class PlacesListFragment : PetsListFragment() {
+open class PostsListFragment : PetsListFragment() {
 
     companion object {
-        val SUGGEST_PLACE = 300
+        val TAG = "PostsListFragment"
     }
 
-    val placesFab by lazy {
+    val postsFab by lazy {
         activity.fab
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val view = inflater?.inflate(R.layout.places_list, container, false)
+
+        val view = inflater?.inflate(R.layout.posts_list, container, false)
 
         // Set the adapter
-        if(view is RelativeLayout) {
+        if(view is ConstraintLayout) {
             with(view) {
-                list.layoutManager = LinearLayoutManager (context)
-                list.adapter = PlacesAdapter(this@PlacesListFragment, ref, progress)
+                list.layoutManager = LinearLayoutManager(context)
+                list.adapter = PostsAdapter(activity, ref, firebaseService.getPostsReference(), progress)
                 list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                     override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
                         super.onScrolled(recyclerView, dx, dy)
                         if (dy > 0) {
-                            placesFab?.hide()
-                            placesFab?.isClickable = false
+                            postsFab?.hide()
+                            postsFab?.isClickable = false
                         } else {
-                            placesFab?.show()
-                            placesFab?.isClickable = true
+                            postsFab?.show()
+                            postsFab?.isClickable = true
                         }
                     }
                 })
@@ -69,15 +67,16 @@ open class PlacesListFragment : PetsListFragment() {
     }
 
     override fun setUpFab(show: Boolean) {
-        placesFab?.setUp(activity, show, R.drawable.ic_add_location_white_24dp) {
-            activity.launchActivityForResult(SuggestPlaceActivity::class, SUGGEST_PLACE)
+        postsFab?.setUp(activity, show, R.drawable.plus_sign) {
+            //permissionsManager.launchWithPermission(Manifest.permission.CAMERA) { activity.launchActivity(QRCodeActivity::class) }
+            val new = Post(
+                    "-KrYn7zXulpuGqBtlaGN",
+                    "Check out these four!",
+                    location = "Siberia"
+            )
+            firebaseService.addPost(new)
         }
     }
 
-    override fun onListClick(identifiers: Array<Any>?) {
-        activity.launchActivityWithExtras(
-                PlaceActivity::class,
-                arrayOf(PlaceActivity.EXTRA_PLACEID),
-                identifiers)
-    }
+    override fun getViewInflater() = activity.layoutInflater
 }

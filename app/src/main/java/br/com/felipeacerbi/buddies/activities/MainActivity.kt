@@ -15,6 +15,7 @@ import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.base.TagHandlerActivity
 import br.com.felipeacerbi.buddies.fragments.PetsListFragment
 import br.com.felipeacerbi.buddies.fragments.PlacesListFragment
+import br.com.felipeacerbi.buddies.fragments.PostsListFragment
 import br.com.felipeacerbi.buddies.models.User
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
 import br.com.felipeacerbi.buddies.utils.launchActivity
@@ -101,7 +102,6 @@ class MainActivity : TagHandlerActivity() {
     override fun onResume() {
         super.onResume()
         firebaseAuth.addAuthStateListener(firebaseAuthStateListener)
-        navigation.selectedItemId = currentFragment
     }
 
     override fun onPause() {
@@ -112,10 +112,11 @@ class MainActivity : TagHandlerActivity() {
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             FRAGMENT_POSTS -> {
-//                transactToFragment(
-//                        PetsListFragment(),
-//                        container.id,
-//                        makeQueryBundle(firebaseService.queryFollow()))
+                PostsListFragment().transact(
+                        this,
+                        container.id,
+                        Bundle().makeQueryBundle(this, firebaseService.queryPosts())
+                )
                 currentFragment = FRAGMENT_POSTS
                 return@OnNavigationItemSelectedListener true
             }
@@ -153,6 +154,8 @@ class MainActivity : TagHandlerActivity() {
                     .putBoolean(SettingsActivity.QR_CODE_BUTTON_SHORTCUT_KEY, !nfcService.isNFCSupported(this))
                     .apply()
         }
+
+        navigation.selectedItemId = currentFragment
     }
 
     override fun showTagOptionsDialog(baseTag: BaseTag) {

@@ -51,6 +51,7 @@
         app:stroke_color="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="@id/picture"
         app:layout_constraintEnd_toEndOf="@id/picture"
+        android:tint="@color/colorPrimary"
         android:src="@drawable/ic_edit_black_24dp"/>
 
     <android.support.design.widget.TextInputLayout

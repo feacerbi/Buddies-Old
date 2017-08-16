@@ -1,9 +1,7 @@
 package br.com.felipeacerbi.buddies.firebase
 
-import android.content.Context
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import br.com.felipeacerbi.buddies.models.*
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
 import com.google.firebase.auth.FirebaseAuth
@@ -30,6 +28,7 @@ class FirebaseService : FirebaseInstanceIdService() {
         val DATABASE_PLACES_PATH = "places/"
         val DATABASE_FITEMS_PATH = "fitems/"
         val DATABASE_ANIMALS_PATH = "animals/"
+        val DATABASE_POSTS_PATH = "posts/"
     }
 
     val firebaseAuth = FirebaseAuth.getInstance()
@@ -200,7 +199,7 @@ class FirebaseService : FirebaseInstanceIdService() {
                         } else {
                             subscriber.onNext(false)
                             val requestKey = getDatabaseReference(DATABASE_REQUESTS_PATH).push().key
-                            val request = Request(getCurrentUserUID(), baseTag.petId, Calendar.getInstance().timeInMillis.toString())
+                            val request = Request(getCurrentUserUID(), baseTag.petId)
                             val childUpdates = HashMap<String, Any?>()
 
                             with(childUpdates) {
@@ -333,7 +332,7 @@ class FirebaseService : FirebaseInstanceIdService() {
         }
     }
 
-    // Places
+    // Places API
     fun getPlaceReference(placeId: String) = getPlacesReference().child(placeId)
     fun getPlacesReference() = getDatabaseReference(DATABASE_PLACES_PATH)
     fun addPlace(place: Place) {
@@ -370,16 +369,16 @@ class FirebaseService : FirebaseInstanceIdService() {
         }
     }
 
-    // Friendly Items
+    // Friendly Items API
     fun getFriendlyItemsReference() = getDatabaseReference(DATABASE_FITEMS_PATH)
     fun getFriendlyItemReference(fitemId: String) = getFriendlyItemsReference().child(fitemId)
     fun getPlaceFriendlyItemsReference(placeId: String) = getPlaceReference(placeId).child(Place.DATABASE_ITEMS_CHILD)
 
-    // Animals
+    // Animals API
     fun getAnimalsReference() = getDatabaseReference(DATABASE_ANIMALS_PATH)
     fun getAnimalBreedsReference(animal: String) = getAnimalsReference().child(animal)
 
-    // Storage
+    // Storage API
     fun uploadPersonalFile(path: Uri, onSuccess: (Uri) -> Unit) {
         firebaseStoreService.getUserStorageReference(getCurrentUserUID()).child(path.lastPathSegment).putFile(path)
                 .addOnSuccessListener {
@@ -413,13 +412,68 @@ class FirebaseService : FirebaseInstanceIdService() {
                 }
     }
 
+    fun uploadPostFile(postId: String, path: Uri, onSuccess: (Uri) -> Unit) {
+        firebaseStoreService.getPostStorageService(postId).child(path.lastPathSegment).putFile(path)
+                .addOnSuccessListener {
+                    val downloadUrl = it.downloadUrl
+
+                    if(downloadUrl != null) {
+                        onSuccess(downloadUrl)
+                    }
+                }
+    }
+
     // Requests API
     fun getRequestsReference() = getDatabaseReference(DATABASE_REQUESTS_PATH)
     fun getRequestReference(requestId: String) = getRequestsReference().child(requestId)
     fun getUserRequestsReference(username: String) = getUserReference(username).child(User.DATABASE_REQUESTS_CHILD)
 
+    // Posts API
+    fun getPostsReference() = getDatabaseReference(DATABASE_POSTS_PATH)
+    fun getPostReference(postId: String) = getPostsReference().child(postId)
+    fun getPetPostsReference(petId: String) = getPetReference(petId).child(Buddy.DATABASE_POSTS_CHILD)
+    fun getUserPostsReference(username: String) = getUserReference(username).child(User.DATABASE_POSTS_CHILD)
+    fun addPost(post: Post) {
+        Log.d(TAG, "Adding new post")
+        val postKey = getPostsReference().push().key
+        val childUpdates = HashMap<String, Any?>()
+
+        if(post.photo.isNotEmpty()) {
+            uploadPlaceFile(postKey, Uri.parse(post.photo)) {
+                downloadUrl ->
+                post.photo = downloadUrl.toString()
+
+                childUpdates.put(DATABASE_POSTS_PATH + postKey, post.toMap())
+            }
+        } else {
+            childUpdates.put(DATABASE_POSTS_PATH + postKey, post.toMap())
+        }
+
+        childUpdates.put(DATABASE_PETS_PATH + post.petId + "/" + Buddy.DATABASE_POSTS_CHILD + "/" + postKey, true)
+
+        //Temporary
+        childUpdates.put(DATABASE_USERS_PATH + getCurrentUserUID() + "/" + User.DATABASE_POSTS_CHILD + "/" + postKey, true)
+
+        updateDB(childUpdates)
+    }
+
+    fun addPostLike(postId: String) {
+        val childUpdates = HashMap<String, Any?>()
+
+            childUpdates.put(DATABASE_POSTS_PATH + postId + "/" + Post.DATABASE_LIKES_CHILD + "/" + getCurrentUserUID(), true)
+            updateDB(childUpdates)
+    }
+
+    fun removePostLike(postId: String) {
+        val childUpdates = HashMap<String, Any?>()
+
+        childUpdates.put(DATABASE_POSTS_PATH + postId + "/" + Post.DATABASE_LIKES_CHILD + "/" + getCurrentUserUID(), null)
+        updateDB(childUpdates)
+    }
+
     fun queryBuddies() = getUserPetsReference(getCurrentUserUID())
     fun queryFollow() = getUserFollowReference(getCurrentUserUID())
     fun queryRequests() = getUserRequestsReference(getCurrentUserUID())
     fun queryPlaces() = getPlacesReference()//.orderByChild(Place.DATABASE_ADDRESS_CHILD)
+    fun queryPosts() = getUserPostsReference(getCurrentUserUID())
 }

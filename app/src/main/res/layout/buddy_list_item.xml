@@ -12,7 +12,8 @@
         android:src="@drawable/ic_delete_black_24dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:layout_alignParentEnd="true"/>
+        android:layout_alignParentEnd="true"
+        android:tint="@color/colorPrimary"/>
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/click_profile_layout"
@@ -55,6 +56,7 @@
                 android:id="@+id/separator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textSize="14sp"
                 app:layout_constraintStart_toEndOf="@id/animal"
                 app:layout_constraintTop_toBottomOf="@id/name"
                 android:text="  •  "/>

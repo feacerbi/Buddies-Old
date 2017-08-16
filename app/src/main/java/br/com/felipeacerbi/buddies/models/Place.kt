@@ -55,5 +55,5 @@ data class Place(
 
     fun calcRating() = (items.size.toFloat() / 5 * 100).toInt()
 
-    fun getRatingGrade() = (items.size.toFloat() / 5 * 10).toInt().toString()
+    fun getRatingGrade() = (items.size.toFloat() / 5 * 10).toInt().toString() + " / 10"
 }

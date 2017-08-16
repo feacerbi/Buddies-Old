@@ -150,7 +150,7 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
     }
 
     fun showFab(show: Boolean) {
-        fab?.setUp(this, show, R.drawable.ic_camera_alt_white_24dp) {
+        fab?.setUp(this, show, R.drawable.ic_add_a_photo_white_24dp) {
             permissionsManager.launchWithPermission(Manifest.permission.CAMERA) { launchActivity(QRCodeActivity::class) }
         }
     }

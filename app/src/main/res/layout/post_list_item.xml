@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:background="#FFFFFF"
+    android:maxHeight="600dp"
+    android:elevation="2dp">
+
+    <cn.gavinliu.android.lib.shapedimageview.ShapedImageView
+        android:id="@+id/post_profile_photo"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_margin="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shape_mode="circle"
+        android:src="@drawable/dog_profile"/>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/post_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/post_profile_photo"
+        app:layout_constraintBottom_toBottomOf="@id/post_profile_photo">
+
+        <TextView
+            android:id="@+id/poster_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="72dp"
+            app:layout_constraintStart_toStartOf="parent"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:text="Little Rex"/>
+
+        <TextView
+            android:id="@+id/post_timestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="72dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/poster_name"
+            android:textSize="12sp"
+            android:text="2h"/>
+
+        <TextView
+            android:id="@+id/post_separator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/post_timestamp"
+            app:layout_constraintTop_toBottomOf="@id/poster_name"
+            android:textSize="12sp"
+            android:text="  •  "/>
+
+        <TextView
+            android:id="@+id/post_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/post_separator"
+            app:layout_constraintTop_toBottomOf="@id/poster_name"
+            android:textSize="12sp"
+            android:text="Siberia"/>
+    </android.support.constraint.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/post_message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/post_profile_photo" />
+
+    <ImageView
+        android:id="@+id/post_photo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/post_message"
+        android:scaleType="centerInside"
+        android:adjustViewBounds="true"/>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/post_footer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/post_photo"
+        android:padding="16dp">
+        <ImageView
+            android:id="@+id/post_like_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tint="@color/colorPrimary"
+            android:src="@drawable/ic_favorite_black_24dp"
+            android:alpha="0.7"/>
+        <ImageView
+            android:id="@+id/post_comment_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tint="@color/colorPrimary"
+            android:src="@drawable/ic_chat_bubble_black_24dp"
+            android:alpha="0.7"
+            android:layout_marginEnd="32dp"
+            app:layout_constraintEnd_toStartOf="@id/post_share_button"/>
+        <ImageView
+            android:id="@+id/post_share_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tint="@color/colorPrimary"
+            android:src="@drawable/ic_share_black_24dp"
+            android:alpha="0.7"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.constraint.ConstraintLayout>

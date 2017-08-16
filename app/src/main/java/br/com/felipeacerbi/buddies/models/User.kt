@@ -10,7 +10,8 @@ data class User(
         var created: Long = System.currentTimeMillis(),
         var buddies: Map<String, Boolean> = HashMap(),
         var following: Map<String, Boolean> = HashMap(),
-        var requests: Map<String, Boolean> = HashMap()) {
+        var requests: Map<String, Boolean> = HashMap(),
+        var posts: Map<String, Boolean> = HashMap()) {
 
     companion object {
         val DATABASE_NAME_CHILD = "name"
@@ -21,6 +22,7 @@ data class User(
         val DATABASE_OWNS_CHILD = "owns"
         val DATABASE_FOLLOWS_CHILD = "follows"
         val DATABASE_REQUESTS_CHILD = "requests"
+        val DATABASE_POSTS_CHILD = "posts"
     }
 
     constructor(dataSnapshot: DataSnapshot) : this() {
@@ -35,7 +37,8 @@ data class User(
             Pair(DATABASE_CREATED_CHILD, created),
             Pair(DATABASE_OWNS_CHILD, buddies),
             Pair(DATABASE_FOLLOWS_CHILD, following),
-            Pair(DATABASE_REQUESTS_CHILD, requests))
+            Pair(DATABASE_REQUESTS_CHILD, requests),
+            Pair(DATABASE_POSTS_CHILD, posts))
 
     fun fromMap(dataSnapshot: DataSnapshot) {
         name = dataSnapshot.child(DATABASE_NAME_CHILD).value as String
@@ -52,6 +55,9 @@ data class User(
 
         val requestsSnapshot = dataSnapshot.child(DATABASE_REQUESTS_CHILD).value
         if(checkNull(requestsSnapshot)) requests = requestsSnapshot as Map<String, Boolean>
+
+        val postsSnapshot = dataSnapshot.child(DATABASE_POSTS_CHILD).value
+        if(checkNull(postsSnapshot)) posts = postsSnapshot as Map<String, Boolean>
     }
 
     fun checkNull(value: Any?) = value != null

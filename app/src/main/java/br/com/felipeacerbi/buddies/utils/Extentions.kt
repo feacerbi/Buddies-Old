@@ -43,10 +43,12 @@ fun ByteArray.toHexString(): String {
     return out
 }
 
+fun Long.toFormatedDate() = this.toString().toFormatedDate()
+
 fun String.toFormatedDate(): String {
     val reqTime = Calendar.getInstance()
     reqTime.timeInMillis = this.toLong()
-    return reqTime.time.toString().substringBeforeLast(" GMT")
+    return reqTime.time.toString().substringBeforeLast(" GMT").substringBeforeLast(":")
 }
 
 fun String.toFormatedWebsite(): String {

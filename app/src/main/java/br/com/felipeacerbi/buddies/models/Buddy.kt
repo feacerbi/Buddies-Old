@@ -10,7 +10,8 @@ data class Buddy(
         var tagId: String = "",
         var created: Long = System.currentTimeMillis(),
         var owners: Map<String, Boolean> = HashMap(),
-        var followers: Map<String, Boolean> = HashMap()) {
+        var followers: Map<String, Boolean> = HashMap(),
+        var posts: Map<String, Boolean> = HashMap()) {
 
     companion object {
         val DATABASE_NAME_CHILD = "name"
@@ -21,6 +22,7 @@ data class Buddy(
         val DATABASE_CREATED_CHILD = "created"
         val DATABASE_OWNS_CHILD = "owns"
         val DATABASE_FOLLOWS_CHILD = "follows"
+        val DATABASE_POSTS_CHILD = "posts"
     }
 
     constructor(dataSnapshot: DataSnapshot): this() {
@@ -42,7 +44,8 @@ data class Buddy(
             Pair(DATABASE_TAG_CHILD, tagId),
             Pair(DATABASE_CREATED_CHILD, created),
             Pair(DATABASE_OWNS_CHILD, owners),
-            Pair(DATABASE_FOLLOWS_CHILD, followers))
+            Pair(DATABASE_FOLLOWS_CHILD, followers),
+            Pair(DATABASE_POSTS_CHILD, posts))
 
     fun fromMap(dataSnapshot: DataSnapshot) {
         name = dataSnapshot.child(DATABASE_NAME_CHILD).value as String
@@ -57,6 +60,9 @@ data class Buddy(
 
         val followersSnapshot = dataSnapshot.child(DATABASE_FOLLOWS_CHILD).value
         if(checkNull(followersSnapshot)) followers = followersSnapshot as Map<String, Boolean>
+
+        val postsSnapshot = dataSnapshot.child(DATABASE_POSTS_CHILD).value
+        if(checkNull(postsSnapshot)) posts = postsSnapshot as Map<String, Boolean>
     }
 
     fun checkNull(value: Any?) = value != null

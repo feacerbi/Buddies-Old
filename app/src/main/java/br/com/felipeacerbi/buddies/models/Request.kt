@@ -5,7 +5,7 @@ import com.google.firebase.database.DataSnapshot
 data class Request(
         var username: String = "",
         var petId: String = "",
-        var timestamp: String = "") {
+        var timestamp: Long = System.currentTimeMillis()) {
 
     companion object {
         val DATABASE_USERNAME_CHILD = "username"
@@ -25,6 +25,6 @@ data class Request(
     fun fromMap(dataSnapshot: DataSnapshot) {
         username = dataSnapshot.child(DATABASE_USERNAME_CHILD).value as String
         petId = dataSnapshot.child(DATABASE_PETID_CHILD).value as String
-        timestamp = dataSnapshot.child(DATABASE_TIMESTAMP_CHILD).value as String
+        timestamp = dataSnapshot.child(DATABASE_TIMESTAMP_CHILD).value as Long
     }
 }
