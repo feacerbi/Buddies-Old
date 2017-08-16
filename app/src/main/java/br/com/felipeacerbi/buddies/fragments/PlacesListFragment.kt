@@ -1,5 +1,7 @@
 package br.com.felipeacerbi.buddies.fragments
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -14,6 +16,7 @@ import br.com.felipeacerbi.buddies.adapters.PlacesAdapter
 import br.com.felipeacerbi.buddies.utils.launchActivityForResult
 import br.com.felipeacerbi.buddies.utils.launchActivityWithExtras
 import br.com.felipeacerbi.buddies.utils.setUp
+import com.google.android.gms.location.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.places_list.view.*
 
@@ -36,6 +39,20 @@ open class PlacesListFragment : PetsListFragment() {
         activity.fab
     }
 
+    val locationProvider: FusedLocationProviderClient  by lazy {
+        LocationServices.getFusedLocationProviderClient(activity)
+    }
+
+    val locationCallback: LocationCallback by lazy {
+        object: LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult?) {
+                if(locationResult?.lastLocation != null) {
+                    firebaseService.registerUserLocation(locationResult.lastLocation)
+                }
+            }
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater?.inflate(R.layout.places_list, container, false)
@@ -44,7 +61,7 @@ open class PlacesListFragment : PetsListFragment() {
         if(view is RelativeLayout) {
             with(view) {
                 list.layoutManager = LinearLayoutManager (context)
-                list.adapter = PlacesAdapter(this@PlacesListFragment, ref, progress)
+                list.adapter = PlacesAdapter(this@PlacesListFragment, ref.orderByValue(), progress)
                 list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                     override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
                         super.onScrolled(recyclerView, dx, dy)
@@ -66,6 +83,43 @@ open class PlacesListFragment : PetsListFragment() {
     override fun onResume() {
         super.onResume()
         setUpFab(true)
+        getUserLocation()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        stopLocationUpdates()
+    }
+
+    @SuppressLint("MissingPermission") // Handled by Permissions Manager
+    fun getUserLocation() {
+        permissionsManager.actionWithPermission(Manifest.permission.ACCESS_FINE_LOCATION) {
+            locationProvider.lastLocation.addOnSuccessListener {
+                location ->
+                firebaseService.registerUserLocation(location)
+                startLocationUpdates()
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission") // Handled by Permissions Manager
+    fun startLocationUpdates() {
+        locationProvider.requestLocationUpdates(
+                createLocationRequest(),
+                locationCallback,
+                null)
+    }
+
+    fun stopLocationUpdates() {
+        locationProvider.removeLocationUpdates(locationCallback)
+    }
+
+    fun createLocationRequest(): LocationRequest {
+        val locationRequest = LocationRequest()
+        locationRequest.interval = 300000 // 5 minutes
+        locationRequest.fastestInterval = 60000 // 1 minute
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        return locationRequest
     }
 
     override fun setUpFab(show: Boolean) {

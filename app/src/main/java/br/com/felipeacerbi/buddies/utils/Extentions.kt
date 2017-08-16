@@ -57,6 +57,18 @@ fun String.toFormatedWebsite(): String {
     return this.replace("//", "//www.", true)
 }
 
+fun Long.toDistanceUnits(): String {
+    var unit = "m"
+    var value = this.toFloat()
+
+    if(value / 1000 > 1) {
+        unit = "km"
+        value /= 1000
+    }
+
+    return Math.round(value).toString() + " " + unit
+}
+
 fun AlertDialog.Builder.showOneChoiceCancelableDialog(
         title: String,
         message: String,

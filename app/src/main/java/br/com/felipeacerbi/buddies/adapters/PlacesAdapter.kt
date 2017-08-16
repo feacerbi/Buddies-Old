@@ -11,22 +11,23 @@ import br.com.felipeacerbi.buddies.adapters.listeners.IListClickListener
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.models.FriendlyItem
 import br.com.felipeacerbi.buddies.models.Place
+import br.com.felipeacerbi.buddies.utils.toDistanceUnits
 import com.firebase.ui.database.ChangeEventListener
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.Query
 import com.google.firebase.database.ValueEventListener
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.place_list_item.view.*
 
-class PlacesAdapter(val listener: IListClickListener, val placesReference: DatabaseReference, val progressBar: ProgressBar) :
-        FirebaseRecyclerAdapter<Place, PlacesAdapter.PlaceViewHolder>
+class PlacesAdapter(val listener: IListClickListener, val userPlacesReference: Query, val progressBar: ProgressBar) :
+        FirebaseRecyclerAdapter<Long, PlacesAdapter.PlaceViewHolder>
         (
-                Place::class.java,
+                Long::class.java,
                 R.layout.place_list_item,
                 PlaceViewHolder::class.java,
-                placesReference
+                userPlacesReference
         ) {
 
     companion object {
@@ -35,42 +36,54 @@ class PlacesAdapter(val listener: IListClickListener, val placesReference: Datab
 
     val firebaseService = FirebaseService()
 
-    override fun populateViewHolder(holder: PlaceViewHolder?, place: Place?, position: Int) {
-        if(holder != null && place != null) {
-            with(holder.itemView) {
-                place_name.text = place.name
-                place_category.text = place.category
-                place_meter.progress = place.calcRating()
-//                place_distance.text = calculateDistance()
+    override fun populateViewHolder(holder: PlaceViewHolder, item: Long, position: Int) {
+        val placeKey = getRef(position).key
 
-                firebaseService.getPlaceFriendlyItemsReference(getRef(position).key).addListenerForSingleValueEvent(object: ValueEventListener{
-                    override fun onCancelled(error: DatabaseError?) {
-                        Log.d(TAG, "Fail to retrieve place")
-                    }
-
-                    override fun onDataChange(dataSnapshot: DataSnapshot?) {
-                        if(dataSnapshot?.value != null && dataSnapshot.hasChildren()) {
-                            friendly_items_bottom.removeAllViews()
-                            dataSnapshot.children.forEach {
-                                friendly_items_bottom.addView(createFriendlyView(it))
-                            }
-                        }
-                    }
-                })
-
-                if(place.photo.isNotEmpty()) {
-                    Picasso.with(listener.getContext())
-                            .load(place.photo)
-                            .placeholder(R.drawable.no_phototn)
-                            .error(R.drawable.no_phototn)
-                            .fit()
-                            .centerCrop()
-                            .into(place_photo)
-                }
-
-                setOnClickListener { listener.onListClick(arrayOf(getRef(position).key)) }
+        firebaseService.getPlaceReference(placeKey).addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onCancelled(p0: DatabaseError?) {
+                Log.d(TAG, "Fail to retrieve place")
             }
-        }
+
+            override fun onDataChange(placeSnapshot: DataSnapshot?) {
+                if(placeSnapshot?.value != null && placeSnapshot.hasChildren()) {
+                    val place = Place(placeSnapshot)
+
+                    with(holder.itemView) {
+                        place_name.text = place.name
+                        place_category.text = place.category
+                        place_distance.text = item.toDistanceUnits()
+
+                        firebaseService.getPlaceFriendlyItemsReference(getRef(position).key).addListenerForSingleValueEvent(object: ValueEventListener{
+                            override fun onCancelled(error: DatabaseError?) {
+                                Log.d(TAG, "Fail to retrieve friendly place")
+                            }
+
+                            override fun onDataChange(fitemSnapshot: DataSnapshot?) {
+                                if(fitemSnapshot?.value != null && fitemSnapshot.hasChildren()) {
+                                    friendly_items_bottom.removeAllViews()
+                                    fitemSnapshot.children.forEach {
+                                        friendly_items_bottom.addView(createFriendlyView(it))
+                                    }
+                                    place_meter.progress = place.calcRating(fitemSnapshot.childrenCount)
+                                }
+                            }
+                        })
+
+                        if(place.photo.isNotEmpty()) {
+                            Picasso.with(listener.getContext())
+                                    .load(place.photo)
+                                    .placeholder(R.drawable.no_phototn)
+                                    .error(R.drawable.no_phototn)
+                                    .fit()
+                                    .centerCrop()
+                                    .into(place_photo)
+                        }
+
+                        setOnClickListener { listener.onListClick(arrayOf(getRef(position).key)) }
+                    }
+                }
+            }
+        })
     }
 
     fun createFriendlyView(dataSnapshot: DataSnapshot): View {
@@ -96,6 +109,11 @@ class PlacesAdapter(val listener: IListClickListener, val placesReference: Datab
 
         view.layoutParams = params
         return view
+    }
+
+    override fun onDataChanged() {
+        super.onDataChanged()
+        hideProgressBar()
     }
 
     override fun onChildChanged(type: ChangeEventListener.EventType?, snapshot: DataSnapshot?, index: Int, oldIndex: Int) {

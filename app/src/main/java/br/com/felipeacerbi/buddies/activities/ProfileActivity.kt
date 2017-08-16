@@ -56,7 +56,7 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
         // Set the adapter
         with(buddies_list) {
             layoutManager = LinearLayoutManager(context)
-            adapter = BuddiesAdapter(this@ProfileActivity, firebaseService.queryBuddies(), progress)
+            adapter = BuddiesAdapter(this@ProfileActivity, firebaseService.queryBuddies(), firebaseService.getPetsReference(), progress)
         }
 
         profile_name_edit_button.setOnClickListener {
@@ -151,7 +151,7 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
 
     fun showFab(show: Boolean) {
         fab?.setUp(this, show, R.drawable.ic_add_a_photo_white_24dp) {
-            permissionsManager.launchWithPermission(Manifest.permission.CAMERA) { launchActivity(QRCodeActivity::class) }
+            permissionsManager.actionWithPermission(Manifest.permission.CAMERA) { launchActivity(QRCodeActivity::class) }
         }
     }
 

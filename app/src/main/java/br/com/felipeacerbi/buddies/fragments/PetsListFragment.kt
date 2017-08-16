@@ -60,7 +60,7 @@ open class PetsListFragment : Fragment(), IListClickListener {
         if(view is RelativeLayout) {
             with(view) {
                 list.layoutManager = LinearLayoutManager(context)
-                list.adapter = BuddiesAdapter(this@PetsListFragment, ref, progress)
+                list.adapter = BuddiesAdapter(this@PetsListFragment, ref, firebaseService.getPetsReference(), progress)
             }
         }
 
@@ -82,7 +82,7 @@ open class PetsListFragment : Fragment(), IListClickListener {
 
     open fun setUpFab(show: Boolean) {
         activity.fab?.setUp(activity, show, R.drawable.ic_add_a_photo_white_24dp) {
-            permissionsManager.launchWithPermission(Manifest.permission.CAMERA) { activity.launchActivity(QRCodeActivity::class) }
+            permissionsManager.actionWithPermission(Manifest.permission.CAMERA) { activity.launchActivity(QRCodeActivity::class) }
         }
     }
 

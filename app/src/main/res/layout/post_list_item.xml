@@ -16,8 +16,7 @@
         android:layout_margin="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:shape_mode="circle"
-        android:src="@drawable/dog_profile"/>
+        app:shape_mode="circle"/>
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/post_header"

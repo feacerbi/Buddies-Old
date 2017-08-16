@@ -55,8 +55,6 @@ class PlaceActivity : FireListener() {
                         toolbar_layout.title = place?.name
                         address_text.text = place?.address
                         place_description.text = place?.description
-                        progress.progress = place?.calcRating() ?: 0
-                        progress_number.text = place?.getRatingGrade()
                         phone_text.text = place?.phone
                         website_text.text = place?.website
 
@@ -79,6 +77,8 @@ class PlaceActivity : FireListener() {
                                         it.children.forEach {
                                             friendly_items.addView(createFriendlyView(it))
                                         }
+                                        progress.progress = place?.calcRating(it.childrenCount) ?: 0
+                                        progress_number.text = place?.getRatingGrade(it.childrenCount)
                                     }
                                 }
                                 .cancel { Log.d(TAG, "Friendly item not found") }

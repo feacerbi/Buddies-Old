@@ -1,9 +1,11 @@
 package br.com.felipeacerbi.buddies.firebase
 
+import android.location.Location
 import android.net.Uri
 import android.util.Log
 import br.com.felipeacerbi.buddies.models.*
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
+import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -83,6 +85,15 @@ class FirebaseService : FirebaseInstanceIdService() {
 
             updateDB(childUpdates)
         }
+    }
+
+    fun registerUserLocation(location: Location) {
+        val childUpdates = HashMap<String, Any?>()
+        val currentUserPath = DATABASE_USERS_PATH + getCurrentUserUID() + "/"
+
+        childUpdates.put(currentUserPath + User.DATABASE_LATLONG_CHILD, LatLng(location.latitude, location.longitude))
+
+        updateDB(childUpdates)
     }
 
     fun checkUserObservable(username: String): Observable<Pair<Boolean, User>> = Observable.create {
@@ -335,6 +346,7 @@ class FirebaseService : FirebaseInstanceIdService() {
     // Places API
     fun getPlaceReference(placeId: String) = getPlacesReference().child(placeId)
     fun getPlacesReference() = getDatabaseReference(DATABASE_PLACES_PATH)
+    fun getUserPlacesReference(username: String) = getUserReference(username).child(User.DATABASE_PLACES_CHILD)
     fun addPlace(place: Place) {
         Log.d(TAG, "Adding new place")
         val placeKey = getPlacesReference().push().key
@@ -474,6 +486,6 @@ class FirebaseService : FirebaseInstanceIdService() {
     fun queryBuddies() = getUserPetsReference(getCurrentUserUID())
     fun queryFollow() = getUserFollowReference(getCurrentUserUID())
     fun queryRequests() = getUserRequestsReference(getCurrentUserUID())
-    fun queryPlaces() = getPlacesReference()//.orderByChild(Place.DATABASE_ADDRESS_CHILD)
+    fun queryPlaces() = getUserPlacesReference(getCurrentUserUID())
     fun queryPosts() = getUserPostsReference(getCurrentUserUID())
 }

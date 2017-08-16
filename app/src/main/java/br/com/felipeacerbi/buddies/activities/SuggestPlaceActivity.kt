@@ -33,6 +33,8 @@ class SuggestPlaceActivity : FireListener() {
         setContentView(R.layout.activity_suggest_place)
     }
 
+    var mapsPlace: com.google.android.gms.location.places.Place? = null
+
     override fun onResume() {
         super.onResume()
         setUpUI()
@@ -74,6 +76,8 @@ class SuggestPlaceActivity : FireListener() {
                     description = place_description.text.toString(),
                     category = place_category.selectedItem as String,
                     items = getSelectedItems(items_list))
+            newPlace.setLatLongPosition(mapsPlace)
+
             firebaseService.addPlace(newPlace)
             setResult(Activity.RESULT_OK)
             finish()
@@ -119,6 +123,7 @@ class SuggestPlaceActivity : FireListener() {
                     place_name.setText(place.name)
                     place_phone.setText(place.phoneNumber)
                     place_website.setText(place.websiteUri?.toString()?.toFormatedWebsite())
+                    mapsPlace = place
                 }
             }
         }

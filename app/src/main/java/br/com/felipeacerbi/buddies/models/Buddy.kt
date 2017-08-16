@@ -1,7 +1,9 @@
 package br.com.felipeacerbi.buddies.models
 
 import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.IgnoreExtraProperties
 
+@IgnoreExtraProperties
 data class Buddy(
         var name: String = "",
         var animal: String = "",
