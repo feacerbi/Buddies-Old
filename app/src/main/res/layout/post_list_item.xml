@@ -32,8 +32,7 @@
             android:layout_marginStart="72dp"
             app:layout_constraintStart_toStartOf="parent"
             android:textSize="14sp"
-            android:textStyle="bold"
-            android:text="Little Rex"/>
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/post_timestamp"
@@ -42,8 +41,7 @@
             android:layout_marginStart="72dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/poster_name"
-            android:textSize="12sp"
-            android:text="2h"/>
+            android:textSize="12sp"/>
 
         <TextView
             android:id="@+id/post_separator"
@@ -52,6 +50,7 @@
             app:layout_constraintStart_toEndOf="@id/post_timestamp"
             app:layout_constraintTop_toBottomOf="@id/poster_name"
             android:textSize="12sp"
+            android:visibility="gone"
             android:text="  •  "/>
 
         <TextView
@@ -60,8 +59,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toEndOf="@id/post_separator"
             app:layout_constraintTop_toBottomOf="@id/poster_name"
-            android:textSize="12sp"
-            android:text="Siberia"/>
+            android:textSize="12sp"/>
     </android.support.constraint.ConstraintLayout>
 
     <TextView

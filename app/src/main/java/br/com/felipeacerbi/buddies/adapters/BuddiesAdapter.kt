@@ -56,9 +56,9 @@ class BuddiesAdapter(
                         .into(picture)
             }
 
-            val editable = petsReference.key == Buddy.DATABASE_OWNS_CHILD
+            val editable = userPetsReference.key == Buddy.DATABASE_OWNS_CHILD
 
-            remove_button.setOnClickListener { firebaseService.removePetFromUser(petsReference.key, petId) }
+            remove_button.setOnClickListener { firebaseService.removePetFromUser(userPetsReference.key, petId) }
             click_profile_layout.setOnClickListener { listener.onListClick(arrayOf(petId, editable)) }
         }
     }

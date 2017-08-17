@@ -42,7 +42,7 @@ open class PostsListFragment : PetsListFragment() {
         if(view is ConstraintLayout) {
             with(view) {
                 list.layoutManager = LinearLayoutManager(context)
-                list.adapter = PostsAdapter(activity, ref, firebaseService.getPostsReference(), progress)
+                list.adapter = PostsAdapter(this@PostsListFragment, ref, firebaseService.getPostsReference(), progress)
                 list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                     override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
                         super.onScrolled(recyclerView, dx, dy)
@@ -68,7 +68,6 @@ open class PostsListFragment : PetsListFragment() {
 
     override fun setUpFab(show: Boolean) {
         postsFab?.setUp(activity, show, R.drawable.plus_sign) {
-            //permissionsManager.launchWithPermission(Manifest.permission.CAMERA) { activity.launchActivity(QRCodeActivity::class) }
             val new = Post(
                     "-KrYn7zXulpuGqBtlaGN",
                     "Check out these four!",

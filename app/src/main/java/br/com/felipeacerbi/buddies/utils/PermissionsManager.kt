@@ -17,7 +17,7 @@ class PermissionsManager(val activity: Activity) : ActivityCompat.OnRequestPermi
         actionFunction = launch
         if (ContextCompat.checkSelfPermission(activity, permission)
                 == PackageManager.PERMISSION_GRANTED) {
-            launch()
+            actionFunction
         } else {
             requestPermission(permission)
         }

@@ -1,12 +1,12 @@
 package br.com.felipeacerbi.buddies.adapters
 
-import android.content.Context
 import android.content.res.ColorStateList
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import br.com.felipeacerbi.buddies.R
+import br.com.felipeacerbi.buddies.adapters.listeners.IListClickListener
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.models.Buddy
 import br.com.felipeacerbi.buddies.models.Post
@@ -20,7 +20,7 @@ import com.google.firebase.database.ValueEventListener
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.post_list_item.view.*
 
-class PostsAdapter(val context: Context, val userPostsReference: DatabaseReference, val postsReference: DatabaseReference, val progressBar: ProgressBar) :
+class PostsAdapter(val listener: IListClickListener, val userPostsReference: DatabaseReference, val postsReference: DatabaseReference, val progressBar: ProgressBar) :
         FirebaseIndexRecyclerAdapter<Post, PostsAdapter.PostViewHolder>
         (
                 Post::class.java,
@@ -89,6 +89,10 @@ class PostsAdapter(val context: Context, val userPostsReference: DatabaseReferen
             } else {
                 post_separator.visibility = View.VISIBLE
                 post_location.text = post.location
+            }
+
+            post_header.setOnClickListener {
+                listener.onListClick(arrayOf(post.petId, false))
             }
 
             if(post.likes.contains(firebaseService.getCurrentUserUID())) {

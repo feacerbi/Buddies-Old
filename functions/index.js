@@ -9,6 +9,121 @@ admin.initializeApp(functions.config().firebase);
 //  response.send("Hello from Firebase!");
 // });
 
+exports.addNewFollowPosts =
+	functions.database.ref('users/{userId}/follows/{followId}')
+	.onWrite(event => {
+		if (!event.data.val()) {
+            console.log("not a valid event");
+            return;
+        }
+		
+		var userId = event.params.userId;
+		var followId = event.params.followId;
+		
+		const getFollowPosts = admin.database().ref('pets/' + followId + "/posts").once('value');
+		
+		return Promise.all([getFollowPosts]).then(
+			results => {
+				const followPostsSnapshot = results[0];
+				
+				var promises = [];
+				
+				followPostsSnapshot.forEach(
+					followPostSnapshot => {
+						var postKey = followPostSnapshot.key;
+						promises[promises.length] = addPostPromise(userId, postKey);
+					})
+					
+				return Promise.all(promises);
+			})
+	});
+
+exports.handleRequests =
+	functions.database.ref('requests/{requestId}')
+	.onWrite(event => {
+		
+		var requestId = event.params.requestId;
+		var petId = event.data.child("petId").val();
+		
+		const getPetOwnersPromise = admin.database().ref('pets/' + petId + "/owns").once('value');
+		
+		return Promise.all([getPetOwnersPromise]).then(
+			results => {
+				const ownsSnapshot = results[0];
+				
+				var promises = [];
+				
+				ownsSnapshot.forEach(
+					ownerSnapshot => {
+						var ownerKey = ownerSnapshot.key;
+						if(event.data.val()) {
+							promises[promises.length] = addRequestPromise(requestId);
+						} else {
+							promises[promises.length] = removeRequestPromise(requestId);
+						}
+					})
+					
+				return Promise.all(promises);
+			})
+	});
+	
+function addRequestPromise(requestId) {
+	var userRequestsRef = admin.database().ref('users/' + userKey + "/requests/" + requestId);
+	var addRequest = userRequestsRef.set(true);
+	
+	return Promise.all([addRequest]);
+}
+	
+function removeRequestPromise(requestId) {
+	var userRequestsRef = admin.database().ref('users/' + userKey + "/requests/" + requestId);
+	var removeRequest = userRequestsRef.set(null);
+	
+	return Promise.all([removeRequest]);
+}
+
+exports.syncPostToFollows =
+	functions.database.ref('pets/{petId}/posts/{postId}')
+	.onWrite(event => {
+		
+		var petId = event.params.petId;
+		var postId = event.params.postId;
+		
+		const getFollowsPromise = admin.database().ref('pets/' + petId + "/follows").once('value');
+		
+		return Promise.all([getFollowsPromise]).then(
+			results => {
+				const followsSnapshot = results[0];
+				
+				var promises = [];
+				
+				followsSnapshot.forEach(
+					followSnapshot => {
+						var followKey = followSnapshot.key;
+						if(event.data.val()) {
+							promises[promises.length] = addPostPromise(followKey, postId);
+						} else {
+							promises[promises.length] = removePostPromise(followKey, postId);
+						}
+					})
+					
+				return Promise.all(promises);
+			})
+	});
+	
+function addPostPromise(userKey, postId) {
+	var userPostsRef = admin.database().ref('users/' + userKey + "/posts/" + postId);
+	var addPost = userPostsRef.set(true);
+	
+	return Promise.all([addPost]);
+}
+
+function removePostPromise(userKey, postId) {
+	var userPostsRef = admin.database().ref('users/' + userKey + "/posts/" + postId);
+	var addPost = userPostsRef.set(null);
+	
+	return Promise.all([addPost]);
+}
+
 exports.listUserPlaces =
 	functions.database.ref('users/{userId}/latlong')
 	.onWrite(event => {

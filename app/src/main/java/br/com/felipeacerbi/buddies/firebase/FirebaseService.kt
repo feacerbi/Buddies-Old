@@ -215,7 +215,6 @@ class FirebaseService : FirebaseInstanceIdService() {
 
                             with(childUpdates) {
                                 put(DATABASE_REQUESTS_PATH + requestKey, request.toMap())
-                                dataSnapshot.children.forEach { put(DATABASE_USERS_PATH + it.key + "/" + User.DATABASE_REQUESTS_CHILD + "/" + requestKey, true) }
                             }
 
                             updateDB(childUpdates)
@@ -250,7 +249,6 @@ class FirebaseService : FirebaseInstanceIdService() {
                         put(petPath + Buddy.DATABASE_OWNS_CHILD + "/" + request.username, true)
                     }
                     put(DATABASE_REQUESTS_PATH + key, null)
-                    dataSnapshot?.children?.forEach { put(DATABASE_USERS_PATH + it.key + "/" + User.DATABASE_REQUESTS_CHILD + "/" + key, null) }
                 }
 
                 updateDB(childUpdates)
@@ -462,9 +460,6 @@ class FirebaseService : FirebaseInstanceIdService() {
         }
 
         childUpdates.put(DATABASE_PETS_PATH + post.petId + "/" + Buddy.DATABASE_POSTS_CHILD + "/" + postKey, true)
-
-        //Temporary
-        childUpdates.put(DATABASE_USERS_PATH + getCurrentUserUID() + "/" + User.DATABASE_POSTS_CHILD + "/" + postKey, true)
 
         updateDB(childUpdates)
     }
