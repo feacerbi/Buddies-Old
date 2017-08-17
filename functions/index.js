@@ -57,9 +57,9 @@ exports.handleRequests =
 					ownerSnapshot => {
 						var ownerKey = ownerSnapshot.key;
 						if(event.data.val()) {
-							promises[promises.length] = addRequestPromise(requestId);
+							promises[promises.length] = addRequestPromise(requestId, ownerKey);
 						} else {
-							promises[promises.length] = removeRequestPromise(requestId);
+							promises[promises.length] = removeRequestPromise(requestId, ownerKey);
 						}
 					})
 					
@@ -67,14 +67,14 @@ exports.handleRequests =
 			})
 	});
 	
-function addRequestPromise(requestId) {
+function addRequestPromise(requestId, userKey) {
 	var userRequestsRef = admin.database().ref('users/' + userKey + "/requests/" + requestId);
 	var addRequest = userRequestsRef.set(true);
 	
 	return Promise.all([addRequest]);
 }
 	
-function removeRequestPromise(requestId) {
+function removeRequestPromise(requestId, userKey) {
 	var userRequestsRef = admin.database().ref('users/' + userKey + "/requests/" + requestId);
 	var removeRequest = userRequestsRef.set(null);
 	
