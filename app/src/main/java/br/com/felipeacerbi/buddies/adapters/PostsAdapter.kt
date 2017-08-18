@@ -56,6 +56,10 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Dat
                                 .fit()
                                 .centerCrop()
                                 .into(post_profile_photo)
+
+                        post_photo.setOnClickListener {
+                            listener.onListClick(arrayOf(post.photo, post.message, buddy.name))
+                        }
                     }
                 }
             }

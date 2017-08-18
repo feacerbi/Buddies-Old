@@ -114,13 +114,24 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
                         profile_name.text = user?.name
                         profile_email.text = user?.email
 
-                        Picasso.with(this)
-                                .load(user?.photo)
-                                .error(R.drawable.no_phototn)
-                                .placeholder(R.drawable.no_phototn)
-                                .fit()
-                                .centerCrop()
-                                .into(profile_picture)
+                        val photo = user?.photo
+                        if(photo != null && photo.isNotEmpty()) {
+                            Picasso.with(this)
+                                    .load(photo)
+                                    .error(R.drawable.no_phototn)
+                                    .placeholder(R.drawable.no_phototn)
+                                    .fit()
+                                    .centerCrop()
+                                    .into(profile_picture)
+
+                            profile_picture.setOnClickListener {
+                                launchActivityWithExtras<FullscreenPhotoActivity>(
+                                        FullscreenPhotoActivity::class,
+                                        arrayOf(FullscreenPhotoActivity.PHOTO_PATH,
+                                                FullscreenPhotoActivity.TOOLBAR_TITLE),
+                                        arrayOf(photo, user?.name ?: ""))
+                            }
+                        }
                     }
                 }
                 .cancel { Log.d(TAG, "User not found") }

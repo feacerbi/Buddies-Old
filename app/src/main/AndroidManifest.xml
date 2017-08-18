@@ -77,9 +77,15 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity android:name=".activities.SuggestPlaceActivity"
+        <activity
+            android:name=".activities.SuggestPlaceActivity"
             android:label="@string/title_activity_suggest_place"
             android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name=".activities.FullscreenPhotoActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/FullscreenTheme" />
     </application>
 
 </manifest>

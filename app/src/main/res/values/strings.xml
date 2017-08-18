@@ -54,4 +54,8 @@
     <string name="new_pet_name_hint">Pet Name</string>
     <string name="title_activity_suggest_place">Suggest Place</string>
     <string name="request_toast_already_owns">You already own this buddy</string>
+
+    <string name="title_activity_fullscreen_photo">FullscreenPhotoActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

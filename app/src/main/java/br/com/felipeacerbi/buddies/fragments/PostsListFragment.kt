@@ -8,8 +8,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import br.com.felipeacerbi.buddies.R
+import br.com.felipeacerbi.buddies.activities.FullscreenPhotoActivity
 import br.com.felipeacerbi.buddies.adapters.PostsAdapter
 import br.com.felipeacerbi.buddies.models.Post
+import br.com.felipeacerbi.buddies.utils.launchActivityWithExtras
 import br.com.felipeacerbi.buddies.utils.setUp
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.buddies_list.view.*
@@ -75,6 +77,15 @@ open class PostsListFragment : PetsListFragment() {
             )
             firebaseService.addPost(new)
         }
+    }
+
+    override fun onListClick(identifiers: Array<Any>?) {
+        activity.launchActivityWithExtras<FullscreenPhotoActivity>(
+                FullscreenPhotoActivity::class,
+                arrayOf(FullscreenPhotoActivity.PHOTO_PATH,
+                        FullscreenPhotoActivity.PHOTO_MESSAGE,
+                        FullscreenPhotoActivity.TOOLBAR_TITLE),
+                identifiers)
     }
 
     override fun getViewInflater() = activity.layoutInflater

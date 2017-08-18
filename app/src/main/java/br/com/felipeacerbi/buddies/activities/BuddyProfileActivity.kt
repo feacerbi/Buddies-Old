@@ -12,6 +12,7 @@ import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.firebase.FireListener
 import br.com.felipeacerbi.buddies.models.Buddy
 import br.com.felipeacerbi.buddies.utils.getFirebaseAdapter
+import br.com.felipeacerbi.buddies.utils.launchActivityWithExtras
 import br.com.felipeacerbi.buddies.utils.showInputDialog
 import br.com.felipeacerbi.buddies.utils.showListDialog
 import com.google.firebase.database.DatabaseReference
@@ -100,6 +101,14 @@ class BuddyProfileActivity : FireListener() {
                                     .fit()
                                     .centerCrop()
                                     .into(picture)
+
+                            picture.setOnClickListener {
+                                launchActivityWithExtras<FullscreenPhotoActivity>(
+                                        FullscreenPhotoActivity::class,
+                                        arrayOf(FullscreenPhotoActivity.PHOTO_PATH,
+                                                FullscreenPhotoActivity.TOOLBAR_TITLE),
+                                        arrayOf(buddyPhoto, buddy?.name ?: ""))
+                            }
                         }
 
                         setEditables(intent.extras.getBoolean(EXTRA_EDITABLE))
