@@ -22,8 +22,8 @@ abstract class TagHandlerActivity : FireListener() {
 
     companion object {
         var TAG = "TagHandlerActivity"
-        val NEW_PET_RESULT = 100
-        val QR_CODE_RESULT = 101
+        val NEW_PET_RESULT = 1000
+        val QR_CODE_RESULT = 1001
     }
 
     val permissionsManager: PermissionsManager by lazy {

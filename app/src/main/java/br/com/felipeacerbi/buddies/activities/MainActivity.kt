@@ -218,4 +218,12 @@ class MainActivity : TagHandlerActivity() {
             }
         }
     }
+
+    override fun onBackPressed() {
+        if(currentFragment == FRAGMENT_POSTS) {
+            finish()
+        } else {
+            navigation.selectedItemId = FRAGMENT_POSTS
+        }
+    }
 }

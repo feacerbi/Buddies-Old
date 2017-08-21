@@ -50,7 +50,7 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
     fun setUpUI() {
         setSupportActionBar(toolbar)
         toolbar.setNavigationOnClickListener {
-            onBackPressed()
+            finish()
         }
 
         // Set the adapter
@@ -197,10 +197,5 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
     override fun onDestroy() {
         super.onDestroy()
         buddies_list.getFirebaseAdapter()?.cleanup()
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        navigateUpTo(parentActivityIntent)
     }
 }

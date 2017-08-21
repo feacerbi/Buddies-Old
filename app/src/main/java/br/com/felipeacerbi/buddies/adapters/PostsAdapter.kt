@@ -82,7 +82,7 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Dat
                         .placeholder(R.drawable.no_phototn)
                         .error(R.drawable.no_phototn)
                         .fit()
-                        .centerCrop()
+                        .centerInside()
                         .into(post_photo)
             }
 

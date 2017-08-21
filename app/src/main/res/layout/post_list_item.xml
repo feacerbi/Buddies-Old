@@ -6,7 +6,6 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
     android:background="#FFFFFF"
-    android:maxHeight="600dp"
     android:elevation="2dp">
 
     <cn.gavinliu.android.lib.shapedimageview.ShapedImageView

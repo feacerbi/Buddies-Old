@@ -17,7 +17,7 @@ class PermissionsManager(val activity: Activity) : ActivityCompat.OnRequestPermi
         actionFunction = launch
         if (ContextCompat.checkSelfPermission(activity, permission)
                 == PackageManager.PERMISSION_GRANTED) {
-            actionFunction
+            actionFunction?.invoke()
         } else {
             requestPermission(permission)
         }
@@ -34,10 +34,9 @@ class PermissionsManager(val activity: Activity) : ActivityCompat.OnRequestPermi
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (requestCode == REQUEST_CODE
                 && grantResults.isNotEmpty()
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                && actionFunction != null) {
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-            actionFunction
+            actionFunction?.invoke()
         }
     }
 }

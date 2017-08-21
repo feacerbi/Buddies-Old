@@ -60,6 +60,7 @@ class FirebaseService : FirebaseInstanceIdService() {
     fun getCurrentUserEmail() = getCurrentUser()?.email ?: ""
     fun getCurrentUserUID() = getCurrentUser()?.uid ?: ""
     fun getCurrentUserPicture() = getCurrentUser()?.photoUrl
+    fun removeUserLocation() = getUserReference(getCurrentUserUID()).child(User.DATABASE_LATLONG_CHILD).setValue(null)
 //    fun getCurrentUserProviders(): List<UserInfo> = getCurrentUser()?.providerData ?: ArrayList<UserInfo>()
 
     fun registerUser(user: User) {
@@ -345,6 +346,7 @@ class FirebaseService : FirebaseInstanceIdService() {
     fun getPlaceReference(placeId: String) = getPlacesReference().child(placeId)
     fun getPlacesReference() = getDatabaseReference(DATABASE_PLACES_PATH)
     fun getUserPlacesReference(username: String) = getUserReference(username).child(User.DATABASE_PLACES_CHILD)
+    fun removeUserPlaces() = getUserPlacesReference(getCurrentUserUID()).setValue(null)
     fun addPlace(place: Place) {
         Log.d(TAG, "Adding new place")
         val placeKey = getPlacesReference().push().key
@@ -448,20 +450,20 @@ class FirebaseService : FirebaseInstanceIdService() {
         val postKey = getPostsReference().push().key
         val childUpdates = HashMap<String, Any?>()
 
+        childUpdates.put(DATABASE_PETS_PATH + post.petId + "/" + Buddy.DATABASE_POSTS_CHILD + "/" + postKey, true)
+
         if(post.photo.isNotEmpty()) {
-            uploadPlaceFile(postKey, Uri.parse(post.photo)) {
+            uploadPostFile(postKey, Uri.parse(post.photo)) {
                 downloadUrl ->
                 post.photo = downloadUrl.toString()
 
                 childUpdates.put(DATABASE_POSTS_PATH + postKey, post.toMap())
+                updateDB(childUpdates)
             }
         } else {
             childUpdates.put(DATABASE_POSTS_PATH + postKey, post.toMap())
+            updateDB(childUpdates)
         }
-
-        childUpdates.put(DATABASE_PETS_PATH + post.petId + "/" + Buddy.DATABASE_POSTS_CHILD + "/" + postKey, true)
-
-        updateDB(childUpdates)
     }
 
     fun addPostLike(postId: String) {

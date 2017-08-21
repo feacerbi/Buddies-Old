@@ -67,6 +67,8 @@ data class Buddy(
         if(checkNull(postsSnapshot)) posts = postsSnapshot as Map<String, Boolean>
     }
 
+    fun toBuddyInfo(): BuddyInfo  = BuddyInfo(name, animal, breed, photo)
+
     fun checkNull(value: Any?) = value != null
 
 }

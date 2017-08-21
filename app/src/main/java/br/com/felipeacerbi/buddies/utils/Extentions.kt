@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ListAdapter
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.fragments.PetsListFragment
 import com.firebase.ui.database.FirebaseRecyclerAdapter
@@ -115,6 +116,22 @@ fun AlertDialog.Builder.showListDialog(
         func: (DialogInterface, Int) -> Unit) {
     setTitle(title)
     setSingleChoiceItems(items, selected, func)
+    show()
+}
+
+fun AlertDialog.Builder.showAdapterDialog(
+        title: String,
+        adapter: ListAdapter,
+        func: (DialogInterface, Int) -> Unit) {
+    setTitle(title)
+    setAdapter(adapter, func)
+    show()
+}
+
+fun AlertDialog.Builder.showCustomDialog(
+        inputView: View) {
+    setView(inputView)
+    setTitle("")
     show()
 }
 

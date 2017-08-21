@@ -2,6 +2,7 @@ package br.com.felipeacerbi.buddies.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -51,6 +52,12 @@ open class PlacesListFragment : PetsListFragment() {
                 }
             }
         }
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        firebaseService.removeUserPlaces()
+        firebaseService.removeUserLocation()
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
