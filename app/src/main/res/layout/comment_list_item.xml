@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:background="#FFFFFF">
+
+    <cn.gavinliu.android.lib.shapedimageview.ShapedImageView
+        android:id="@+id/poster_profile_photo"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_margin="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shape_mode="circle"
+        android:src="@drawable/test"/>
+
+    <ImageView
+        android:id="@+id/comment_like_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:tint="@color/colorPrimary"
+        android:src="@drawable/ic_favorite_black_24dp"
+        android:alpha="0.7"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/comment_header"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        app:layout_constraintTop_toTopOf="@id/poster_profile_photo"
+        app:layout_constraintStart_toEndOf="@id/poster_profile_photo"
+        app:layout_constraintEnd_toStartOf="@id/comment_like_button">
+
+        <TextView
+            android:id="@+id/poster_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:text="Little Rex"/>
+
+        <TextView
+            android:id="@+id/comment_message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/poster_name"
+            android:text="Test Message.
+fdgsdfg
+sgsdgsg
+sfdgsg
+dafgadgadadgadag"/>
+
+        <TextView
+            android:id="@+id/comment_timestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/comment_message"
+            android:textSize="12sp"
+            android:text="32 min"/>
+
+        <TextView
+            android:id="@+id/comment_separator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            app:layout_constraintStart_toEndOf="@id/comment_timestamp"
+            app:layout_constraintTop_toBottomOf="@id/comment_message"
+            android:textSize="12sp"
+            android:visibility="visible"
+            android:text="  •  "/>
+
+        <TextView
+            android:id="@+id/comment_likes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            app:layout_constraintStart_toEndOf="@id/comment_separator"
+            app:layout_constraintTop_toBottomOf="@id/comment_message"
+            android:textSize="12sp"
+            android:text="22 likes"/>
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.constraint.ConstraintLayout>

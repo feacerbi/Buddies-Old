@@ -18,7 +18,6 @@ import br.com.felipeacerbi.buddies.models.Buddy
 import br.com.felipeacerbi.buddies.utils.launchActivityWithExtras
 import br.com.felipeacerbi.buddies.utils.setUp
 import br.com.felipeacerbi.buddies.utils.showAdapterDialog
-import br.com.felipeacerbi.buddies.utils.showCustomDialog
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener

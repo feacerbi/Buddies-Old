@@ -31,6 +31,7 @@ class FirebaseService : FirebaseInstanceIdService() {
         val DATABASE_FITEMS_PATH = "fitems/"
         val DATABASE_ANIMALS_PATH = "animals/"
         val DATABASE_POSTS_PATH = "posts/"
+        val DATABASE_COMMENTS_PATH = "comments/"
     }
 
     val firebaseAuth = FirebaseAuth.getInstance()
@@ -477,6 +478,37 @@ class FirebaseService : FirebaseInstanceIdService() {
         val childUpdates = HashMap<String, Any?>()
 
         childUpdates.put(DATABASE_POSTS_PATH + postId + "/" + Post.DATABASE_LIKES_CHILD + "/" + getCurrentUserUID(), null)
+        updateDB(childUpdates)
+    }
+
+    // Comments API
+    fun getCommentsReference() = getDatabaseReference(DATABASE_COMMENTS_PATH)
+    fun getCommentReference(commentId: String) = getCommentsReference().child(commentId)
+    fun getPostCommentsReference(postId: String) = getPostReference(postId).child(Post.DATABASE_COMMENTS_CHILD)
+    fun addComment(comment: Comment) {
+        Log.d(TAG, "Adding new comment")
+        val commentKey = getCommentsReference().push().key
+        val childUpdates = HashMap<String, Any?>()
+
+        comment.posterId = getCurrentUserUID()
+
+        childUpdates.put(DATABASE_COMMENTS_PATH + commentKey, comment.toMap())
+        childUpdates.put(DATABASE_POSTS_PATH + comment.postId + "/" + Post.DATABASE_COMMENTS_CHILD + "/" + commentKey, true)
+
+        updateDB(childUpdates)
+    }
+
+    fun addCommentLike(commentId: String) {
+        val childUpdates = HashMap<String, Any?>()
+
+        childUpdates.put(DATABASE_COMMENTS_PATH + commentId + "/" + Comment.DATABASE_LIKES_CHILD + "/" + getCurrentUserUID(), true)
+        updateDB(childUpdates)
+    }
+
+    fun removeCommentLike(commentId: String) {
+        val childUpdates = HashMap<String, Any?>()
+
+        childUpdates.put(DATABASE_COMMENTS_PATH + commentId + "/" + Comment.DATABASE_LIKES_CHILD + "/" + getCurrentUserUID(), null)
         updateDB(childUpdates)
     }
 
