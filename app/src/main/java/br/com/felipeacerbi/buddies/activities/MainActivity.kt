@@ -37,6 +37,8 @@ class MainActivity : TagHandlerActivity() {
         val FRAGMENT_POSTS = R.id.navigation_home
         val FRAGMENT_FOLLOWS = R.id.navigation_following
         val FRAGMENT_PLACES = R.id.navigation_places
+
+        val SAVE_CURRENT_FRAGMENT = "currentFragment"
     }
 
     var currentFragment = FRAGMENT_POSTS
@@ -97,6 +99,10 @@ class MainActivity : TagHandlerActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        if(savedInstanceState != null) {
+            currentFragment = savedInstanceState.getInt(SAVE_CURRENT_FRAGMENT)
+        }
     }
 
     override fun onResume() {
@@ -225,5 +231,10 @@ class MainActivity : TagHandlerActivity() {
         } else {
             navigation.selectedItemId = FRAGMENT_POSTS
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putInt(SAVE_CURRENT_FRAGMENT, currentFragment)
+        super.onSaveInstanceState(outState)
     }
 }
