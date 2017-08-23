@@ -75,6 +75,10 @@ open class PetsListFragment : Fragment(), IListClickListener {
                 identifiers)
     }
 
+    override fun selectListItem(position: Int) {
+        list?.smoothScrollToPosition(position)
+    }
+
     override fun onResume() {
         super.onResume()
         setUpFab(sharedPreferences.getBoolean(SettingsActivity.QR_CODE_BUTTON_SHORTCUT_KEY, false))

@@ -160,6 +160,10 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
                 identifiers)
     }
 
+    override fun selectListItem(position: Int) {
+        buddies_list?.smoothScrollToPosition(position)
+    }
+
     fun showFab(show: Boolean) {
         fab?.setUp(this, show, R.drawable.ic_add_a_photo_white_24dp) {
             permissionsManager.actionWithPermission(Manifest.permission.CAMERA) { launchActivity(QRCodeActivity::class) }

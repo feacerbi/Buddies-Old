@@ -19,6 +19,7 @@ import br.com.felipeacerbi.buddies.utils.launchActivityWithExtras
 import br.com.felipeacerbi.buddies.utils.setUp
 import com.google.android.gms.location.*
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.places_list.*
 import kotlinx.android.synthetic.main.places_list.view.*
 
 
@@ -140,5 +141,9 @@ open class PlacesListFragment : PetsListFragment() {
                 PlaceActivity::class,
                 arrayOf(PlaceActivity.EXTRA_PLACEID),
                 identifiers)
+    }
+
+    override fun selectListItem(position: Int) {
+        list?.smoothScrollToPosition(position)
     }
 }

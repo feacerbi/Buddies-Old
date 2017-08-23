@@ -23,6 +23,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.buddies_list.view.*
+import kotlinx.android.synthetic.main.posts_list.*
 
 
 /**
@@ -52,6 +53,7 @@ open class PostsListFragment : PetsListFragment() {
         if(view is ConstraintLayout) {
             with(view) {
                 list.layoutManager = LinearLayoutManager(context)
+                (list.layoutManager as LinearLayoutManager).reverseLayout = true
                 list.adapter = PostsAdapter(this@PostsListFragment, ref, firebaseService.getPostsReference(), progress)
                 list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                     override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
@@ -137,6 +139,10 @@ open class PostsListFragment : PetsListFragment() {
                         FullscreenPhotoActivity.PHOTO_MESSAGE,
                         FullscreenPhotoActivity.TOOLBAR_TITLE),
                 identifiers)
+    }
+
+    override fun selectListItem(position: Int) {
+        list?.smoothScrollToPosition(position)
     }
 
     override fun getViewInflater() = activity.layoutInflater

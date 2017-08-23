@@ -119,6 +119,7 @@ class PlacesAdapter(val listener: IListClickListener, val userPlacesReference: Q
     override fun onChildChanged(type: ChangeEventListener.EventType?, snapshot: DataSnapshot?, index: Int, oldIndex: Int) {
         super.onChildChanged(type, snapshot, index, oldIndex)
         hideProgressBar()
+        listener.selectListItem(0)
     }
 
     fun hideProgressBar() {

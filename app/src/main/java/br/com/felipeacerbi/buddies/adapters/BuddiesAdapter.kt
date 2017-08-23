@@ -43,8 +43,6 @@ class BuddiesAdapter(
             name.text = buddy.name
             animal.text = buddy.animal
             breed.text = buddy.breed
-//                        followers.text = buddy.followers.size.toString()
-//                        followers_text.text = if(buddy.followers.size == 1) " follower" else " followers"
 
             if(buddy.photo.isNotEmpty()) {
                 Picasso.with(listener.getContext())
@@ -71,6 +69,7 @@ class BuddiesAdapter(
     override fun onChildChanged(type: ChangeEventListener.EventType?, snapshot: DataSnapshot?, index: Int, oldIndex: Int) {
         super.onChildChanged(type, snapshot, index, oldIndex)
         hideProgressBar()
+        listener.selectListItem(0)
     }
 
     fun hideProgressBar() {

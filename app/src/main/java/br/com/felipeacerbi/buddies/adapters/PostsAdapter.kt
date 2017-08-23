@@ -3,6 +3,7 @@ package br.com.felipeacerbi.buddies.adapters
 import android.content.res.ColorStateList
 import android.support.v7.widget.RecyclerView
 import android.util.Log
+import android.util.TypedValue
 import android.view.View
 import android.widget.ProgressBar
 import br.com.felipeacerbi.buddies.R
@@ -75,8 +76,10 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Dat
 
             if(post.photo.isEmpty()) {
                 post_photo.visibility = View.GONE
+                post_message.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22F)
             } else {
                 post_photo.visibility = View.VISIBLE
+                post_message.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16F)
                 Picasso.with(context)
                         .load(post.photo)
                         .placeholder(R.drawable.no_phototn)
@@ -123,6 +126,7 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Dat
     override fun onChildChanged(type: ChangeEventListener.EventType?, snapshot: DataSnapshot?, index: Int, oldIndex: Int) {
         super.onChildChanged(type, snapshot, index, oldIndex)
         hideProgressBar()
+        listener.selectListItem(itemCount - 1)
     }
 
     fun hideProgressBar() {
