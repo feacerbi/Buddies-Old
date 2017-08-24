@@ -59,5 +59,7 @@
     <string name="title_activity_fullscreen_photo">FullscreenPhotoActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_new_post">New Post</string>
     <string name="title_activity_comments">Comments</string>
+    <string name="new_comment_hint">Write a comment</string>
 </resources>

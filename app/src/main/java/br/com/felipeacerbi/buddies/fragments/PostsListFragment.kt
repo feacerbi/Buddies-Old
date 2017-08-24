@@ -10,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import br.com.felipeacerbi.buddies.R
-import br.com.felipeacerbi.buddies.activities.FullscreenPhotoActivity
 import br.com.felipeacerbi.buddies.activities.NewPostActivity
 import br.com.felipeacerbi.buddies.adapters.BuddiesListAdapter
 import br.com.felipeacerbi.buddies.adapters.PostsAdapter
@@ -22,8 +21,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.buddies_list.view.*
 import kotlinx.android.synthetic.main.posts_list.*
+import kotlinx.android.synthetic.main.posts_list.view.*
+import kotlin.reflect.KClass
 
 
 /**
@@ -84,41 +84,53 @@ open class PostsListFragment : PetsListFragment() {
                 Log.d(TAG, "Fail to get buddies")
             }
 
-            override fun onDataChange(dataSnapshot: DataSnapshot?) {
-                if (dataSnapshot != null && dataSnapshot.hasChildren()) {
+            override fun onDataChange(ownedsSnapshot: DataSnapshot?) {
+                if (ownedsSnapshot != null && ownedsSnapshot.hasChildren()) {
 
                     val adapter = BuddiesListAdapter(activity)
 
-                    dataSnapshot.children.forEach {
-                        addBuddyToList(it.key, adapter)
+                    ownedsSnapshot.children.forEach {
+                        addBuddyToList(it.key, ownedsSnapshot, adapter)
                     }
-
-                    AlertDialog.Builder(context).showAdapterDialog(
-                            "Choose a Buddy to post",
-                            adapter,
-                            { dialog, position ->
-                                val postBuddyId = dataSnapshot.children.elementAt(position).key
-                                openNewPostActivity(postBuddyId, adapter.getItem(position))
-                                dialog.dismiss()
-                            })
                 }
             }
         })
     }
 
-    fun addBuddyToList(key: String, adapter: BuddiesListAdapter) {
+    fun addBuddyToList(key: String, ownedsSnapshot: DataSnapshot, adapter: BuddiesListAdapter) {
         firebaseService.getPetReference(key).addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onCancelled(p0: DatabaseError?) {
                 Log.d(TAG, "Fail to get buddy")
             }
 
-            override fun onDataChange(dataSnapshot: DataSnapshot?) {
-                if (dataSnapshot != null && dataSnapshot.hasChildren()) {
-                    val newBuddy = Buddy(dataSnapshot)
+            override fun onDataChange(buddySnapshot: DataSnapshot?) {
+                if (buddySnapshot != null && buddySnapshot.hasChildren()) {
+                    val newBuddy = Buddy(buddySnapshot)
                     adapter.add(newBuddy)
+
+                    checkAndOpenBuddiesDialog(adapter, ownedsSnapshot)
                 }
             }
         })
+    }
+
+    private fun checkAndOpenBuddiesDialog(adapter: BuddiesListAdapter, ownedsSnapshot: DataSnapshot) {
+        val total = ownedsSnapshot.childrenCount
+        if(adapter.count.toLong() == total) {
+            if(total == 1L) {
+                val postBuddyId = ownedsSnapshot.children.elementAt(0).key
+                openNewPostActivity(postBuddyId, adapter.getItem(0))
+            } else {
+                AlertDialog.Builder(context).showAdapterDialog(
+                        "Choose a Buddy to post",
+                        adapter,
+                        { dialog, position ->
+                            val postBuddyId = ownedsSnapshot.children.elementAt(position).key
+                            openNewPostActivity(postBuddyId, adapter.getItem(position))
+                            dialog.dismiss()
+                        })
+            }
+        }
     }
 
     fun openNewPostActivity(key: String, buddy: Buddy) {
@@ -132,13 +144,11 @@ open class PostsListFragment : PetsListFragment() {
         postsFab?.setUp(activity, show, R.drawable.plus_sign) { showPetsOwnedDialog() }
     }
 
-    override fun onListClick(identifiers: Array<Any>?) {
-        activity.launchActivityWithExtras<FullscreenPhotoActivity>(
-                FullscreenPhotoActivity::class,
-                arrayOf(FullscreenPhotoActivity.PHOTO_PATH,
-                        FullscreenPhotoActivity.PHOTO_MESSAGE,
-                        FullscreenPhotoActivity.TOOLBAR_TITLE),
-                identifiers)
+    override fun <T : Any> onListClick(clazz: KClass<T>, identifiers: Array<String>?, extras: Array<Any>?) {
+        activity.launchActivityWithExtras(
+                clazz,
+                identifiers,
+                extras)
     }
 
     override fun selectListItem(position: Int) {

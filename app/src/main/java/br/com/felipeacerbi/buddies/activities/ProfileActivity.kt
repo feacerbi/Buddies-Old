@@ -22,6 +22,7 @@ import br.com.felipeacerbi.buddies.utils.*
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_profile.*
 import kotlinx.android.synthetic.main.input_dialog.view.*
+import kotlin.reflect.KClass
 
 class ProfileActivity : TagHandlerActivity(), IListClickListener {
 
@@ -152,12 +153,11 @@ class ProfileActivity : TagHandlerActivity(), IListClickListener {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onListClick(identifiers: Array<Any>?) {
+    override fun <T : Any> onListClick(clazz: KClass<T>, identifiers: Array<String>?, extras: Array<Any>?) {
         launchActivityWithExtras(
-                BuddyProfileActivity::class,
-                arrayOf(BuddyProfileActivity.EXTRA_PETID,
-                        BuddyProfileActivity.EXTRA_EDITABLE),
-                identifiers)
+                clazz,
+                identifiers,
+                extras)
     }
 
     override fun selectListItem(position: Int) {

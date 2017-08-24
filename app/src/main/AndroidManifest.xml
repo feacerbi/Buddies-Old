@@ -78,7 +78,10 @@
         <activity
             android:name=".activities.FullscreenPhotoActivity"
             android:theme="@style/FullscreenTheme" />
-        <activity android:name=".activities.NewPostActivity" />
+
+        <activity android:name=".activities.NewPostActivity"
+            android:label="@string/title_activity_new_post"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <activity android:name=".activities.CommentsActivity"
             android:label="@string/title_activity_comments"

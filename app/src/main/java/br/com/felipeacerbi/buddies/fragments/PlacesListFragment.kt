@@ -2,7 +2,6 @@ package br.com.felipeacerbi.buddies.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -11,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import br.com.felipeacerbi.buddies.R
-import br.com.felipeacerbi.buddies.activities.PlaceActivity
 import br.com.felipeacerbi.buddies.activities.SuggestPlaceActivity
 import br.com.felipeacerbi.buddies.adapters.PlacesAdapter
 import br.com.felipeacerbi.buddies.utils.launchActivityForResult
@@ -21,6 +19,7 @@ import com.google.android.gms.location.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.places_list.*
 import kotlinx.android.synthetic.main.places_list.view.*
+import kotlin.reflect.KClass
 
 
 /**
@@ -53,12 +52,6 @@ open class PlacesListFragment : PetsListFragment() {
                 }
             }
         }
-    }
-
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-        firebaseService.removeUserPlaces()
-        firebaseService.removeUserLocation()
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
@@ -94,6 +87,11 @@ open class PlacesListFragment : PetsListFragment() {
         getUserLocation()
     }
 
+    override fun onStart() {
+        super.onStart()
+        startLocationUpdates()
+    }
+
     override fun onPause() {
         super.onPause()
         stopLocationUpdates()
@@ -112,10 +110,12 @@ open class PlacesListFragment : PetsListFragment() {
 
     @SuppressLint("MissingPermission") // Handled by Permissions Manager
     fun startLocationUpdates() {
-        locationProvider.requestLocationUpdates(
-                createLocationRequest(),
-                locationCallback,
-                null)
+        permissionsManager.actionWithPermission(Manifest.permission.ACCESS_FINE_LOCATION) {
+            locationProvider.requestLocationUpdates(
+                    createLocationRequest(),
+                    locationCallback,
+                    null)
+        }
     }
 
     fun stopLocationUpdates() {
@@ -136,11 +136,11 @@ open class PlacesListFragment : PetsListFragment() {
         }
     }
 
-    override fun onListClick(identifiers: Array<Any>?) {
+    override fun <T : Any> onListClick(clazz: KClass<T>, identifiers: Array<String>?, extras: Array<Any>?) {
         activity.launchActivityWithExtras(
-                PlaceActivity::class,
-                arrayOf(PlaceActivity.EXTRA_PLACEID),
-                identifiers)
+                clazz,
+                identifiers,
+                extras)
     }
 
     override fun selectListItem(position: Int) {

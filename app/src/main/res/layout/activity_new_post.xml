@@ -60,13 +60,13 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/post_header"
         android:layout_alignBottom="@id/post_header">
-    <cn.gavinliu.android.lib.shapedimageview.ShapedImageView
-        android:id="@+id/post_profile_photo"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_marginStart="16dp"
-        android:layout_gravity="center_vertical"
-        app:shape_mode="circle"/>
+        <cn.gavinliu.android.lib.shapedimageview.ShapedImageView
+            android:id="@+id/post_profile_photo"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="16dp"
+            android:layout_gravity="center_vertical"
+            app:shape_mode="circle"/>
     </FrameLayout>
 
     <LinearLayout
@@ -111,8 +111,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_below="@id/post_header"
@@ -120,6 +118,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:orientation="vertical">
             <EditText
                 android:id="@+id/post_message"

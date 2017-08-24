@@ -35,16 +35,16 @@ class NewBuddyActivity : FireListener() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_pet)
 
-        setSupportActionBar(toolbar)
-        toolbar.setNavigationOnClickListener {
-            onBackPressed()
-        }
-
         handleIntent(intent)
         setUpUI()
     }
 
     fun setUpUI() {
+        setSupportActionBar(toolbar)
+        toolbar.setNavigationOnClickListener {
+            finish()
+        }
+
         pet_chooser.isEnabled = false
         breed_chooser.isEnabled = false
 

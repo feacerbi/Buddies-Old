@@ -61,6 +61,7 @@
             android:layout_marginTop="4dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/comment_message"
+            android:alpha="0.7"
             android:textSize="12sp"/>
 
         <TextView
@@ -70,6 +71,7 @@
             android:layout_marginTop="4dp"
             app:layout_constraintStart_toEndOf="@id/comment_timestamp"
             app:layout_constraintTop_toBottomOf="@id/comment_message"
+            android:alpha="0.7"
             android:textSize="12sp"
             android:visibility="visible"
             android:text="  •  "/>
@@ -81,6 +83,7 @@
             android:layout_marginTop="4dp"
             app:layout_constraintStart_toEndOf="@id/comment_separator"
             app:layout_constraintTop_toBottomOf="@id/comment_message"
+            android:alpha="0.7"
             android:textSize="12sp"/>
     </android.support.constraint.ConstraintLayout>
 

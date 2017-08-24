@@ -24,7 +24,7 @@ class CommentsAdapter(val context: Context, val postCommentsReference: DatabaseR
         FirebaseIndexRecyclerAdapter<Comment, CommentsAdapter.CommentViewHolder>
         (
                 Comment::class.java,
-                R.layout.request_list_item,
+                R.layout.comment_list_item,
                 CommentViewHolder::class.java,
                 postCommentsReference,
                 commentsReference

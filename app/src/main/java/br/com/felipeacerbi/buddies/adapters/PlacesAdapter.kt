@@ -7,6 +7,7 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import br.com.felipeacerbi.buddies.R
+import br.com.felipeacerbi.buddies.activities.PlaceActivity
 import br.com.felipeacerbi.buddies.adapters.listeners.IListClickListener
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.models.FriendlyItem
@@ -79,7 +80,12 @@ class PlacesAdapter(val listener: IListClickListener, val userPlacesReference: Q
                                     .into(place_photo)
                         }
 
-                        setOnClickListener { listener.onListClick(arrayOf(getRef(position).key)) }
+                        setOnClickListener {
+                            listener.onListClick<PlaceActivity>(
+                                    PlaceActivity::class,
+                                    arrayOf(PlaceActivity.EXTRA_PLACEID),
+                                    arrayOf(getRef(position).key))
+                        }
                     }
                 }
             }

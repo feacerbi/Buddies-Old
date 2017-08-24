@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import br.com.felipeacerbi.buddies.R
+import br.com.felipeacerbi.buddies.activities.BuddyProfileActivity
 import br.com.felipeacerbi.buddies.adapters.listeners.IListClickListener
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.models.Buddy
@@ -57,7 +58,12 @@ class BuddiesAdapter(
             val editable = userPetsReference.key == Buddy.DATABASE_OWNS_CHILD
 
             remove_button.setOnClickListener { firebaseService.removePetFromUser(userPetsReference.key, petId) }
-            click_profile_layout.setOnClickListener { listener.onListClick(arrayOf(petId, editable)) }
+            click_profile_layout.setOnClickListener {
+                listener.onListClick(
+                        BuddyProfileActivity::class,
+                        arrayOf(BuddyProfileActivity.EXTRA_PETID, BuddyProfileActivity.EXTRA_EDITABLE),
+                        arrayOf(petId, editable))
+            }
         }
     }
 

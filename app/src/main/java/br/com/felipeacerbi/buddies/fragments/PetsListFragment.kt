@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import br.com.felipeacerbi.buddies.R
-import br.com.felipeacerbi.buddies.activities.BuddyProfileActivity
 import br.com.felipeacerbi.buddies.activities.QRCodeActivity
 import br.com.felipeacerbi.buddies.activities.SettingsActivity
 import br.com.felipeacerbi.buddies.adapters.BuddiesAdapter
@@ -20,6 +19,7 @@ import br.com.felipeacerbi.buddies.utils.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.buddies_list.*
 import kotlinx.android.synthetic.main.buddies_list.view.*
+import kotlin.reflect.KClass
 
 
 /**
@@ -67,12 +67,11 @@ open class PetsListFragment : Fragment(), IListClickListener {
         return view
     }
 
-    override fun onListClick(identifiers: Array<Any>?) {
+    override fun <T : Any> onListClick(clazz: KClass<T>, identifiers: Array<String>?, extras: Array<Any>?) {
         activity.launchActivityWithExtras(
-                BuddyProfileActivity::class,
-                arrayOf(BuddyProfileActivity.EXTRA_PETID,
-                        BuddyProfileActivity.EXTRA_EDITABLE),
-                identifiers)
+                clazz,
+                identifiers,
+                extras)
     }
 
     override fun selectListItem(position: Int) {

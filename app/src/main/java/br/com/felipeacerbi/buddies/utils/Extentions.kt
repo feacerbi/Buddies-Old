@@ -67,7 +67,7 @@ fun Long.toDistanceUnits(): String {
         value /= 1000
     }
 
-    return Math.round(value).toString() + " " + unit
+    return "$value?? $unit"
 }
 
 fun AlertDialog.Builder.showOneChoiceCancelableDialog(

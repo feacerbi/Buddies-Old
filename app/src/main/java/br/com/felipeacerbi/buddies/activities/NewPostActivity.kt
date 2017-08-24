@@ -48,6 +48,11 @@ class NewPostActivity : FireListener() {
     }
 
     private fun setUpUI() {
+        setSupportActionBar(toolbar)
+        toolbar.setNavigationOnClickListener {
+            finish()
+        }
+
         poster_name.text = buddyInfo?.name
         post_post_button.isEnabled = false
         post_location.visibility = View.GONE

@@ -7,6 +7,9 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.ProgressBar
 import br.com.felipeacerbi.buddies.R
+import br.com.felipeacerbi.buddies.activities.BuddyProfileActivity
+import br.com.felipeacerbi.buddies.activities.CommentsActivity
+import br.com.felipeacerbi.buddies.activities.FullscreenPhotoActivity
 import br.com.felipeacerbi.buddies.adapters.listeners.IListClickListener
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.models.Buddy
@@ -14,14 +17,11 @@ import br.com.felipeacerbi.buddies.models.Post
 import br.com.felipeacerbi.buddies.utils.toFormatedDate
 import com.firebase.ui.database.ChangeEventListener
 import com.firebase.ui.database.FirebaseIndexRecyclerAdapter
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.post_list_item.view.*
 
-class PostsAdapter(val listener: IListClickListener, val userPostsReference: DatabaseReference, val postsReference: DatabaseReference, val progressBar: ProgressBar) :
+class PostsAdapter(val listener: IListClickListener, val userPostsReference: Query, val postsReference: DatabaseReference, val progressBar: ProgressBar) :
         FirebaseIndexRecyclerAdapter<Post, PostsAdapter.PostViewHolder>
         (
                 Post::class.java,
@@ -59,7 +59,10 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Dat
                                 .into(post_profile_photo)
 
                         post_photo.setOnClickListener {
-                            listener.onListClick(arrayOf(post.photo, post.message, buddy.name))
+                            listener.onListClick<FullscreenPhotoActivity>(
+                                    FullscreenPhotoActivity::class,
+                                    arrayOf(FullscreenPhotoActivity.PHOTO_PATH, FullscreenPhotoActivity.PHOTO_MESSAGE, FullscreenPhotoActivity.TOOLBAR_TITLE),
+                                    arrayOf(post.photo, post.message, buddy.name))
                         }
                     }
                 }
@@ -99,8 +102,35 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Dat
             }
 
             post_header.setOnClickListener {
-                listener.onListClick(arrayOf(post.petId, false))
+                listener.onListClick<BuddyProfileActivity>(
+                        BuddyProfileActivity::class,
+                        arrayOf(BuddyProfileActivity.EXTRA_PETID, BuddyProfileActivity.EXTRA_EDITABLE) ,
+                        arrayOf(post.petId, false))
             }
+
+            post_comment_button.setOnClickListener {
+                listener.onListClick<CommentsActivity>(
+                        CommentsActivity::class,
+                        arrayOf(CommentsActivity.POST_ID_EXTRA),
+                        arrayOf(getRef(position).key))
+            }
+
+            if(post.likes.size == 0) {
+                post_likes_number.visibility = View.GONE
+            } else {
+                post_likes_number.visibility = View.VISIBLE
+                post_likes_number.text = post.likes.size.toString()
+            }
+
+            if(post.comments.size == 0) {
+                post_comments_number.visibility = View.GONE
+            } else {
+                post_comments_number.visibility = View.VISIBLE
+                post_comments_number.text = post.comments.size.toString()
+            }
+
+            post_shares_number.visibility = View.GONE
+//            post_shares_number.text = post.shares.size.toString()
 
             if(post.likes.contains(firebaseService.getCurrentUserUID())) {
                 post_like_button.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.colorAccent))

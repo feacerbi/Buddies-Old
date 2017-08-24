@@ -102,6 +102,12 @@ class MainActivity : TagHandlerActivity() {
         handleIntent(intent, true)
     }
 
+//    override fun onStart() {
+//        super.onStart()
+//        firebaseService.removeUserPlaces()
+//        firebaseService.removeUserLocation()
+//    }
+
     override fun onResume() {
         super.onResume()
         firebaseAuth.addAuthStateListener(firebaseAuthStateListener)

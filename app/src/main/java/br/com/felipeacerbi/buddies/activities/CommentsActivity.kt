@@ -56,6 +56,7 @@ class CommentsActivity : AppCompatActivity() {
         send_icon.setOnClickListener {
             val newComment = createComment()
             if(newComment != null) firebaseService.addComment(newComment)
+            send_message.setText("")
         }
 
         send_message.addTextChangedListener(object: TextWatcher {
@@ -71,7 +72,6 @@ class CommentsActivity : AppCompatActivity() {
                 send_icon.isEnabled = size != 0
             }
         })
-        send_message.clearFocus()
     }
 
     fun createComment(): Comment? {
