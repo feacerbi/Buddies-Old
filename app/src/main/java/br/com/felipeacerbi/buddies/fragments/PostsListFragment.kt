@@ -142,7 +142,7 @@ open class PostsListFragment : PetsListFragment() {
     }
 
     override fun selectListItem(position: Int) {
-        list?.smoothScrollToPosition(position)
+        list?.scrollToPosition(position)
     }
 
     override fun getViewInflater() = activity.layoutInflater

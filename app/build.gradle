@@ -4,6 +4,8 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+apply plugin: 'kotlin-kapt'
+
 android {
     compileSdkVersion 26
     buildToolsVersion "26.0.0"
@@ -28,6 +30,7 @@ android {
 
 repositories {
     mavenCentral()
+    maven {url "https://clojars.org/repo/"}
 }
 
 kapt {
@@ -64,6 +67,10 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
     implementation 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.2'
     implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'org.parceler:parceler-api:1.1.9'
+    kapt 'org.parceler:parceler:1.1.9'
+    implementation 'frankiesardo:icepick:3.2.0'
+    kapt 'frankiesardo:icepick-processor:3.2.0'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.powermock:powermock-api-mockito:1.6.2'
     testImplementation 'org.powermock:powermock-module-junit4:1.6.2'

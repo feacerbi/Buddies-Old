@@ -76,7 +76,7 @@ open class PetsListFragment : Fragment(), IListClickListener {
     }
 
     override fun selectListItem(position: Int) {
-        list?.smoothScrollToPosition(position)
+        list?.scrollToPosition(position)
     }
 
     override fun onResume() {

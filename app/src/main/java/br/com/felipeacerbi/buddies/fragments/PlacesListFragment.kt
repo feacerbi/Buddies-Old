@@ -144,6 +144,6 @@ open class PlacesListFragment : PetsListFragment() {
     }
 
     override fun selectListItem(position: Int) {
-        list?.smoothScrollToPosition(position)
+        list?.scrollToPosition(position)
     }
 }

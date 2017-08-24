@@ -24,6 +24,8 @@ import br.com.felipeacerbi.buddies.utils.showOneChoiceCancelableDialog
 import br.com.felipeacerbi.buddies.utils.transact
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
+import icepick.Icepick
+import icepick.State
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : TagHandlerActivity() {
@@ -37,11 +39,9 @@ class MainActivity : TagHandlerActivity() {
         val FRAGMENT_POSTS = R.id.navigation_home
         val FRAGMENT_FOLLOWS = R.id.navigation_following
         val FRAGMENT_PLACES = R.id.navigation_places
-
-        val SAVE_CURRENT_FRAGMENT = "currentFragment"
     }
 
-    var currentFragment = FRAGMENT_POSTS
+    @State @JvmField var currentFragment: Int? = null
 
     val authUI by lazy {
         AuthUI.getInstance()
@@ -87,9 +87,6 @@ class MainActivity : TagHandlerActivity() {
 
                     firebaseService.registerUser(user) }
         ))
-
-        setUpUI()
-        handleIntent(intent, true)
     }
 
     fun onSignOut() {
@@ -99,10 +96,10 @@ class MainActivity : TagHandlerActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        Icepick.restoreInstanceState(this, savedInstanceState)
 
-        if(savedInstanceState != null) {
-            currentFragment = savedInstanceState.getInt(SAVE_CURRENT_FRAGMENT)
-        }
+        setUpUI()
+        handleIntent(intent, true)
     }
 
     override fun onResume() {
@@ -161,7 +158,7 @@ class MainActivity : TagHandlerActivity() {
                     .apply()
         }
 
-        navigation.selectedItemId = currentFragment
+        navigation.selectedItemId = currentFragment ?: FRAGMENT_POSTS
     }
 
     override fun showTagOptionsDialog(baseTag: BaseTag) {
@@ -227,14 +224,14 @@ class MainActivity : TagHandlerActivity() {
 
     override fun onBackPressed() {
         if(currentFragment == FRAGMENT_POSTS) {
-            finish()
+            super.onBackPressed()
         } else {
             navigation.selectedItemId = FRAGMENT_POSTS
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putInt(SAVE_CURRENT_FRAGMENT, currentFragment)
         super.onSaveInstanceState(outState)
+        Icepick.saveInstanceState(this, outState)
     }
 }

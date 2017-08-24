@@ -71,6 +71,7 @@ class CommentsActivity : AppCompatActivity() {
                 send_icon.isEnabled = size != 0
             }
         })
+        send_message.clearFocus()
     }
 
     fun createComment(): Comment? {
