@@ -96,26 +96,28 @@ abstract class TagHandlerActivity : FireListener() {
     fun addNewFollow(baseTag: BaseTag) {
         subscriptions.add(subscriptionsManager.checkTagSubscription(
                 baseTag,
-                existsAction = { firebaseService.addFollowPet(it) },
-                notExistsAction = { Log.d(TAG, "Follow pet not found") }))
+                usedAction = { firebaseService.addFollowPet(it) },
+                newAction = { Toast.makeText(this, "This TAG was not used yet.", Toast.LENGTH_SHORT).show() },
+                notVerifiedAction = { Toast.makeText(this, "This TAG was not verified yet.", Toast.LENGTH_SHORT).show() }))
     }
 
     fun addNewBuddy(baseTag: BaseTag) {
         subscriptions.add(subscriptionsManager.checkTagSubscription(
                 baseTag,
-                existsAction = {
+                usedAction = {
                     subscriptions.add(subscriptionsManager.checkOwnerRequestSubscription(
                             it,
                             ownsAction = { Toast.makeText(this, getString(R.string.request_toast_already_owns), Toast.LENGTH_SHORT).show() },
                             notOwnsAction = { Toast.makeText(this, getString(R.string.request_toast_sent_message), Toast.LENGTH_SHORT).show() }
                     ))
                 },
-                notExistsAction = {
+                newAction = {
                     launchActivityWithExtras<NewBuddyActivity>(
                         NewBuddyActivity::class,
                         arrayOf(NewBuddyActivity.EXTRA_BASETAG),
                         arrayOf(it),
                         true,
-                        NEW_PET_RESULT) }))
+                        NEW_PET_RESULT) },
+                notVerifiedAction = { Toast.makeText(this, "This TAG was not verified yet.", Toast.LENGTH_SHORT).show() }))
     }
 }

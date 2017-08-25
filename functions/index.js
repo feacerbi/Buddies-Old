@@ -9,6 +9,19 @@ admin.initializeApp(functions.config().firebase);
 //  response.send("Hello from Firebase!");
 // });
 
+function sendMessagePromise(idToken, payload) {
+	console.log("Sending message to " + idToken + "...");
+	sendPromise = admin.messaging().sendToDevice(idToken, payload)
+		.then(function(response) {
+			console.log("Successfully sent message:", response);
+        })
+		.catch(function(error) {
+			console.log("Error sending message:", error);
+        });
+	
+	return Promise.all([sendPromise]);
+}
+
 exports.addNewFollowPosts =
 	functions.database.ref('users/{userId}/follows/{followId}')
 	.onWrite(event => {
@@ -20,18 +33,38 @@ exports.addNewFollowPosts =
 		var userId = event.params.userId;
 		var followId = event.params.followId;
 		
-		const getFollowPosts = admin.database().ref('pets/' + followId + "/posts").once('value');
+		const getUsers = admin.database().ref('users').once('value');
+		const getFollowedPet = admin.database().ref('pets/' + followId).once('value');
 		
-		return Promise.all([getFollowPosts]).then(
+		return Promise.all([getUsers, getFollowedPet]).then(
 			results => {
-				const followPostsSnapshot = results[0];
+				const usersSnapshot = results[0];
+				const petSnapshot = results[1];
 				
 				var promises = [];
 				
-				followPostsSnapshot.forEach(
+				petSnapshot.child("posts").forEach(
 					followPostSnapshot => {
 						var postKey = followPostSnapshot.key;
 						promises[promises.length] = addPostPromise(userId, postKey);
+					})
+					
+				var followerName = usersSnapshot.child(userId).child("name").val();
+				var followerPhoto = usersSnapshot.child(userId).child("photo").val();
+				var petName = petSnapshot.child("name").val();
+		
+				var payload = {
+					notification: {
+						title: "New follower!",
+						body: followerName + " started following " + petName + "."
+					}
+				};
+				
+				petSnapshot.child("owns").forEach(
+					ownerSnapshot => {
+						var ownerKey = ownerSnapshot.key;
+						var idToken = usersSnapshot.child(ownerKey).child("idToken").val();
+						promises[promises.length] = sendMessagePromise(idToken, payload);
 					})
 					
 				return Promise.all(promises);
@@ -43,21 +76,37 @@ exports.handleRequests =
 	.onWrite(event => {
 		
 		var requestId = event.params.requestId;
+		var requesterId = event.data.child("username").val();
 		var petId = event.data.child("petId").val();
 		
-		const getPetOwnersPromise = admin.database().ref('pets/' + petId + "/owns").once('value');
+		const getUsers = admin.database().ref('users').once('value');
+		const getPet = admin.database().ref('pets/' + petId).once('value');
 		
-		return Promise.all([getPetOwnersPromise]).then(
+		return Promise.all([getUsers, getPet]).then(
 			results => {
-				const ownsSnapshot = results[0];
+				const usersSnapshot = results[0];
+				const petSnapshot = results[1];
+				
+				var petName = petSnapshot.child("name").val();
+				var requesterName = usersSnapshot.child(requesterId).child("name").val();
+				var requesterPhoto = usersSnapshot.child(requesterId).child("photo").val();
+				
+				var payload = {
+					notification: {
+						title: "New owner request!",
+						body: requesterName + " wants to be owner of " + petName
+					}
+				};
 				
 				var promises = [];
 				
-				ownsSnapshot.forEach(
+				petSnapshot.child("owns").forEach(
 					ownerSnapshot => {
 						var ownerKey = ownerSnapshot.key;
+						var ownerIdToken = usersSnapshot.child(ownerKey).child("idToken").val();
 						if(event.data.val()) {
 							promises[promises.length] = addRequestPromise(requestId, ownerKey);
+							promises[promises.length] = sendMessagePromise(ownerIdToken, payload);
 						} else {
 							promises[promises.length] = removeRequestPromise(requestId, ownerKey);
 						}

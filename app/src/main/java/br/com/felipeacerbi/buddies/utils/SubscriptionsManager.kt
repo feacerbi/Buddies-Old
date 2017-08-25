@@ -18,23 +18,29 @@ class SubscriptionsManager(val context: Context) {
     }
 
     fun checkTagSubscription(baseTag: BaseTag,
-                             existsAction: (BaseTag) -> Unit,
-                             notExistsAction: (BaseTag) -> Unit): Disposable {
+                             usedAction: (BaseTag) -> Unit,
+                             newAction: (BaseTag) -> Unit,
+                             notVerifiedAction: (BaseTag) -> Unit): Disposable {
         Log.d(TAG, "Check pet with action " + baseTag.id)
         return firebaseService.checkTagObservable(baseTag)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe (
                         { foundTag ->
-                            if(foundTag.petId.isEmpty()) {
-                                Log.d(TAG, "Tag not found")
-                                notExistsAction(foundTag)
+                            if(foundTag.verified) {
+                                if (foundTag.petId.isEmpty()) {
+                                    Log.d(TAG, "New Tag")
+                                    newAction(foundTag)
+                                } else {
+                                    Log.d(TAG, "Used Tag")
+                                    usedAction(foundTag)
+                                }
                             } else {
-                                Log.d(TAG, "Tag found")
-                                existsAction(foundTag)
+                                Log.d(TAG, "Not verified Tag")
+                                notVerifiedAction(foundTag)
                             }
                         },
-                        { e -> Log.d(TAG, "Error adding pet " + e.message) })
+                        { e -> Log.d(TAG, "Error adding pet: " + e.message) })
     }
 
     fun checkOwnerRequestSubscription(baseTag: BaseTag,

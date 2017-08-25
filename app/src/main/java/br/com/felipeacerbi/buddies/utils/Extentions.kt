@@ -61,13 +61,15 @@ fun String.toFormatedWebsite(): String {
 fun Long.toDistanceUnits(): String {
     var unit = "m"
     var value = this.toFloat()
+    var precision = "%.0f"
 
     if(value / 1000 > 1) {
         unit = "km"
         value /= 1000
+        precision = "%.1f"
     }
 
-    return "$value?? $unit"
+    return "$precision %s".format(value, unit)
 }
 
 fun AlertDialog.Builder.showOneChoiceCancelableDialog(

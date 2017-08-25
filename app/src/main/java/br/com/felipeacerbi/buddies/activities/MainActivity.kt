@@ -78,7 +78,11 @@ class MainActivity : TagHandlerActivity() {
 
     fun onSignIn() {
         subscriptions.add(subscriptionsManager.checkUserSubscription(
-                existsAction = { Log.d(TAG, "User exists") },
+                existsAction = {
+                    userFound ->
+                    Log.d(TAG, "User exists")
+                    firebaseService.updateUser(userFound.second)
+                },
                 notExistsAction = {
                     val user = User(
                             name = firebaseService.getCurrentUserDisplayName(),
@@ -206,7 +210,7 @@ class MainActivity : TagHandlerActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main_activity, menu)
-        return super.onCreateOptionsMenu(menu)
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {

@@ -75,6 +75,7 @@ class FirebaseService : FirebaseInstanceIdService() {
 
     fun updateUser(user: User?) {
         if(user != null) {
+            user.idToken = getAppIDToken()
 
             val childUpdates = HashMap<String, Any?>()
             val currentUserPath = DATABASE_USERS_PATH + getCurrentUserUID() + "/"
@@ -82,6 +83,7 @@ class FirebaseService : FirebaseInstanceIdService() {
             childUpdates.put(currentUserPath + User.DATABASE_NAME_CHILD, user.name)
             childUpdates.put(currentUserPath + User.DATABASE_EMAIL_CHILD, user.email)
             childUpdates.put(currentUserPath + User.DATABASE_PHOTO_CHILD, user.photo)
+            childUpdates.put(currentUserPath + User.DATABASE_IDTOKEN_CHILD, user.idToken)
 
             updateDB(childUpdates)
         }
@@ -133,15 +135,16 @@ class FirebaseService : FirebaseInstanceIdService() {
             }
 
             override fun onDataChange(dataSnapshot: DataSnapshot?) {
-                var foundTag = baseTag
                 if(dataSnapshot != null && dataSnapshot.childrenCount > 0) {
-                    foundTag = BaseTag(dataSnapshot.children.first())
+                    val foundTag = BaseTag(dataSnapshot.children.first())
+
+                    subscriber.onNext(foundTag)
+                    subscriber.onComplete()
                     Log.d(TAG, "Tag found")
                 } else {
+                    subscriber.onError(Throwable("Tag not found"))
                     Log.d(TAG, "Tag not found")
                 }
-                subscriber.onNext(foundTag)
-                subscriber.onComplete()
             }
         })
     }
