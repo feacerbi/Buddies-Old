@@ -10,10 +10,13 @@ import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.BuddyProfileActivity
 import br.com.felipeacerbi.buddies.activities.CommentsActivity
 import br.com.felipeacerbi.buddies.activities.FullscreenPhotoActivity
+import br.com.felipeacerbi.buddies.activities.NewPostActivity
 import br.com.felipeacerbi.buddies.adapters.listeners.IListClickListener
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.models.Buddy
+import br.com.felipeacerbi.buddies.models.Comment
 import br.com.felipeacerbi.buddies.models.Post
+import br.com.felipeacerbi.buddies.models.User
 import br.com.felipeacerbi.buddies.utils.toFormatedDate
 import com.firebase.ui.database.ChangeEventListener
 import com.firebase.ui.database.FirebaseIndexRecyclerAdapter
@@ -109,10 +112,11 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
             }
 
             post_comment_button.setOnClickListener {
-                listener.onListClick<CommentsActivity>(
-                        CommentsActivity::class,
-                        arrayOf(CommentsActivity.POST_ID_EXTRA),
-                        arrayOf(getRef(position).key))
+                openCommentsActivity(position)
+            }
+
+            post_share_button.setOnClickListener {
+                openNewPostActivity(position)
             }
 
             if(post.likes.size == 0) {
@@ -124,13 +128,17 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
 
             if(post.comments.size == 0) {
                 post_comments_number.visibility = View.GONE
+                last_comment_view.visibility = View.GONE
             } else {
                 post_comments_number.visibility = View.VISIBLE
                 post_comments_number.text = post.comments.size.toString()
-            }
 
-            post_shares_number.visibility = View.GONE
-//            post_shares_number.text = post.shares.size.toString()
+                last_comment_view.visibility = View.VISIBLE
+                last_comment_view.setOnClickListener {
+                    openCommentsActivity(position)
+                }
+                setUpLastComment(post.comments.keys.elementAt(0), holder)
+            }
 
             if(post.likes.contains(firebaseService.getCurrentUserUID())) {
                 post_like_button.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.colorAccent))
@@ -146,6 +154,60 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
                 }
             }
         }
+    }
+
+    fun setUpLastComment(postKey: String, holder: PostViewHolder) {
+        firebaseService.getCommentReference(postKey).addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onCancelled(p0: DatabaseError?) {
+                Log.e(TAG, "Could not find comment")
+            }
+
+            override fun onDataChange(commentSnapshot: DataSnapshot?) {
+                if(commentSnapshot != null && commentSnapshot.hasChildren()) {
+                    val lastComment = Comment(commentSnapshot)
+
+                    with(holder.itemView) {
+                        val comment = " " + lastComment.message
+                        last_comment_poster_comment.text = comment
+                        firebaseService.getUserReference(lastComment.posterId).addListenerForSingleValueEvent(object: ValueEventListener {
+                            override fun onCancelled(p0: DatabaseError?) {
+                                Log.e(TAG, "Could not find user")
+                            }
+
+                            override fun onDataChange(userSnapshot: DataSnapshot?) {
+                                if(userSnapshot != null && userSnapshot.hasChildren()) {
+                                    val poster = User(userSnapshot)
+                                    last_comment_poster_name.text = poster.name
+
+                                    Picasso.with(listener.getContext())
+                                            .load(poster.photo)
+                                            .placeholder(R.drawable.no_phototn)
+                                            .error(R.drawable.no_phototn)
+                                            .fit()
+                                            .centerCrop()
+                                            .into(last_comment_profile_photo)
+                                }
+                            }
+                        })
+                    }
+
+                }
+            }
+        })
+    }
+
+    fun openCommentsActivity(position: Int) {
+        listener.onListClick<CommentsActivity>(
+                CommentsActivity::class,
+                arrayOf(CommentsActivity.POST_ID_EXTRA),
+                arrayOf(getRef(position).key))
+    }
+
+    fun openNewPostActivity(position: Int) {
+        listener.onListClick<NewPostActivity>(
+                NewPostActivity::class,
+                arrayOf(NewPostActivity.SHARE_POST_ID),
+                arrayOf(getRef(position).key))
     }
 
     override fun onDataChanged() {

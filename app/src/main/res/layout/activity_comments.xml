@@ -38,6 +38,7 @@
             android:maxLines="1"
             android:hint="@string/new_comment_hint"
             android:inputType="textCapSentences"
+            android:focusedByDefault="false"
             android:layout_centerVertical="true"
             android:layout_marginStart="16dp"
             android:layout_alignParentStart="true"

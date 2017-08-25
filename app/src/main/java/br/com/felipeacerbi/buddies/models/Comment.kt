@@ -17,6 +17,10 @@ data class Comment(
         val DATABASE_LIKES_CHILD = "likes"
     }
 
+    constructor(dataSnapshot: DataSnapshot): this() {
+        fromMap(dataSnapshot)
+    }
+
     fun toMap() = mapOf(
             Pair(DATABASE_POSTERID_CHILD, posterId),
             Pair(DATABASE_POSTID_CHILD, postId),

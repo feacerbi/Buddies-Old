@@ -3,7 +3,6 @@ package br.com.felipeacerbi.buddies.activities.base
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.support.v7.app.AlertDialog
-import android.util.Log
 import android.widget.Toast
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.NewBuddyActivity
