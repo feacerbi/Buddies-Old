@@ -78,7 +78,7 @@ class SuggestPlaceActivity : FireListener() {
                     items = getSelectedItems(items_list))
             newPlace.setLatLongPosition(mapsPlace)
 
-            firebaseService.addPlace(newPlace)
+            firebaseService.addSuggestion(newPlace)
             setResult(Activity.RESULT_OK)
             finish()
         }

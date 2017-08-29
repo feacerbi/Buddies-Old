@@ -19,6 +19,7 @@ class NewBuddyActivity : FireListener() {
         val TAG = "NewBuddyActivity"
         val BUDDY_INFO_EXTRA = "buddy_info"
         val EXTRA_BASETAG = "basetag"
+        val EXTRA_TAG_KEY = "tag_key"
         val RC_PHOTO_PICKER = 1
     }
 
@@ -26,8 +27,9 @@ class NewBuddyActivity : FireListener() {
         FireBuilder()
     }
 
+    var tagKey = ""
     var baseTag: BaseTag? = null
-    var photoUrl: String = ""
+    var photoUrl = ""
     var petSelected = 0
     var breedSelected = 0
 
@@ -68,6 +70,7 @@ class NewBuddyActivity : FireListener() {
 
             val resultIntent = Intent(this, MainActivity::class.java)
             resultIntent.putExtra(BUDDY_INFO_EXTRA, BuddyInfo(name, pet, breed, photoUrl))
+            resultIntent.putExtra(EXTRA_TAG_KEY, tagKey)
             resultIntent.putExtra(EXTRA_BASETAG, baseTag)
 
             setResult(RESULT_OK, resultIntent)
@@ -146,6 +149,7 @@ class NewBuddyActivity : FireListener() {
 
     private fun  handleIntent(intent: Intent?) {
         if(intent != null) {
+            tagKey = intent.extras.getString(EXTRA_TAG_KEY)
             baseTag = intent.extras.getSerializable(EXTRA_BASETAG) as BaseTag
         }
     }

@@ -2,15 +2,17 @@ package br.com.felipeacerbi.buddies.adapters
 
 import android.content.res.ColorStateList
 import android.support.v7.widget.RecyclerView
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.util.TypedValue
 import android.view.View
+import android.widget.EditText
 import android.widget.ProgressBar
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.BuddyProfileActivity
 import br.com.felipeacerbi.buddies.activities.CommentsActivity
 import br.com.felipeacerbi.buddies.activities.FullscreenPhotoActivity
-import br.com.felipeacerbi.buddies.activities.NewPostActivity
 import br.com.felipeacerbi.buddies.adapters.listeners.IListClickListener
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.models.Buddy
@@ -88,8 +90,8 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
                 post_message.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16F)
                 Picasso.with(context)
                         .load(post.photo)
-                        .placeholder(R.drawable.no_phototn)
-                        .error(R.drawable.no_phototn)
+                        .placeholder(R.drawable.placeholder)
+                        .error(R.drawable.placeholder)
                         .fit()
                         .centerInside()
                         .into(post_photo)
@@ -115,28 +117,52 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
                 openCommentsActivity(position)
             }
 
-            post_share_button.setOnClickListener {
-                // TODO Add external share action
-            }
-
-            if(post.likes.size == 0) {
+            if(post.likes.isEmpty()) {
                 post_likes_number.visibility = View.GONE
             } else {
                 post_likes_number.visibility = View.VISIBLE
                 post_likes_number.text = post.likes.size.toString()
             }
 
-            if(post.comments.size == 0) {
-                post_comments_number.visibility = View.GONE
-                last_comment_view.visibility = View.GONE
+            val hasComments = post.comments.isNotEmpty()
+
+            post_new_comment.visibility = if(hasComments) View.INVISIBLE else View.VISIBLE
+            post_new_comment_button.visibility = if(hasComments) View.INVISIBLE else View.VISIBLE
+            post_comments_number.visibility = if(hasComments) View.VISIBLE else View.GONE
+            last_comment_poster_name.visibility = if(hasComments) View.VISIBLE else View.INVISIBLE
+            last_comment_poster_comment.visibility = if(hasComments) View.VISIBLE else View.INVISIBLE
+
+            if(post.comments.isEmpty()) {
+
+                post_new_comment.addTextChangedListener(object: TextWatcher {
+                    override fun afterTextChanged(p0: Editable?) {
+                        // No need
+                    }
+
+                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                        // No need
+                    }
+
+                    override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, size: Int) {
+                        post_new_comment_button.isEnabled = size != 0
+                    }
+                })
+
+                post_new_comment_button.setOnClickListener {
+                    val newComment = createComment(position, post_new_comment)
+                    if(newComment != null) firebaseService.addComment(newComment)
+                    post_new_comment.setText("")
+                }
+
+                last_comment_poster_comment.setOnClickListener(null)
+                setUpNewComment(holder)
             } else {
-                post_comments_number.visibility = View.VISIBLE
                 post_comments_number.text = post.comments.size.toString()
 
-                last_comment_view.visibility = View.VISIBLE
-                last_comment_view.setOnClickListener {
+                last_comment_poster_comment.setOnClickListener {
                     openCommentsActivity(position)
                 }
+
                 setUpLastComment(post.comments.keys.elementAt(0), holder)
             }
 
@@ -156,8 +182,32 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
         }
     }
 
-    fun setUpLastComment(postKey: String, holder: PostViewHolder) {
-        firebaseService.getCommentReference(postKey).addListenerForSingleValueEvent(object: ValueEventListener {
+    private fun setUpNewComment(holder: PostViewHolder) {
+        firebaseService.getUserReference(firebaseService.getCurrentUserUID()).addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onCancelled(p0: DatabaseError?) {
+                Log.e(TAG, "Could not find user")
+            }
+
+            override fun onDataChange(userSnapshot: DataSnapshot?) {
+                if(userSnapshot != null && userSnapshot.hasChildren()) {
+                    val poster = User(userSnapshot)
+
+                    with(holder.itemView) {
+                        Picasso.with(listener.getContext())
+                                .load(poster.photo)
+                                .placeholder(R.drawable.no_phototn)
+                                .error(R.drawable.no_phototn)
+                                .fit()
+                                .centerCrop()
+                                .into(last_comment_profile_photo)
+                    }
+                }
+            }
+        })
+    }
+
+    fun setUpLastComment(commentKey: String, holder: PostViewHolder) {
+        firebaseService.getCommentReference(commentKey).addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onCancelled(p0: DatabaseError?) {
                 Log.e(TAG, "Could not find comment")
             }
@@ -196,17 +246,20 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
         })
     }
 
+    fun createComment(position: Int, view: EditText): Comment? {
+        val id = getRef(position).key
+
+        if(id != null) {
+            return Comment(postId = id, message = view.text.toString())
+        }
+
+        return null
+    }
+
     fun openCommentsActivity(position: Int) {
         listener.onListClick<CommentsActivity>(
                 CommentsActivity::class,
                 arrayOf(CommentsActivity.POST_ID_EXTRA),
-                arrayOf(getRef(position).key))
-    }
-
-    fun openNewPostActivity(position: Int) {
-        listener.onListClick<NewPostActivity>(
-                NewPostActivity::class,
-                arrayOf(NewPostActivity.SHARE_POST_ID),
                 arrayOf(getRef(position).key))
     }
 

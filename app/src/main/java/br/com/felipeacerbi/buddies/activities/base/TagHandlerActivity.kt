@@ -71,8 +71,9 @@ abstract class TagHandlerActivity : FireListener() {
             when(requestCode) {
                 NEW_PET_RESULT -> {
                     val buddyInfo = data?.extras?.getSerializable(NewBuddyActivity.BUDDY_INFO_EXTRA) as BuddyInfo
+                    val tagKey = data.extras.getString(NewBuddyActivity.EXTRA_TAG_KEY)
                     val baseTag = data.extras.getSerializable(NewBuddyActivity.EXTRA_BASETAG) as BaseTag
-                    firebaseService.addNewPet(baseTag, buddyInfo)
+                    firebaseService.addNewPet(tagKey, baseTag, buddyInfo)
                     launchActivity(ProfileActivity::class)
                 }
                 QR_CODE_RESULT -> { showTagOptionsDialog(BaseTag(data?.extras?.getString(QRCodeActivity.QR_CODE_TEXT) ?: "")) }
@@ -96,7 +97,7 @@ abstract class TagHandlerActivity : FireListener() {
         subscriptions.add(subscriptionsManager.checkTagSubscription(
                 baseTag,
                 usedAction = { firebaseService.addFollowPet(it) },
-                newAction = { Toast.makeText(this, "This TAG was not used yet.", Toast.LENGTH_SHORT).show() },
+                newAction = { _, _ -> Toast.makeText(this, "This TAG was not used yet.", Toast.LENGTH_SHORT).show() },
                 notVerifiedAction = { Toast.makeText(this, "This TAG was not verified yet.", Toast.LENGTH_SHORT).show() }))
     }
 
@@ -111,10 +112,11 @@ abstract class TagHandlerActivity : FireListener() {
                     ))
                 },
                 newAction = {
+                    key, foundTag ->
                     launchActivityWithExtras<NewBuddyActivity>(
                         NewBuddyActivity::class,
-                        arrayOf(NewBuddyActivity.EXTRA_BASETAG),
-                        arrayOf(it),
+                        arrayOf(NewBuddyActivity.EXTRA_TAG_KEY, NewBuddyActivity.EXTRA_BASETAG),
+                        arrayOf(key, foundTag),
                         true,
                         NEW_PET_RESULT) },
                 notVerifiedAction = { Toast.makeText(this, "This TAG was not verified yet.", Toast.LENGTH_SHORT).show() }))

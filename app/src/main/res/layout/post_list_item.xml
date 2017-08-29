@@ -8,78 +8,13 @@
     android:background="#FFFFFF"
     android:elevation="2dp">
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/shared_view"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="gone">
-        <cn.gavinliu.android.lib.shapedimageview.ShapedImageView
-            android:id="@+id/shared_post_profile_photo"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_margin="16dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:shape_mode="circle"/>
-
-        <TextView
-            android:id="@+id/shared_poster_name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/shared_post_profile_photo"
-            app:layout_constraintBottom_toBottomOf="@id/shared_post_profile_photo"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="72dp"
-            android:textStyle="bold"
-            android:text="Little Rex"/>
-
-        <TextView
-            android:id="@+id/shared_action"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/shared_post_profile_photo"
-            app:layout_constraintBottom_toBottomOf="@id/shared_post_profile_photo"
-            app:layout_constraintStart_toEndOf="@id/shared_poster_name"
-            android:text=" shared a post from "/>
-
-        <TextView
-            android:id="@+id/shared_poster_name_from"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/shared_post_profile_photo"
-            app:layout_constraintBottom_toBottomOf="@id/shared_post_profile_photo"
-            app:layout_constraintStart_toEndOf="@id/shared_action"
-            android:textStyle="bold"
-            android:text="Mila"/>
-
-        <TextView
-            android:id="@+id/shared_poster_comment"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            app:layout_constraintTop_toBottomOf="@id/shared_post_profile_photo"
-            app:layout_constraintStart_toStartOf="@id/shared_post_profile_photo"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:text="I totally agree!"/>
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:background="@color/black_overlay"/>
-    </android.support.constraint.ConstraintLayout>
-
     <cn.gavinliu.android.lib.shapedimageview.ShapedImageView
         android:id="@+id/post_profile_photo"
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:layout_margin="16dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/shared_view"
+        app:layout_constraintTop_toTopOf="parent"
         app:shape_mode="circle"/>
 
     <android.support.constraint.ConstraintLayout
@@ -131,6 +66,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:padding="8dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -174,8 +111,7 @@
             android:tint="@color/colorPrimary"
             android:src="@drawable/ic_chat_bubble_black_24dp"
             android:alpha="0.7"
-            android:layout_marginEnd="48dp"
-            app:layout_constraintEnd_toStartOf="@id/post_share_button"/>
+            app:layout_constraintEnd_toEndOf="parent"/>
         <TextView
             android:id="@+id/post_comments_number"
             android:layout_width="wrap_content"
@@ -184,24 +120,14 @@
             app:layout_constraintEnd_toStartOf="@id/post_comment_button"
             app:layout_constraintTop_toTopOf="@id/post_comment_button"
             app:layout_constraintBottom_toBottomOf="@id/post_comment_button" />
-        <ImageView
-            android:id="@+id/post_share_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:tint="@color/colorPrimary"
-            android:src="@drawable/ic_share_black_24dp"
-            android:alpha="0.7"
-            app:layout_constraintEnd_toEndOf="parent"/>
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/last_comment_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/post_footer"
-        android:visibility="visible">
+        app:layout_constraintTop_toBottomOf="@id/post_footer">
         <ImageView
             android:id="@+id/last_comment_divider"
             android:layout_width="match_parent"
@@ -217,6 +143,35 @@
             app:layout_constraintTop_toBottomOf="@id/last_comment_divider"
             app:layout_constraintBottom_toBottomOf="parent"
             app:shape_mode="circle"/>
+        <ImageView
+            android:id="@+id/post_new_comment_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/last_comment_profile_photo"
+            app:layout_constraintBottom_toBottomOf="@id/last_comment_profile_photo"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:tint="@color/colorPrimary"
+            android:src="@drawable/ic_send_black_24dp"
+            android:alpha="0.7"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"/>
+        <EditText
+            android:id="@+id/post_new_comment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/last_comment_profile_photo"
+            app:layout_constraintBottom_toBottomOf="@id/last_comment_profile_photo"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/post_new_comment_button"
+            android:layout_marginStart="72dp"
+            android:textSize="14sp"
+            android:inputType="textCapSentences"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:visibility="invisible"
+            android:backgroundTint="@color/colorPrimary"
+            android:hint="Be the first one to comment" />
         <TextView
             android:id="@+id/last_comment_poster_name"
             android:layout_width="0dp"
@@ -225,8 +180,8 @@
             app:layout_constraintBottom_toBottomOf="@id/last_comment_profile_photo"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="72dp"
-            android:textStyle="bold"
-            android:text="Little Rex"/>
+            android:visibility="invisible"
+            android:textStyle="bold"/>
         <TextView
             android:id="@+id/last_comment_poster_comment"
             android:layout_width="0dp"
@@ -234,7 +189,7 @@
             app:layout_constraintTop_toTopOf="@id/last_comment_profile_photo"
             app:layout_constraintBottom_toBottomOf="@id/last_comment_profile_photo"
             app:layout_constraintStart_toEndOf="@id/last_comment_poster_name"
-            android:text=" hahahah"/>
+            android:visibility="invisible"/>
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

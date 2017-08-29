@@ -73,8 +73,8 @@ class PlacesAdapter(val listener: IListClickListener, val userPlacesReference: Q
                         if(place.photo.isNotEmpty()) {
                             Picasso.with(listener.getContext())
                                     .load(place.photo)
-                                    .placeholder(R.drawable.no_phototn)
-                                    .error(R.drawable.no_phototn)
+                                    .placeholder(R.drawable.placeholder)
+                                    .error(R.drawable.placeholder)
                                     .fit()
                                     .centerCrop()
                                     .into(place_photo)

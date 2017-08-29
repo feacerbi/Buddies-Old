@@ -9,7 +9,6 @@ import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import br.com.felipeacerbi.buddies.BuildConfig
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.base.TagHandlerActivity
@@ -33,8 +32,6 @@ class MainActivity : TagHandlerActivity() {
     companion object {
         val TAG = "MainActivity"
         val RC_SIGN_IN = 1
-        val CREATE_PROFILE = 2
-        val SUGGEST_PLACE = 3
 
         val FRAGMENT_POSTS = R.id.navigation_home
         val FRAGMENT_FOLLOWS = R.id.navigation_following
@@ -65,7 +62,7 @@ class MainActivity : TagHandlerActivity() {
                                         AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
                                         AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build()))
                         .setIsSmartLockEnabled(!BuildConfig.DEBUG)
-                        .setTheme(R.style.AppTheme_NoActionBar)
+                        .setTheme(R.style.AppTheme)
                         .build(),
                         RC_SIGN_IN)
             }
@@ -91,7 +88,6 @@ class MainActivity : TagHandlerActivity() {
 
                     firebaseService.registerUser(user) }
         ))
-        navigation.selectedItemId = currentFragment ?: FRAGMENT_POSTS
     }
 
     fun onSignOut() {
@@ -123,7 +119,7 @@ class MainActivity : TagHandlerActivity() {
                 PostsListFragment().transact(
                         this,
                         container.id,
-                        Bundle().makeQueryBundle(this, firebaseService.queryPosts())
+                        Bundle().makeQueryBundle(firebaseService.queryPosts())
                 )
                 currentFragment = FRAGMENT_POSTS
                 return@OnNavigationItemSelectedListener true
@@ -132,7 +128,7 @@ class MainActivity : TagHandlerActivity() {
                 PetsListFragment().transact(
                         this,
                         container.id,
-                        Bundle().makeQueryBundle(this, firebaseService.queryFollow())
+                        Bundle().makeQueryBundle(firebaseService.queryFollow())
                 )
                 currentFragment = FRAGMENT_FOLLOWS
                 return@OnNavigationItemSelectedListener true
@@ -141,7 +137,7 @@ class MainActivity : TagHandlerActivity() {
                 PlacesListFragment().transact(
                         this,
                         container.id,
-                        Bundle().makeQueryBundle(this, firebaseService.queryPlaces())
+                        Bundle().makeQueryBundle(firebaseService.queryPlaces())
                 )
                 currentFragment = FRAGMENT_PLACES
                 return@OnNavigationItemSelectedListener true
@@ -162,6 +158,8 @@ class MainActivity : TagHandlerActivity() {
                     .putBoolean(SettingsActivity.QR_CODE_BUTTON_SHORTCUT_KEY, !nfcService.isNFCSupported(this))
                     .apply()
         }
+
+        navigation.selectedItemId = FRAGMENT_POSTS
     }
 
     override fun showTagOptionsDialog(baseTag: BaseTag) {
@@ -181,21 +179,10 @@ class MainActivity : TagHandlerActivity() {
             RC_SIGN_IN -> {
                 when(resultCode) {
                     Activity.RESULT_CANCELED -> finish()
-                    Activity.RESULT_OK -> Log.d(TAG, "Sign in success")
-                }
-            }
-
-            CREATE_PROFILE -> {
-                when(resultCode) {
-                    Activity.RESULT_CANCELED -> onSignOut()
-                    Activity.RESULT_OK -> Log.d(TAG, "Profile created")
-                }
-            }
-
-            SUGGEST_PLACE -> {
-                when(resultCode) {
-                    Activity.RESULT_OK -> { Toast.makeText(this, "Thank you for the suggestion!", Toast.LENGTH_SHORT).show() }
-                    Activity.RESULT_CANCELED -> { Toast.makeText(this, "Maybe another time...", Toast.LENGTH_SHORT).show() }
+                    Activity.RESULT_OK -> {
+                        Log.d(TAG, "Sign in success")
+                        navigation.selectedItemId = FRAGMENT_POSTS
+                    }
                 }
             }
         }

@@ -19,18 +19,21 @@ class SubscriptionsManager(val context: Context) {
 
     fun checkTagSubscription(baseTag: BaseTag,
                              usedAction: (BaseTag) -> Unit,
-                             newAction: (BaseTag) -> Unit,
+                             newAction: (String, BaseTag) -> Unit,
                              notVerifiedAction: (BaseTag) -> Unit): Disposable {
         Log.d(TAG, "Check pet with action " + baseTag.id)
         return firebaseService.checkTagObservable(baseTag)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe (
-                        { foundTag ->
+                        { tagPair ->
+                            val key = tagPair.first
+                            val foundTag = tagPair.second
+
                             if(foundTag.verified) {
                                 if (foundTag.petId.isEmpty()) {
                                     Log.d(TAG, "New Tag")
-                                    newAction(foundTag)
+                                    newAction(key, foundTag)
                                 } else {
                                     Log.d(TAG, "Used Tag")
                                     usedAction(foundTag)

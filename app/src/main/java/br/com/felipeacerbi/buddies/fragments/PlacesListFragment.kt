@@ -2,13 +2,17 @@ package br.com.felipeacerbi.buddies.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
+import android.widget.Toast
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.SuggestPlaceActivity
 import br.com.felipeacerbi.buddies.adapters.PlacesAdapter
@@ -145,5 +149,20 @@ open class PlacesListFragment : PetsListFragment() {
 
     override fun selectListItem(position: Int) {
         list?.scrollToPosition(position)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        Log.d(TAG, "Activity request code " + requestCode)
+
+        when(requestCode) {
+            SUGGEST_PLACE -> {
+                when(resultCode) {
+                    Activity.RESULT_OK -> { Toast.makeText(activity, "Thank you for the suggestion!", Toast.LENGTH_SHORT).show() }
+                    Activity.RESULT_CANCELED -> { Toast.makeText(activity, "Maybe another time...", Toast.LENGTH_SHORT).show() }
+                }
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data)
     }
 }

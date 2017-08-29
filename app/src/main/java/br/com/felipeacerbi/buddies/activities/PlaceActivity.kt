@@ -88,8 +88,8 @@ class PlaceActivity : FireListener() {
                         if(placePhoto != null && placePhoto.isNotEmpty()) {
                             Picasso.with(this)
                                     .load(place?.photo)
-                                    .placeholder(R.drawable.no_phototn)
-                                    .error(R.drawable.no_phototn)
+                                    .placeholder(R.drawable.placeholder)
+                                    .error(R.drawable.placeholder)
                                     .fit()
                                     .centerCrop()
                                     .into(place_photo)

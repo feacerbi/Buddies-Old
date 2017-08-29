@@ -14,7 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ListAdapter
-import br.com.felipeacerbi.buddies.R
+import br.com.felipeacerbi.buddies.activities.BuddyProfileActivity
 import br.com.felipeacerbi.buddies.fragments.PetsListFragment
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.google.firebase.database.Query
@@ -154,8 +154,13 @@ fun RecyclerView.getFirebaseAdapter(): FirebaseRecyclerAdapter<*, *>? {
     return null
 }
 
-fun Bundle.makeQueryBundle(context: Context, query: Query): Bundle {
-    putString(PetsListFragment.DATABASE_REFERENCE, query.toString().removePrefix(context.getString(R.string.firebase_query_prefix)))
+fun Bundle.makeQueryBundle(query: Query): Bundle {
+    putString(PetsListFragment.DATABASE_REFERENCE, query.toString().removePrefix("https://buddies-5d07f.firebaseio.com/"))
+    return this
+}
+
+fun Bundle.makeBooleanBundle(value: Boolean): Bundle {
+    putString(BuddyProfileActivity.EXTRA_EDITABLE, value.toString())
     return this
 }
 
@@ -168,6 +173,11 @@ fun Fragment.transact(activity: AppCompatActivity, id: Int, bundle: Bundle? = nu
     transaction.commit()
 }
 
+fun Fragment.create(bundle: Bundle? = null): Fragment {
+    if(bundle != null) arguments = bundle
+    return this
+}
+
 fun android.app.Fragment.transact(activity: AppCompatActivity, id: Int, bundle: Bundle? = null) {
     val transaction = activity.fragmentManager.beginTransaction()
 
@@ -175,6 +185,35 @@ fun android.app.Fragment.transact(activity: AppCompatActivity, id: Int, bundle: 
 
     transaction.replace(id, this)
     transaction.commit()
+}
+
+fun <T : Any> Fragment.launchActivityWithExtras(
+        clazz: KClass<T>,
+        identifiers: Array<String>?,
+        extras: Array<Any>?,
+        forResult: Boolean = false,
+        resultIdentifier: Int = -1) {
+    val intent = Intent(activity, clazz.java)
+
+    if(identifiers != null && extras != null) {
+        for (extra in extras) {
+            if (extra is String) {
+                intent.putExtra(identifiers[extras.indexOf(extra)], extra)
+            } else if (extra is Int) {
+                intent.putExtra(identifiers[extras.indexOf(extra)], extra)
+            } else if (extra is Boolean) {
+                intent.putExtra(identifiers[extras.indexOf(extra)], extra)
+            } else if(extra is Serializable) {
+                intent.putExtra(identifiers[extras.indexOf(extra)], extra)
+            }
+        }
+    }
+
+    if(forResult) {
+        startActivityForResult(intent, resultIdentifier)
+    } else {
+        startActivity(intent)
+    }
 }
 
 fun <T : Any> Activity.launchActivity(clazz: KClass<T>) {

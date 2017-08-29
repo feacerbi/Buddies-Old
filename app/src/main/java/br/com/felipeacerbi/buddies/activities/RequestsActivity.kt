@@ -22,7 +22,7 @@ class RequestsActivity : AppCompatActivity() {
         RequestsListFragment().transact(
                 this,
                 container.id,
-                Bundle().makeQueryBundle(this, firebaseService.queryRequests())
+                Bundle().makeQueryBundle(firebaseService.queryRequests())
         )
     }
 

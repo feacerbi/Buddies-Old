@@ -24,7 +24,6 @@
     <string name="navigation_string_following">Following</string>
     <string name="title_activity_settings">Settings</string>
 
-    <string name="firebase_query_prefix">https://buddies-5d07f.firebaseio.com/</string>
     <string name="action_title_settings">Settings</string>
     <string name="action_title_profile">Profile</string>
     <string name="title_activity_profile">Profile</string>
@@ -62,4 +61,10 @@
     <string name="title_activity_new_post">New Post</string>
     <string name="title_activity_comments">Comments</string>
     <string name="new_comment_hint">Write a comment</string>
+    <string name="title_activity_tab_example">TabExampleActivity</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+    <string name="tab_text_3">Tab 3</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
 </resources>

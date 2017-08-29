@@ -58,7 +58,7 @@ class FullscreenPhotoActivity : AppCompatActivity() {
         if(photoPath != null) {
             Picasso.with(this)
                     .load(photoPath)
-                    .error(R.drawable.no_phototn)
+                    .error(R.drawable.placeholder)
                     .fit()
                     .centerInside()
                     .into(fullscreen_photo)

@@ -26,12 +26,10 @@ class NewPostActivity : FireListener() {
         val PLACE_PICKER_REQUEST = 101
         val BUDDY_KEY_EXTRA = "buddy_key"
         val BUDDY_INFO_EXTRA = "buddy_info"
-        val SHARE_POST_ID = "share_id"
     }
 
     var buddyKey: String? = null
     var buddyInfo: BuddyInfo? = null
-    var shareId: String? = null
 
     var photoUrl: String = ""
     var mapsPlace: Place? = null
@@ -48,8 +46,6 @@ class NewPostActivity : FireListener() {
         if(intent != null && intent.hasExtra(BUDDY_KEY_EXTRA)) {
             buddyKey = intent.getStringExtra(BUDDY_KEY_EXTRA)
             buddyInfo = intent.getSerializableExtra(BUDDY_INFO_EXTRA) as BuddyInfo
-        } else {
-            shareId = intent?.getStringExtra(SHARE_POST_ID)
         }
     }
 
@@ -57,10 +53,6 @@ class NewPostActivity : FireListener() {
         setSupportActionBar(toolbar)
         toolbar.setNavigationOnClickListener {
             finish()
-        }
-
-        if(shareId != null) {
-            supportActionBar?.title = "Sharing"
         }
 
         poster_name.text = buddyInfo?.name
@@ -92,13 +84,8 @@ class NewPostActivity : FireListener() {
             }
         })
 
-        if(shareId == null) {
-            post_add_image.visibility = View.VISIBLE
-            post_add_image.setOnClickListener { pickImage() }
-        } else {
-            post_add_image.visibility = View.GONE
-
-        }
+        post_add_image.visibility = View.VISIBLE
+        post_add_image.setOnClickListener { pickImage() }
 
         post_add_location.setOnClickListener { pickPlace() }
         post_add_mark.setOnClickListener {  }
