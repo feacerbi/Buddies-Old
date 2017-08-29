@@ -126,6 +126,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="top"
+                android:backgroundTint="@color/colorPrimary"
                 android:hint="@string/post_message_hint"/>
 
             <ImageView

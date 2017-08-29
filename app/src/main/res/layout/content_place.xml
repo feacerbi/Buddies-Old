@@ -30,6 +30,7 @@
                 android:textStyle="bold"
                 android:textSize="12sp"
                 android:textAllCaps="true"
+                android:textColor="@color/colorPrimary"
                 android:text="@string/friendly_items_title"/>
             <LinearLayout
                 android:id="@+id/friendly_items"
@@ -88,6 +89,7 @@
                 android:textAllCaps="true"
                 android:textStyle="bold"
                 android:textSize="12sp"
+                android:textColor="@color/colorPrimary"
                 android:text="@string/place_address_title"/>
             <TextView
                 android:id="@+id/address_text"
@@ -127,6 +129,7 @@
                 android:textAllCaps="true"
                 android:textStyle="bold"
                 android:textSize="12sp"
+                android:textColor="@color/colorPrimary"
                 android:text="@string/place_phone_title"/>
             <TextView
                 android:id="@+id/phone_text"
@@ -167,6 +170,7 @@
                 android:textAllCaps="true"
                 android:textStyle="bold"
                 android:textSize="12sp"
+                android:textColor="@color/colorPrimary"
                 android:text="Website"/>
             <TextView
                 android:id="@+id/website_text"
@@ -195,6 +199,7 @@
                 android:textAllCaps="true"
                 android:textStyle="bold"
                 android:textSize="12sp"
+                android:textColor="@color/colorPrimary"
                 android:text="@string/place_description_title"/>
             <TextView
                 android:id="@+id/place_description"

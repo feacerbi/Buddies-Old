@@ -91,6 +91,7 @@ class MainActivity : TagHandlerActivity() {
 
                     firebaseService.registerUser(user) }
         ))
+        navigation.selectedItemId = currentFragment ?: FRAGMENT_POSTS
     }
 
     fun onSignOut() {
@@ -105,12 +106,6 @@ class MainActivity : TagHandlerActivity() {
         setUpUI()
         handleIntent(intent, true)
     }
-
-//    override fun onStart() {
-//        super.onStart()
-//        firebaseService.removeUserPlaces()
-//        firebaseService.removeUserLocation()
-//    }
 
     override fun onResume() {
         super.onResume()
@@ -167,8 +162,6 @@ class MainActivity : TagHandlerActivity() {
                     .putBoolean(SettingsActivity.QR_CODE_BUTTON_SHORTCUT_KEY, !nfcService.isNFCSupported(this))
                     .apply()
         }
-
-        navigation.selectedItemId = currentFragment ?: FRAGMENT_POSTS
     }
 
     override fun showTagOptionsDialog(baseTag: BaseTag) {

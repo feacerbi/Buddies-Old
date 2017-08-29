@@ -71,29 +71,62 @@
             android:hint="@string/new_pet_name_hint"
             android:inputType="textPersonName"
             android:maxLines="1"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:backgroundTint="@color/colorPrimary"/>
 
     </android.support.design.widget.TextInputLayout>
 
-    <TextView
-        android:id="@+id/pet_chooser"
+    <RelativeLayout
+        android:id="@+id/pet_chooser_row"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:padding="16dp"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/pet_name_row" />
+        app:layout_constraintTop_toBottomOf="@id/pet_name_row"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/pet_chooser_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:textColor="@color/colorPrimary"
+            android:text="Animal"/>
+        <TextView
+            android:id="@+id/pet_chooser"
+            android:textSize="16sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/pet_chooser_title"/>
+    </RelativeLayout>
 
-    <TextView
-        android:id="@+id/breed_chooser"
+    <RelativeLayout
+        android:id="@+id/breed_chooser_row"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:padding="16dp"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/pet_chooser" />
+        app:layout_constraintTop_toBottomOf="@id/pet_chooser_row"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/breed_chooser_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:textColor="@color/colorPrimary"
+            android:text="Breed"/>
+        <TextView
+            android:id="@+id/breed_chooser"
+            android:textSize="16sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/breed_chooser_title"/>
+    </RelativeLayout>
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/buttons"
@@ -101,7 +134,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/breed_chooser">
+        app:layout_constraintTop_toBottomOf="@id/breed_chooser_row">
 
         <Button
             android:id="@+id/add_button"

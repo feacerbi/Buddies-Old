@@ -116,7 +116,7 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
             }
 
             post_share_button.setOnClickListener {
-                openNewPostActivity(position)
+                // TODO Add external share action
             }
 
             if(post.likes.size == 0) {
