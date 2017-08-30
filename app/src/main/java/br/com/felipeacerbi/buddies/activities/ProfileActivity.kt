@@ -31,7 +31,6 @@ class ProfileActivity : TagHandlerActivity() {
 
     fun setUpUI() {
         setSupportActionBar(toolbar)
-
         toolbar.setNavigationOnClickListener {
             finish()
         }
@@ -54,7 +53,7 @@ class ProfileActivity : TagHandlerActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_profile_activity, menu)
-        return super.onCreateOptionsMenu(menu)
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {

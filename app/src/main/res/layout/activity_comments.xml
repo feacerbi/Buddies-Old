@@ -10,11 +10,10 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="?android:attr/actionBarSize"
         android:elevation="4dp"
         app:navigationIcon="@drawable/ic_keyboard_backspace_white_24dp"
-        android:theme="@style/AppTheme.Toolbar"
-        app:popupTheme="@style/AppTheme.PopupOverlay" />
+        android:theme="@style/AppTheme.Toolbar" />
 
     <RelativeLayout
         android:id="@+id/new_comment_bar"

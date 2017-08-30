@@ -19,12 +19,11 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="?android:attr/actionBarSize"
         android:layout_marginTop="24dp"
         android:background="@color/black_overlay"
         app:titleTextColor="#FFFFFF"
-        app:navigationIcon="@drawable/ic_keyboard_backspace_white_24dp"
-        app:popupTheme="@style/AppTheme.PopupOverlay" />
+        app:navigationIcon="@drawable/ic_keyboard_backspace_white_24dp"/>
 
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->

@@ -1,6 +1,8 @@
 package br.com.felipeacerbi.buddies.adapters
 
+import android.content.Intent
 import android.content.res.ColorStateList
+import android.net.Uri
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
@@ -54,6 +56,13 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
 
                     with(holder.itemView) {
                         poster_name.text = buddy.name
+                        poster_name.setOnClickListener {
+                            openBuddyDetails(post)
+                        }
+
+                        post_profile_photo.setOnClickListener {
+                            openBuddyDetails(post)
+                        }
 
                         Picasso.with(context)
                                 .load(buddy.photo)
@@ -99,18 +108,14 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
 
             post_timestamp.text = post.created.toFormatedDate()
 
-            if(post.location.isEmpty()) {
+            if(post.location.isEmpty() || post.location == "null") {
                 post_separator.visibility = View.GONE
             } else {
                 post_separator.visibility = View.VISIBLE
                 post_location.text = post.location
-            }
-
-            post_header.setOnClickListener {
-                listener.onListClick<BuddyProfileActivity>(
-                        BuddyProfileActivity::class,
-                        arrayOf(BuddyProfileActivity.EXTRA_PETID, BuddyProfileActivity.EXTRA_EDITABLE) ,
-                        arrayOf(post.petId, false))
+                post_location.setOnClickListener {
+                    openMapAddress(post.location)
+                }
             }
 
             post_comment_button.setOnClickListener {
@@ -159,11 +164,12 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
             } else {
                 post_comments_number.text = post.comments.size.toString()
 
-                last_comment_poster_comment.setOnClickListener {
+                last_comment_view.setOnClickListener {
                     openCommentsActivity(position)
                 }
 
-                setUpLastComment(post.comments.keys.elementAt(0), holder)
+                val commentKeys = post.comments.keys
+                setUpLastComment(commentKeys.elementAt(commentKeys.size - 1), holder)
             }
 
             if(post.likes.contains(firebaseService.getCurrentUserUID())) {
@@ -256,11 +262,26 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
         return null
     }
 
+    fun openBuddyDetails(post: Post) {
+        listener.onListClick<BuddyProfileActivity>(
+                BuddyProfileActivity::class,
+                arrayOf(BuddyProfileActivity.EXTRA_PETID, BuddyProfileActivity.EXTRA_EDITABLE) ,
+                arrayOf(post.petId, false))
+    }
+
     fun openCommentsActivity(position: Int) {
         listener.onListClick<CommentsActivity>(
                 CommentsActivity::class,
                 arrayOf(CommentsActivity.POST_ID_EXTRA),
                 arrayOf(getRef(position).key))
+    }
+
+    fun openMapAddress(address: String?) {
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = Uri.parse("geo:0,0?q=" + address)
+        if (intent.resolveActivity(listener.getContext().packageManager) != null) {
+            listener.getContext().startActivity(intent)
+        }
     }
 
     override fun onDataChanged() {
@@ -271,7 +292,9 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
     override fun onChildChanged(type: ChangeEventListener.EventType?, snapshot: DataSnapshot?, index: Int, oldIndex: Int) {
         super.onChildChanged(type, snapshot, index, oldIndex)
         hideProgressBar()
-        listener.selectListItem(itemCount - 1)
+        if(type == ChangeEventListener.EventType.ADDED) {
+            listener.selectListItem(itemCount - 1)
+        }
     }
 
     fun hideProgressBar() {

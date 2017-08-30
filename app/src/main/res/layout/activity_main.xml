@@ -11,10 +11,9 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="54dp"
+        android:layout_height="?android:attr/actionBarSize"
         android:elevation="4dp"
-        android:theme="@style/AppTheme.Toolbar"
-        app:popupTheme="@style/AppTheme.PopupOverlay" />
+        android:theme="@style/AppTheme.Toolbar" />
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"

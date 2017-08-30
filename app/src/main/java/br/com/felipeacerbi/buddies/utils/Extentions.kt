@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
+import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -47,9 +48,29 @@ fun ByteArray.toHexString(): String {
 fun Long.toFormatedDate() = this.toString().toFormatedDate()
 
 fun String.toFormatedDate(): String {
+    val currentTime = Calendar.getInstance()
     val reqTime = Calendar.getInstance()
     reqTime.timeInMillis = this.toLong()
-    return reqTime.time.toString().substringBeforeLast(" GMT").substringBeforeLast(":")
+
+    if(reqTime[Calendar.YEAR] != currentTime[Calendar.YEAR]) {
+        return DateFormat.format("MMM dd, yyyy 'at' h:mm a", reqTime).toString()
+    }
+
+    if(reqTime[Calendar.DAY_OF_MONTH] != currentTime[Calendar.DAY_OF_MONTH]) {
+        return DateFormat.format("MMM dd 'at' h:mm a", reqTime).toString()
+    }
+
+    if(reqTime[Calendar.HOUR_OF_DAY] != currentTime[Calendar.HOUR_OF_DAY]) {
+        val hoursPassed = currentTime[Calendar.HOUR_OF_DAY] - reqTime[Calendar.HOUR_OF_DAY]
+        return hoursPassed.toString() + " hrs"
+    }
+
+    if(reqTime[Calendar.MINUTE] != currentTime[Calendar.MINUTE]) {
+        val minsPassed = currentTime[Calendar.MINUTE] - reqTime[Calendar.MINUTE]
+        return minsPassed.toString() + " mins"
+    }
+
+    return "Just now"
 }
 
 fun String.toFormatedWebsite(): String {

@@ -141,7 +141,7 @@ open class PostsListFragment : PetsListFragment() {
     }
 
     override fun setUpFab(show: Boolean) {
-        postsFab?.setUp(activity, show, R.drawable.plus_sign) { showPetsOwnedDialog() }
+        postsFab?.setUp(activity, show, R.drawable.ic_mode_edit_white_24dp) { showPetsOwnedDialog() }
     }
 
     override fun <T : Any> onListClick(clazz: KClass<T>, identifiers: Array<String>?, extras: Array<Any>?) {
