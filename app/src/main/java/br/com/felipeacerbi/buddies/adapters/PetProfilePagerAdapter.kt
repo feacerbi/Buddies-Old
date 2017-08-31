@@ -30,7 +30,8 @@ class PetProfilePagerAdapter(
                 return PetProfileInfoFragment().create(Bundle().makeQueryBundle(ref))
             }
             POSTS_FRAGMENT -> {
-                return PostsListFragment().create(Bundle().makeQueryBundle(ref.child(Buddy.DATABASE_POSTS_CHILD)))
+                return PostsListFragment().create(
+                        Bundle().makeQueryBundle(ref.child(Buddy.DATABASE_POSTS_CHILD)))
             }
             else -> { return ProfileInfoFragment()
             }

@@ -5,12 +5,12 @@ import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.widget.NestedScrollView
 import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ScrollView
 import android.widget.Toast
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.FullscreenPhotoActivity
@@ -38,7 +38,9 @@ open class PetProfileInfoFragment : Fragment() {
     }
 
     val editViewList by lazy {
-        arrayOf(buddy_name_edit_button, picture_edit_button)
+        with(view) {
+            arrayOf(buddy_name_edit_button, picture_edit_button)
+        }
     }
 
     val buddyReference by lazy {
@@ -60,10 +62,10 @@ open class PetProfileInfoFragment : Fragment() {
     }
 
     fun setUpViews() {
-        if(view is ScrollView) {
+        if(view is NestedScrollView) {
             with(view) {
                 for(editView in editViewList) {
-                    editView.visibility = if(editable) View.VISIBLE else View.GONE
+                    editView.visibility = if(editable) View.VISIBLE else View.INVISIBLE
                 }
 
                 if(editable) {

@@ -59,10 +59,10 @@ class BuddiesAdapter(
 
             remove_button.setOnClickListener { firebaseService.removePetFromUser(userPetsReference.key, petId) }
             click_profile_layout.setOnClickListener {
-                listener.onListClick(
+                listener.onListClick<BuddyProfileActivity>(
                         BuddyProfileActivity::class,
-                        arrayOf(BuddyProfileActivity.EXTRA_PETID, BuddyProfileActivity.EXTRA_EDITABLE),
-                        arrayOf(petId, editable))
+                        arrayOf(BuddyProfileActivity.EXTRA_PETID),
+                        arrayOf(petId))
             }
         }
     }

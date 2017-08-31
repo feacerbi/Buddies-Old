@@ -13,7 +13,7 @@ import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.firebase.FireListener
 import br.com.felipeacerbi.buddies.models.BuddyInfo
 import br.com.felipeacerbi.buddies.models.Post
-import com.google.android.gms.location.places.Place
+import br.com.felipeacerbi.buddies.models.PostInfo
 import com.google.android.gms.location.places.ui.PlacePicker
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_new_post.*
@@ -24,15 +24,20 @@ class NewPostActivity : FireListener() {
         val TAG = "NewPostActivity"
         val RC_PHOTO_PICKER = 100
         val PLACE_PICKER_REQUEST = 101
+        val POST_KEY_EXTRA = "post_key"
+        val POST_INFO_EXTRA = "post_info"
         val BUDDY_KEY_EXTRA = "buddy_key"
         val BUDDY_INFO_EXTRA = "buddy_info"
     }
+
+    var postKey: String? = null
+    var postInfo: Post? = null
 
     var buddyKey: String? = null
     var buddyInfo: BuddyInfo? = null
 
     var photoUrl: String = ""
-    var mapsPlace: Place? = null
+    var mapsPlace: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +49,10 @@ class NewPostActivity : FireListener() {
 
     private fun handleIntent(intent: Intent?) {
         if(intent != null && intent.hasExtra(BUDDY_KEY_EXTRA)) {
+            if(intent.hasExtra(POST_KEY_EXTRA)) {
+                postKey = intent.getStringExtra(POST_KEY_EXTRA)
+                postInfo = Post(intent.getSerializableExtra(POST_INFO_EXTRA) as PostInfo)
+            }
             buddyKey = intent.getStringExtra(BUDDY_KEY_EXTRA)
             buddyInfo = intent.getSerializableExtra(BUDDY_INFO_EXTRA) as BuddyInfo
         }
@@ -90,7 +99,36 @@ class NewPostActivity : FireListener() {
         post_add_location.setOnClickListener { pickPlace() }
         post_add_mark.setOnClickListener {  }
 
-        post_post_button.setOnClickListener { createNewPost() }
+        post_post_button.setOnClickListener {
+            if(postKey != null) {
+                updatePost(postKey)
+            } else {
+                createNewPost()
+            }
+        }
+
+        val postToEdit = postInfo
+        if(postToEdit != null) {
+            post_message.setText(postToEdit.message)
+
+            val postLocation = postToEdit.location
+            if(postLocation.isNotEmpty()) {
+                mapsPlace = postLocation
+                post_location.text = postLocation
+                post_location.visibility = View.VISIBLE
+            }
+
+            if(postToEdit.photo.isNotEmpty()) {
+                Log.d(TAG, "Photo " + photoUrl)
+                Picasso.with(this)
+                        .load(postToEdit.photo)
+                        .error(R.drawable.placeholder)
+                        .placeholder(R.drawable.placeholder)
+                        .fit()
+                        .centerCrop()
+                        .into(post_photo)
+            }
+        }
     }
 
     private fun pickPlace() {
@@ -105,21 +143,44 @@ class NewPostActivity : FireListener() {
         startActivityForResult(Intent.createChooser(intent, "Complete action using"), RC_PHOTO_PICKER)
     }
 
-    private fun createNewPost() {
+    fun createNewPost() {
+        val newPost = getPost()
+        if(newPost != null) {
+            firebaseService.addPost(newPost)
+            Toast.makeText(this, "Post created!", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Post error!", Toast.LENGTH_SHORT).show()
+        }
+
+        finish()
+    }
+
+    fun updatePost(postKey: String?) {
+        val updatePost = getPost()
+        val postId = postKey
+
+        if(updatePost != null && postId != null) {
+            firebaseService.updatePost(updatePost, postId)
+            Toast.makeText(this, "Post updated!", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Post error!", Toast.LENGTH_SHORT).show()
+        }
+
+        finish()
+    }
+
+    fun getPost(): Post? {
         val id = buddyKey
 
         if (id != null) {
-            val newPost = Post(
+            return Post(
                     id,
                     post_message.text.toString(),
                     photoUrl,
-                    mapsPlace?.name.toString()
-            )
-
-            firebaseService.addPost(newPost)
-            Toast.makeText(this, "Post created!", Toast.LENGTH_SHORT).show()
-            finish()
+                    mapsPlace)
         }
+
+        return null
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -130,12 +191,11 @@ class NewPostActivity : FireListener() {
             when(requestCode) {
                 RC_PHOTO_PICKER -> {
                     photoUrl = data?.data.toString()
-                    Log.d(TAG, "Image picked")
                     post_photo.setImageBitmap(MediaStore.Images.Media.getBitmap(contentResolver, data?.data))
                 }
                 PLACE_PICKER_REQUEST -> {
-                    mapsPlace = PlacePicker.getPlace(this, data)
-                    post_location.text = mapsPlace?.name
+                    mapsPlace = PlacePicker.getPlace(this, data)?.name.toString()
+                    post_location.text = mapsPlace
                     post_location.visibility = View.VISIBLE
                 }
             }

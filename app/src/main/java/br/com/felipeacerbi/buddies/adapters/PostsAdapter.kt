@@ -3,11 +3,13 @@ package br.com.felipeacerbi.buddies.adapters
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.net.Uri
+import android.support.v7.widget.PopupMenu
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.util.TypedValue
+import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.ProgressBar
@@ -15,18 +17,17 @@ import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.BuddyProfileActivity
 import br.com.felipeacerbi.buddies.activities.CommentsActivity
 import br.com.felipeacerbi.buddies.activities.FullscreenPhotoActivity
+import br.com.felipeacerbi.buddies.activities.NewPostActivity
 import br.com.felipeacerbi.buddies.adapters.listeners.IListClickListener
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
-import br.com.felipeacerbi.buddies.models.Buddy
-import br.com.felipeacerbi.buddies.models.Comment
-import br.com.felipeacerbi.buddies.models.Post
-import br.com.felipeacerbi.buddies.models.User
+import br.com.felipeacerbi.buddies.models.*
 import br.com.felipeacerbi.buddies.utils.toFormatedDate
 import com.firebase.ui.database.ChangeEventListener
 import com.firebase.ui.database.FirebaseIndexRecyclerAdapter
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.post_list_item.view.*
+
 
 class PostsAdapter(val listener: IListClickListener, val userPostsReference: Query, val postsReference: DatabaseReference, val progressBar: ProgressBar) :
         FirebaseIndexRecyclerAdapter<Post, PostsAdapter.PostViewHolder>
@@ -45,7 +46,9 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
     val firebaseService = FirebaseService()
 
     override fun populateViewHolder(holder: PostViewHolder, post: Post, position: Int) {
+
         firebaseService.getPetReference(post.petId).addListenerForSingleValueEvent(object: ValueEventListener{
+
             override fun onCancelled(p0: DatabaseError?) {
                 Log.d(TAG, "Fail to retrieve pet")
             }
@@ -53,6 +56,8 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
             override fun onDataChange(buddySnapshot: DataSnapshot?) {
                 if(buddySnapshot?.value != null) {
                     val buddy = Buddy(buddySnapshot)
+
+                    val editable = buddy.owners.keys.contains(firebaseService.getCurrentUserUID())
 
                     with(holder.itemView) {
                         poster_name.text = buddy.name
@@ -77,6 +82,18 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
                                     FullscreenPhotoActivity::class,
                                     arrayOf(FullscreenPhotoActivity.PHOTO_PATH, FullscreenPhotoActivity.PHOTO_MESSAGE, FullscreenPhotoActivity.TOOLBAR_TITLE),
                                     arrayOf(post.photo, post.message, buddy.name))
+                        }
+
+                        if(editable) {
+                            post_more.visibility = View.VISIBLE
+                            post_more.setOnClickListener {
+                                val popup = PopupMenu(listener.getContext(), post_more)
+                                popup.setOnMenuItemClickListener { menuItem -> onActionsMenuClicked(menuItem, position, buddySnapshot.key, buddy.toBuddyInfo()) }
+                                popup.inflate(R.menu.post_actions)
+                                popup.show()
+                            }
+                        } else {
+                            post_more.visibility = View.INVISIBLE
                         }
                     }
                 }
@@ -188,6 +205,27 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
         }
     }
 
+    fun onActionsMenuClicked(item: MenuItem, position: Int, buddyKey: String, buddyInfo: BuddyInfo): Boolean {
+        when(item.itemId) {
+            R.id.menu_post_edit -> {
+                openEditPost(getRef(position).key, getItem(position).toPostInfo(), buddyKey, buddyInfo)
+                return true
+            }
+            R.id.menu_post_remove -> {
+                firebaseService.removePetPost(getItem(position).petId, getRef(position).key)
+                return true
+            }
+            else -> return false
+        }
+    }
+
+    private fun openEditPost(postKey: String, postInfo: PostInfo, buddyKey: String, buddyInfo: BuddyInfo) {
+        listener.onListClick<NewPostActivity>(
+                NewPostActivity::class,
+                arrayOf(NewPostActivity.POST_KEY_EXTRA, NewPostActivity.POST_INFO_EXTRA, NewPostActivity.BUDDY_KEY_EXTRA, NewPostActivity.BUDDY_INFO_EXTRA),
+                arrayOf(postKey, postInfo, buddyKey, buddyInfo))
+    }
+
     private fun setUpNewComment(holder: PostViewHolder) {
         firebaseService.getUserReference(firebaseService.getCurrentUserUID()).addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onCancelled(p0: DatabaseError?) {
@@ -265,8 +303,8 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
     fun openBuddyDetails(post: Post) {
         listener.onListClick<BuddyProfileActivity>(
                 BuddyProfileActivity::class,
-                arrayOf(BuddyProfileActivity.EXTRA_PETID, BuddyProfileActivity.EXTRA_EDITABLE) ,
-                arrayOf(post.petId, false))
+                arrayOf(BuddyProfileActivity.EXTRA_PETID),
+                arrayOf(post.petId))
     }
 
     fun openCommentsActivity(position: Int) {

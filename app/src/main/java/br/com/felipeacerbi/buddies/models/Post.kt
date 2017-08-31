@@ -25,6 +25,13 @@ data class Post(
         fromMap(dataSnapshot)
     }
 
+    constructor(postInfo: PostInfo): this() {
+        petId = postInfo.petId
+        message = postInfo.message
+        photo = postInfo.photo
+        location = postInfo.location
+    }
+
     fun toMap() = mapOf(
             Pair(DATABASE_PETID_CHILD, petId),
             Pair(DATABASE_MESSAGE_CHILD, message),
@@ -44,9 +51,11 @@ data class Post(
         val likesSnapshot = dataSnapshot.child(DATABASE_LIKES_CHILD).value
         if(checkNull(likesSnapshot)) likes = likesSnapshot as Map<String, Boolean>
 
-//        val commentsSnapshot = dataSnapshot.child(DATABASE_COMMENTS_CHILD).value
-//        if(checkNull(commentsSnapshot)) comments = commentsSnapshot as Map<String, Boolean>
+        val commentsSnapshot = dataSnapshot.child(DATABASE_COMMENTS_CHILD).value
+        if(checkNull(commentsSnapshot)) comments = commentsSnapshot as Map<String, Boolean>
     }
+
+    fun toPostInfo() = PostInfo(petId, message, photo, location)
 
     fun checkNull(value: Any?) = value != null
 

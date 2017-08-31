@@ -15,7 +15,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ListAdapter
-import br.com.felipeacerbi.buddies.activities.BuddyProfileActivity
 import br.com.felipeacerbi.buddies.fragments.PetsListFragment
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.google.firebase.database.Query
@@ -62,12 +61,12 @@ fun String.toFormatedDate(): String {
 
     if(reqTime[Calendar.HOUR_OF_DAY] != currentTime[Calendar.HOUR_OF_DAY]) {
         val hoursPassed = currentTime[Calendar.HOUR_OF_DAY] - reqTime[Calendar.HOUR_OF_DAY]
-        return hoursPassed.toString() + " hrs"
+        return hoursPassed.toString() + if(hoursPassed == 1) " h" else " hrs"
     }
 
     if(reqTime[Calendar.MINUTE] != currentTime[Calendar.MINUTE]) {
         val minsPassed = currentTime[Calendar.MINUTE] - reqTime[Calendar.MINUTE]
-        return minsPassed.toString() + " mins"
+        return minsPassed.toString()  + if(minsPassed == 1) " min" else " mins"
     }
 
     return "Just now"
@@ -177,11 +176,6 @@ fun RecyclerView.getFirebaseAdapter(): FirebaseRecyclerAdapter<*, *>? {
 
 fun Bundle.makeQueryBundle(query: Query): Bundle {
     putString(PetsListFragment.DATABASE_REFERENCE, query.toString().removePrefix("https://buddies-5d07f.firebaseio.com/"))
-    return this
-}
-
-fun Bundle.makeBooleanBundle(value: Boolean): Bundle {
-    putString(BuddyProfileActivity.EXTRA_EDITABLE, value.toString())
     return this
 }
 

@@ -86,7 +86,8 @@
         <activity
             android:name=".activities.CommentsActivity"
             android:label="@string/title_activity_comments"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateHidden"/>
     </application>
 
 </manifest>

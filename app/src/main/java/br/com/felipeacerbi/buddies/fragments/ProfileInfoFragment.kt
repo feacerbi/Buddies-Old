@@ -4,12 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.widget.NestedScrollView
 import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ScrollView
 import android.widget.Toast
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.FullscreenPhotoActivity
@@ -45,7 +45,7 @@ open class ProfileInfoFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         val view = inflater?.inflate(R.layout.profile_info_fragment, container, false)
 
-        if(view is ScrollView) {
+        if(view is NestedScrollView) {
             with(view) {
                 profile_name_edit_button.setOnClickListener {
                     showEditDialog("Edit name", profile_name.text.toString(), { user?.name = it })

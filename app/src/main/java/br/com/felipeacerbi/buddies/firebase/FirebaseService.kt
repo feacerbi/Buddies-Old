@@ -437,6 +437,12 @@ class FirebaseService : FirebaseInstanceIdService() {
     fun getPostReference(postId: String) = getPostsReference().child(postId)
     fun getPetPostsReference(petId: String) = getPetReference(petId).child(Buddy.DATABASE_POSTS_CHILD)
     fun getUserPostsReference(username: String) = getUserReference(username).child(User.DATABASE_POSTS_CHILD)
+
+    fun removePetPost(petId: String, postId: String) {
+        getPetPostsReference(petId).child(postId).setValue(null)
+        getPostReference(postId).setValue(null)
+    }
+
     fun addPost(post: Post) {
         Log.d(TAG, "Adding new post")
         val postKey = getPostsReference().push().key
@@ -458,11 +464,34 @@ class FirebaseService : FirebaseInstanceIdService() {
         }
     }
 
+    fun updatePost(post: Post?, postId: String) {
+        if(post != null) {
+
+            val childUpdates = HashMap<String, Any?>()
+            val currentUserPath = DATABASE_POSTS_PATH + postId + "/"
+
+            childUpdates.put(currentUserPath + Post.DATABASE_MESSAGE_CHILD, post.message)
+            childUpdates.put(currentUserPath + Post.DATABASE_LOCATION_CHILD, post.location)
+
+            if(post.photo.isNotEmpty()) {
+                uploadPostFile(postId, Uri.parse(post.photo)) {
+                    downloadUrl ->
+                    post.photo = downloadUrl.toString()
+
+                    childUpdates.put(currentUserPath + Post.DATABASE_PHOTO_CHILD, post.photo)
+                    updateDB(childUpdates)
+                }
+            } else {
+                updateDB(childUpdates)
+            }
+        }
+    }
+
     fun addPostLike(postId: String) {
         val childUpdates = HashMap<String, Any?>()
 
-            childUpdates.put(DATABASE_POSTS_PATH + postId + "/" + Post.DATABASE_LIKES_CHILD + "/" + getCurrentUserUID(), true)
-            updateDB(childUpdates)
+        childUpdates.put(DATABASE_POSTS_PATH + postId + "/" + Post.DATABASE_LIKES_CHILD + "/" + getCurrentUserUID(), true)
+        updateDB(childUpdates)
     }
 
     fun removePostLike(postId: String) {

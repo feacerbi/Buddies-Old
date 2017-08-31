@@ -15,11 +15,9 @@ class BuddyProfileActivity : FireListener() {
     companion object {
         val TAG = "BuddyProfileActivity"
         val EXTRA_PETID = "extra_petid"
-        val EXTRA_EDITABLE = "extra_editable"
     }
 
     var petId = ""
-    var editable = false
     var buddyReference: DatabaseReference? = null
     var petProfilePagerAdapter: PetProfilePagerAdapter? = null
 
@@ -51,7 +49,6 @@ class BuddyProfileActivity : FireListener() {
     private fun  handleIntent(intent: Intent?) {
         if(intent != null) {
             petId = intent.extras.getString(EXTRA_PETID)
-            editable = intent.extras.getString(EXTRA_EDITABLE).toBoolean()
             buddyReference = firebaseService.getPetReference(petId)
         }
     }
