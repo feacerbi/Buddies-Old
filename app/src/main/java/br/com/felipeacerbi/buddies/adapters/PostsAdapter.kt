@@ -13,6 +13,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.ProgressBar
+import android.widget.TextView
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.BuddyProfileActivity
 import br.com.felipeacerbi.buddies.activities.CommentsActivity
@@ -20,13 +21,17 @@ import br.com.felipeacerbi.buddies.activities.FullscreenPhotoActivity
 import br.com.felipeacerbi.buddies.activities.NewPostActivity
 import br.com.felipeacerbi.buddies.adapters.listeners.IListClickListener
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
-import br.com.felipeacerbi.buddies.models.*
+import br.com.felipeacerbi.buddies.models.Buddy
+import br.com.felipeacerbi.buddies.models.Comment
+import br.com.felipeacerbi.buddies.models.Post
+import br.com.felipeacerbi.buddies.models.User
 import br.com.felipeacerbi.buddies.utils.toFormatedDate
 import com.firebase.ui.database.ChangeEventListener
 import com.firebase.ui.database.FirebaseIndexRecyclerAdapter
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.post_list_item.view.*
+import org.parceler.Parcels
 
 
 class PostsAdapter(val listener: IListClickListener, val userPostsReference: Query, val postsReference: DatabaseReference, val progressBar: ProgressBar) :
@@ -88,7 +93,9 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
                             post_more.visibility = View.VISIBLE
                             post_more.setOnClickListener {
                                 val popup = PopupMenu(listener.getContext(), post_more)
-                                popup.setOnMenuItemClickListener { menuItem -> onActionsMenuClicked(menuItem, position, buddySnapshot.key, buddy.toBuddyInfo()) }
+                                popup.setOnMenuItemClickListener {
+                                    menuItem -> onActionsMenuClicked(menuItem, position, buddySnapshot.key, buddy)
+                                }
                                 popup.inflate(R.menu.post_actions)
                                 popup.show()
                             }
@@ -110,7 +117,7 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
 
             if(post.photo.isEmpty()) {
                 post_photo.visibility = View.GONE
-                post_message.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22F)
+                post_message.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20F)
             } else {
                 post_photo.visibility = View.VISIBLE
                 post_message.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16F)
@@ -126,8 +133,10 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
             post_timestamp.text = post.created.toFormatedDate()
 
             if(post.location.isEmpty() || post.location == "null") {
+                post_location.visibility = View.GONE
                 post_separator.visibility = View.GONE
             } else {
+                post_location.visibility = View.VISIBLE
                 post_separator.visibility = View.VISIBLE
                 post_location.text = post.location
                 post_location.setOnClickListener {
@@ -202,13 +211,47 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
                     firebaseService.addPostLike(getRef(position).key)
                 }
             }
+
+            if(post.withs.isEmpty()) {
+                post_with.visibility = View.GONE
+                post_with_names.visibility = View.GONE
+            } else {
+                post_with.visibility = View.VISIBLE
+                post_with_names.visibility = View.VISIBLE
+
+                var withText = " "
+
+                if(post.withs.size == 1) {
+                    displayWithName(post.withs.keys.elementAt(0), post_with_names)
+                } else {
+                    withText += post.withs.size.toString() + " others"
+                    post_with_names.text = withText
+                }
+            }
         }
     }
 
-    fun onActionsMenuClicked(item: MenuItem, position: Int, buddyKey: String, buddyInfo: BuddyInfo): Boolean {
+    fun displayWithName(key: String, nameField: TextView) {
+        firebaseService.getUserReference(key).addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onCancelled(p0: DatabaseError?) {
+                Log.e(TAG, "Could not find user")
+            }
+
+            override fun onDataChange(userSnapshot: DataSnapshot?) {
+                if(userSnapshot != null && userSnapshot.hasChildren()) {
+                    val user = User(userSnapshot)
+
+                    val nameText = " " + user.name
+                    nameField.text = nameText
+                }
+            }
+        })
+    }
+
+    fun onActionsMenuClicked(item: MenuItem, position: Int, buddyKey: String, buddy: Buddy): Boolean {
         when(item.itemId) {
             R.id.menu_post_edit -> {
-                openEditPost(getRef(position).key, getItem(position).toPostInfo(), buddyKey, buddyInfo)
+                openEditPost(getRef(position).key, getItem(position), buddyKey, buddy)
                 return true
             }
             R.id.menu_post_remove -> {
@@ -219,11 +262,11 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
         }
     }
 
-    private fun openEditPost(postKey: String, postInfo: PostInfo, buddyKey: String, buddyInfo: BuddyInfo) {
+    private fun openEditPost(postKey: String, post: Post, buddyKey: String, buddy: Buddy) {
         listener.onListClick<NewPostActivity>(
                 NewPostActivity::class,
                 arrayOf(NewPostActivity.POST_KEY_EXTRA, NewPostActivity.POST_INFO_EXTRA, NewPostActivity.BUDDY_KEY_EXTRA, NewPostActivity.BUDDY_INFO_EXTRA),
-                arrayOf(postKey, postInfo, buddyKey, buddyInfo))
+                arrayOf(postKey, Parcels.wrap(post), buddyKey, Parcels.wrap(buddy)))
     }
 
     private fun setUpNewComment(holder: PostViewHolder) {

@@ -1,13 +1,12 @@
 package br.com.felipeacerbi.buddies.tags.models
 
 import com.google.firebase.database.DataSnapshot
-import java.io.Serializable
 
 open class BaseTag(
         var id: String = "",
         var petId: String = "",
         var verified: Boolean = false,
-        var created: Long = System.currentTimeMillis()) : Serializable {
+        var created: Long = System.currentTimeMillis()) {
 
     companion object {
         val DATABASE_ID_CHILD = "id"

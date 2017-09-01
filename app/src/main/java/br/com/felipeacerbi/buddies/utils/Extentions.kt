@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.os.Parcelable
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
@@ -150,6 +151,18 @@ fun AlertDialog.Builder.showAdapterDialog(
     show()
 }
 
+fun AlertDialog.Builder.showConfirmAdapterDialog(
+        title: String,
+        adapter: ListAdapter,
+        buttonTitle: String,
+        adapterFunc: (DialogInterface, Int) -> Unit,
+        buttonFunc: (DialogInterface, Int) -> Unit) {
+    setTitle(title)
+    setAdapter(adapter, adapterFunc)
+    setPositiveButton(buttonTitle, buttonFunc)
+    show()
+}
+
 fun AlertDialog.Builder.showCustomDialog(
         inputView: View) {
     setView(inputView)
@@ -252,7 +265,7 @@ fun <T : Any> Activity.launchActivityWithExtras(
                 intent.putExtra(identifiers[extras.indexOf(extra)], extra)
             } else if (extra is Boolean) {
                 intent.putExtra(identifiers[extras.indexOf(extra)], extra)
-            } else if(extra is Serializable) {
+            } else if(extra is Parcelable) {
                 intent.putExtra(identifiers[extras.indexOf(extra)], extra)
             }
         }

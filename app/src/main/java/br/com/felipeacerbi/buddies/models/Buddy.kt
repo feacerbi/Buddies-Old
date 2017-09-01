@@ -2,8 +2,10 @@ package br.com.felipeacerbi.buddies.models
 
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.IgnoreExtraProperties
+import org.parceler.Parcel
 
 @IgnoreExtraProperties
+@Parcel
 data class Buddy(
         var name: String = "",
         var animal: String = "",
@@ -29,13 +31,6 @@ data class Buddy(
 
     constructor(dataSnapshot: DataSnapshot): this() {
         fromMap(dataSnapshot)
-    }
-
-    constructor(buddyInfo: BuddyInfo): this() {
-        name = buddyInfo.name
-        animal = buddyInfo.animal
-        breed = buddyInfo.breed
-        photo = buddyInfo.photo
     }
 
     fun toMap() = mapOf(
@@ -66,8 +61,6 @@ data class Buddy(
         val postsSnapshot = dataSnapshot.child(DATABASE_POSTS_CHILD).value
         if(checkNull(postsSnapshot)) posts = postsSnapshot as Map<String, Boolean>
     }
-
-    fun toBuddyInfo(): BuddyInfo  = BuddyInfo(name, animal, breed, photo)
 
     fun checkNull(value: Any?) = value != null
 

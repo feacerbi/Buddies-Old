@@ -33,28 +33,69 @@
             android:layout_alignParentEnd="true"
             android:text="POST"/>
 
-        <LinearLayout
+        <android.support.constraint.ConstraintLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_alignParentStart="true"
-            android:layout_toStartOf="@id/post_post_button"
-            android:orientation="vertical">
+            android:layout_toStartOf="@id/post_post_button">
+
             <TextView
                 android:id="@+id/poster_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="marquee"
+                android:layout_marginStart="72dp"
                 android:textSize="14sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:text="Mila"/>
+
+            <TextView
+                android:id="@+id/post_with"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@id/poster_name"
+                android:textSize="14sp"
+                android:visibility="visible"
+                android:text="  with  "/>
+
+            <TextView
+                android:id="@+id/post_with_names"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@id/post_with"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:text="3 others"/>
+
+            <TextView
+                android:id="@+id/post_timestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="72dp"
+                app:layout_constraintTop_toBottomOf="@id/poster_name"
+                android:textSize="12sp"
+                android:text="5 hrs"/>
+
+            <TextView
+                android:id="@+id/post_separator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@id/post_timestamp"
+                app:layout_constraintTop_toBottomOf="@id/poster_name"
+                android:textSize="12sp"
+                android:visibility="visible"
+                android:text="  •  "/>
 
             <TextView
                 android:id="@+id/post_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="marquee"
+                app:layout_constraintStart_toEndOf="@id/post_separator"
+                app:layout_constraintTop_toBottomOf="@id/poster_name"
+                android:visibility="visible"
+                android:text="Vila Madá"
                 android:textSize="12sp"/>
-        </LinearLayout>
+        </android.support.constraint.ConstraintLayout>
     </RelativeLayout>
 
     <FrameLayout

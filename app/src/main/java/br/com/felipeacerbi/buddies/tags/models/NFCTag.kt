@@ -2,10 +2,9 @@ package br.com.felipeacerbi.buddies.tags.models
 
 import android.nfc.NdefMessage
 import android.nfc.Tag
+import org.parceler.Parcel
 
-/**
- * Created by felipe.acerbi on 11/07/2017.
- */
+@Parcel
 data class NFCTag(
         val tag: Tag?,
         val message: NdefMessage?,

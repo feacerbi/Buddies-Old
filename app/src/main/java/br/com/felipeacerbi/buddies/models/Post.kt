@@ -1,7 +1,9 @@
 package br.com.felipeacerbi.buddies.models
 
 import com.google.firebase.database.DataSnapshot
+import org.parceler.Parcel
 
+@Parcel
 data class Post(
         var petId: String = "",
         var message: String = "",
@@ -9,7 +11,8 @@ data class Post(
         var location: String = "",
         var created: Long = System.currentTimeMillis(),
         var likes: Map<String, Boolean> = HashMap(),
-        var comments: Map<String, Boolean> = HashMap()) {
+        var comments: Map<String, Boolean> = HashMap(),
+        var withs: Map<String, Boolean> = HashMap()) {
 
     companion object {
         val DATABASE_PETID_CHILD = "petId"
@@ -19,17 +22,11 @@ data class Post(
         val DATABASE_CREATED_CHILD = "created"
         val DATABASE_LIKES_CHILD = "likes"
         val DATABASE_COMMENTS_CHILD = "comments"
+        val DATABASE_WITHS_CHILD = "withs"
     }
 
     constructor(dataSnapshot: DataSnapshot): this() {
         fromMap(dataSnapshot)
-    }
-
-    constructor(postInfo: PostInfo): this() {
-        petId = postInfo.petId
-        message = postInfo.message
-        photo = postInfo.photo
-        location = postInfo.location
     }
 
     fun toMap() = mapOf(
@@ -39,7 +36,8 @@ data class Post(
             Pair(DATABASE_LOCATION_CHILD, location),
             Pair(DATABASE_CREATED_CHILD, created),
             Pair(DATABASE_LIKES_CHILD, likes),
-            Pair(DATABASE_COMMENTS_CHILD, comments))
+            Pair(DATABASE_COMMENTS_CHILD, comments),
+            Pair(DATABASE_WITHS_CHILD, withs))
 
     fun fromMap(dataSnapshot: DataSnapshot) {
         petId = dataSnapshot.child(DATABASE_PETID_CHILD).value as String
@@ -53,9 +51,10 @@ data class Post(
 
         val commentsSnapshot = dataSnapshot.child(DATABASE_COMMENTS_CHILD).value
         if(checkNull(commentsSnapshot)) comments = commentsSnapshot as Map<String, Boolean>
-    }
 
-    fun toPostInfo() = PostInfo(petId, message, photo, location)
+        val withsSnapshot = dataSnapshot.child(DATABASE_WITHS_CHILD).value
+        if(checkNull(withsSnapshot)) comments = withsSnapshot as Map<String, Boolean>
+    }
 
     fun checkNull(value: Any?) = value != null
 

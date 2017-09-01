@@ -21,8 +21,8 @@
         android:id="@+id/post_more"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
         android:layout_alignTop="@id/post_profile_photo"
         android:layout_alignBottom="@id/post_profile_photo"
         android:src="@drawable/ic_more_vert_black_24dp"
@@ -46,7 +46,26 @@
             android:layout_marginStart="72dp"
             app:layout_constraintStart_toStartOf="parent"
             android:textSize="14sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:text="Mila"/>
+
+        <TextView
+            android:id="@+id/post_with"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/poster_name"
+            android:textSize="14sp"
+            android:visibility="visible"
+            android:text="  with  "/>
+
+        <TextView
+            android:id="@+id/post_with_names"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/post_with"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:text="3 others"/>
 
         <TextView
             android:id="@+id/post_timestamp"
@@ -55,7 +74,8 @@
             android:layout_marginStart="72dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/poster_name"
-            android:textSize="12sp"/>
+            android:textSize="12sp"
+            android:text="5 hrs"/>
 
         <TextView
             android:id="@+id/post_separator"
@@ -64,7 +84,7 @@
             app:layout_constraintStart_toEndOf="@id/post_timestamp"
             app:layout_constraintTop_toBottomOf="@id/poster_name"
             android:textSize="12sp"
-            android:visibility="gone"
+            android:visibility="visible"
             android:text="  •  "/>
 
         <TextView
@@ -73,6 +93,8 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toEndOf="@id/post_separator"
             app:layout_constraintTop_toBottomOf="@id/poster_name"
+            android:visibility="visible"
+            android:text="Vila Madá"
             android:textSize="12sp"/>
     </android.support.constraint.ConstraintLayout>
 
@@ -80,7 +102,6 @@
         android:id="@+id/post_message"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:paddingTop="8dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:textSize="16sp"
@@ -92,7 +113,7 @@
         android:id="@+id/post_photo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:layout_below="@id/post_message"
         android:adjustViewBounds="true"/>
 
@@ -102,20 +123,22 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_below="@id/post_photo"
-        android:padding="16dp">
+        android:layout_below="@id/post_photo">
         <ImageView
             android:id="@+id/post_like_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:tint="@color/colorPrimary"
             android:src="@drawable/ic_favorite_black_24dp"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:paddingEnd="4dp"
             android:alpha="0.7"/>
         <TextView
             android:id="@+id/post_likes_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
             app:layout_constraintStart_toEndOf="@id/post_like_button"
             app:layout_constraintTop_toTopOf="@id/post_like_button"
             app:layout_constraintBottom_toBottomOf="@id/post_like_button" />
@@ -125,13 +148,16 @@
             android:layout_height="wrap_content"
             android:tint="@color/colorPrimary"
             android:src="@drawable/ic_chat_bubble_black_24dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:paddingStart="4dp"
             android:alpha="0.7"
             app:layout_constraintEnd_toEndOf="parent"/>
         <TextView
             android:id="@+id/post_comments_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
             app:layout_constraintEnd_toStartOf="@id/post_comment_button"
             app:layout_constraintTop_toTopOf="@id/post_comment_button"
             app:layout_constraintBottom_toBottomOf="@id/post_comment_button" />

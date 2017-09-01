@@ -2,6 +2,7 @@ package br.com.felipeacerbi.buddies.activities.base
 
 import android.content.Intent
 import android.nfc.NfcAdapter
+import android.os.Parcelable
 import android.support.v7.app.AlertDialog
 import android.widget.Toast
 import br.com.felipeacerbi.buddies.R
@@ -9,13 +10,14 @@ import br.com.felipeacerbi.buddies.activities.NewBuddyActivity
 import br.com.felipeacerbi.buddies.activities.ProfileActivity
 import br.com.felipeacerbi.buddies.activities.QRCodeActivity
 import br.com.felipeacerbi.buddies.firebase.FireListener
-import br.com.felipeacerbi.buddies.models.BuddyInfo
+import br.com.felipeacerbi.buddies.models.Buddy
 import br.com.felipeacerbi.buddies.tags.NFCService
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
 import br.com.felipeacerbi.buddies.utils.PermissionsManager
 import br.com.felipeacerbi.buddies.utils.launchActivity
 import br.com.felipeacerbi.buddies.utils.launchActivityWithExtras
 import br.com.felipeacerbi.buddies.utils.showTwoChoiceCancelableDialog
+import org.parceler.Parcels
 
 abstract class TagHandlerActivity : FireListener() {
 
@@ -70,10 +72,10 @@ abstract class TagHandlerActivity : FireListener() {
         if(resultCode == RESULT_OK) {
             when(requestCode) {
                 NEW_PET_RESULT -> {
-                    val buddyInfo = data?.extras?.getSerializable(NewBuddyActivity.BUDDY_INFO_EXTRA) as BuddyInfo
+                    val buddy = Parcels.unwrap<Buddy>(data?.extras?.get(NewBuddyActivity.BUDDY_EXTRA) as Parcelable)
                     val tagKey = data.extras.getString(NewBuddyActivity.EXTRA_TAG_KEY)
-                    val baseTag = data.extras.getSerializable(NewBuddyActivity.EXTRA_BASETAG) as BaseTag
-                    firebaseService.addNewPet(tagKey, baseTag, buddyInfo)
+                    val baseTag = Parcels.unwrap<BaseTag>(data.extras.getSerializable(NewBuddyActivity.EXTRA_BASETAG) as Parcelable)
+                    firebaseService.addNewPet(tagKey, baseTag, buddy)
                     launchActivity(ProfileActivity::class)
                 }
                 QR_CODE_RESULT -> { showTagOptionsDialog(BaseTag(data?.extras?.getString(QRCodeActivity.QR_CODE_TEXT) ?: "")) }

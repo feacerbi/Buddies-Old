@@ -166,11 +166,9 @@ class FirebaseService : FirebaseInstanceIdService() {
     fun getUserPetsReference(username: String) = getUserReference(username).child(User.DATABASE_OWNS_CHILD)
     fun getUserFollowReference(username: String) = getUserReference(username).child(User.DATABASE_FOLLOWS_CHILD)
 
-    fun addNewPet(tagKey: String, baseTag: BaseTag, buddyInfo: BuddyInfo) {
+    fun addNewPet(tagKey: String, baseTag: BaseTag, buddy: Buddy) {
         Log.d(TAG, "Adding new pet")
         val petKey = getPetsReference().push().key
-
-        val buddy = Buddy(buddyInfo)
 
         buddy.tagId = baseTag.id
 
@@ -186,8 +184,8 @@ class FirebaseService : FirebaseInstanceIdService() {
             put(tagPath + BaseTag.DATABASE_PETID_CHILD, petKey)
         }
 
-        if(buddyInfo.photo.isNotEmpty()) {
-            uploadPetFile(petKey, Uri.parse(buddyInfo.photo)) {
+        if(buddy.photo.isNotEmpty()) {
+            uploadPetFile(petKey, Uri.parse(buddy.photo)) {
                 downloadUrl ->
                 buddy.photo = downloadUrl.toString()
 

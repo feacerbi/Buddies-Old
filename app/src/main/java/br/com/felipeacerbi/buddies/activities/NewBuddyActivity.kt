@@ -8,16 +8,17 @@ import android.support.v7.app.AlertDialog
 import android.util.Log
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.firebase.FireListener
-import br.com.felipeacerbi.buddies.models.BuddyInfo
+import br.com.felipeacerbi.buddies.models.Buddy
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
 import br.com.felipeacerbi.buddies.utils.showListDialog
 import kotlinx.android.synthetic.main.activity_new_pet.*
+import org.parceler.Parcels
 
 class NewBuddyActivity : FireListener() {
 
     companion object {
         val TAG = "NewBuddyActivity"
-        val BUDDY_INFO_EXTRA = "buddy_info"
+        val BUDDY_EXTRA = "buddy"
         val EXTRA_BASETAG = "basetag"
         val EXTRA_TAG_KEY = "tag_key"
         val RC_PHOTO_PICKER = 1
@@ -69,9 +70,9 @@ class NewBuddyActivity : FireListener() {
             val breed = breed_chooser.text.toString()
 
             val resultIntent = Intent(this, MainActivity::class.java)
-            resultIntent.putExtra(BUDDY_INFO_EXTRA, BuddyInfo(name, pet, breed, photoUrl))
+            resultIntent.putExtra(BUDDY_EXTRA, Parcels.wrap(Buddy(name, pet, breed, photoUrl)))
             resultIntent.putExtra(EXTRA_TAG_KEY, tagKey)
-            resultIntent.putExtra(EXTRA_BASETAG, baseTag)
+            resultIntent.putExtra(EXTRA_BASETAG, Parcels.wrap(baseTag))
 
             setResult(RESULT_OK, resultIntent)
             finish()

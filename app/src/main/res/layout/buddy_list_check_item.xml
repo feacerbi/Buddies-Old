@@ -5,22 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="72dp">
 
-    <ImageView
-        android:id="@+id/remove_button"
+    <CheckBox
+        android:id="@+id/buddy_check"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:src="@drawable/ic_delete_black_24dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:layout_alignParentEnd="true"
-        android:tint="@color/colorPrimary"/>
+        android:layout_height="wrap_content"
+        android:buttonTint="@color/colorPrimary"
+        android:layout_centerVertical="true"
+        android:layout_margin="16dp"/>
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/click_profile_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingStart="16dp"
-        android:layout_toStartOf="@id/remove_button">
+        android:layout_toEndOf="@id/buddy_check">
         <cn.gavinliu.android.lib.shapedimageview.ShapedImageView
             android:id="@+id/picture"
             android:layout_width="50dp"

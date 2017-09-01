@@ -23,6 +23,7 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.posts_list.*
 import kotlinx.android.synthetic.main.posts_list.view.*
+import org.parceler.Parcels
 import kotlin.reflect.KClass
 
 
@@ -137,7 +138,7 @@ open class PostsListFragment : PetsListFragment() {
         activity.launchActivityWithExtras<NewPostActivity>(
                 NewPostActivity::class,
                 arrayOf(NewPostActivity.BUDDY_KEY_EXTRA, NewPostActivity.BUDDY_INFO_EXTRA),
-                arrayOf(key, buddy.toBuddyInfo()))
+                arrayOf(key, Parcels.wrap(buddy)))
     }
 
     override fun setUpFab(show: Boolean) {
