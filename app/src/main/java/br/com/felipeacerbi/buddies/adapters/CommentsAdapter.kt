@@ -1,15 +1,19 @@
 package br.com.felipeacerbi.buddies.adapters
 
-import android.content.Context
 import android.content.res.ColorStateList
+import android.support.v7.app.AlertDialog
+import android.support.v7.widget.PopupMenu
 import android.support.v7.widget.RecyclerView
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
 import br.com.felipeacerbi.buddies.R
+import br.com.felipeacerbi.buddies.adapters.listeners.IListClickListener
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.models.Comment
 import br.com.felipeacerbi.buddies.models.User
+import br.com.felipeacerbi.buddies.utils.showInputDialog
 import br.com.felipeacerbi.buddies.utils.toFormatedDate
 import com.firebase.ui.database.ChangeEventListener
 import com.firebase.ui.database.FirebaseIndexRecyclerAdapter
@@ -19,8 +23,9 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.comment_list_item.view.*
+import kotlinx.android.synthetic.main.input_dialog.view.*
 
-class CommentsAdapter(val context: Context, val postCommentsReference: DatabaseReference, val commentsReference: DatabaseReference, val progressBar: ProgressBar) :
+class CommentsAdapter(val listener: IListClickListener, val postCommentsReference: DatabaseReference, val commentsReference: DatabaseReference, val progressBar: ProgressBar) :
         FirebaseIndexRecyclerAdapter<Comment, CommentsAdapter.CommentViewHolder>
         (
                 Comment::class.java,
@@ -58,6 +63,17 @@ class CommentsAdapter(val context: Context, val postCommentsReference: DatabaseR
                                 .fit()
                                 .centerCrop()
                                 .into(poster_profile_photo)
+
+                        setOnLongClickListener {
+                            view ->
+                            val popup = PopupMenu(context, view)
+                            popup.setOnMenuItemClickListener {
+                                menuItem -> onActionsMenuClicked(menuItem, getRef(position).key, comment)
+                            }
+                            popup.inflate(R.menu.post_actions)
+                            popup.show()
+                            true
+                        }
                     }
                 }
             }
@@ -87,6 +103,37 @@ class CommentsAdapter(val context: Context, val postCommentsReference: DatabaseR
                     firebaseService.addCommentLike(getRef(position).key)
                 }
             }
+        }
+    }
+
+    fun onActionsMenuClicked(item: MenuItem, commentKey: String, comment: Comment): Boolean {
+        when(item.itemId) {
+            R.id.menu_post_edit -> {
+                showEditDialog("Edit message", comment, commentKey)
+                return true
+            }
+            R.id.menu_post_remove -> {
+                firebaseService.removeComment(commentKey, comment.postId)
+                return true
+            }
+            else -> return false
+        }
+    }
+
+    fun showEditDialog(title: String, editComment: Comment, key: String) {
+        val inputView = listener.getViewInflater().inflate(R.layout.input_dialog, null)
+        with(inputView) {
+            input_field.setText(editComment.message)
+
+            AlertDialog.Builder(context).showInputDialog(
+                    title,
+                    "Save",
+                    this,
+                    { _, _ ->
+                        editComment.message = input_field.text.toString()
+                        firebaseService.updateComment(editComment, key)
+                    }
+            )
         }
     }
 

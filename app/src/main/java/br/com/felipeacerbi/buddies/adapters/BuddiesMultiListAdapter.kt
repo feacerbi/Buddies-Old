@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.CheckBox
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.models.Buddy
@@ -34,7 +35,7 @@ class BuddiesMultiListAdapter(context: Context, val keys: Array<String>, val sel
                 animal.text = buddy.animal
                 breed.text = buddy.breed
 
-                buddy_check.isSelected = tempKeys.contains(keys[position])
+                toggleSelection(buddy_check, position)
 
                 if (buddy.photo.isNotEmpty()) {
                     com.squareup.picasso.Picasso.with(context)
@@ -45,14 +46,23 @@ class BuddiesMultiListAdapter(context: Context, val keys: Array<String>, val sel
                             .centerCrop()
                             .into(picture)
                 }
+
+                setOnClickListener {
+                    check(keys[position])
+                    toggleSelection(buddy_check, position)
+                }
             }
         }
 
         return convertView
     }
 
+    fun toggleSelection(checkBox: CheckBox, position: Int) {
+        checkBox.isChecked = tempKeys.contains(keys[position])
+    }
+
     fun check(key: String) {
-        if(selectedKeys.contains(key)) {
+        if(tempKeys.contains(key)) {
             unselect(key)
         } else {
             select(key)

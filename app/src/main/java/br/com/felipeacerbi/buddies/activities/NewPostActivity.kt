@@ -17,7 +17,6 @@ import br.com.felipeacerbi.buddies.adapters.BuddiesMultiListAdapter
 import br.com.felipeacerbi.buddies.firebase.FireListener
 import br.com.felipeacerbi.buddies.models.Buddy
 import br.com.felipeacerbi.buddies.models.Post
-import br.com.felipeacerbi.buddies.models.User
 import br.com.felipeacerbi.buddies.utils.showConfirmAdapterDialog
 import com.google.android.gms.location.places.ui.PlacePicker
 import com.google.firebase.database.DataSnapshot
@@ -77,6 +76,9 @@ class NewPostActivity : FireListener() {
         poster_name.text = buddyIntent?.name
         post_post_button.isEnabled = false
         post_location.visibility = View.GONE
+        post_separator.visibility = View.GONE
+        post_with.visibility = View.GONE
+        post_with_names.visibility = View.GONE
 
         val info = buddyIntent
         if(info != null && info.photo.isNotEmpty()) {
@@ -103,7 +105,6 @@ class NewPostActivity : FireListener() {
             }
         })
 
-        post_add_image.visibility = View.VISIBLE
         post_add_image.setOnClickListener { pickImage() }
 
         post_add_location.setOnClickListener { pickPlace() }
@@ -119,6 +120,7 @@ class NewPostActivity : FireListener() {
 
         val postToEdit = postIntent
         if(postToEdit != null) {
+            title = "Edit Post"
             post_message.setText(postToEdit.message)
 
             val postLocation = postToEdit.location
@@ -126,10 +128,10 @@ class NewPostActivity : FireListener() {
                 mapsPlace = postLocation
                 post_location.text = postLocation
                 post_location.visibility = View.VISIBLE
+                post_separator.visibility = View.VISIBLE
             }
 
             if(postToEdit.photo.isNotEmpty()) {
-                Log.d(TAG, "Photo " + photoUrl)
                 Picasso.with(this)
                         .load(postToEdit.photo)
                         .error(R.drawable.placeholder)
@@ -244,18 +246,15 @@ class NewPostActivity : FireListener() {
         val total = followsSnapshot.childrenCount
         if(adapter.count.toLong() == total) {
             if(total == 1L) {
-                val postBuddyId = followsSnapshot.children.elementAt(0).key
-                withBuddies = mapOf(Pair(postBuddyId, true))
-            } else {
                 AlertDialog.Builder(this).showConfirmAdapterDialog(
-                        "Choose a Buddy to post",
+                        "Who's with your buddy?",
                         adapter,
-                        "Add",
-                        { dialog, position ->
+                        "Set",
+                        { _, position ->
                             adapter.check(followsSnapshot.children.elementAt(position).key)
                         },
                         {
-                            dialog, position ->
+                            _, _ ->
                             withBuddies = adapter.getSelectedKeys()
                             setWiths()
                         })
@@ -264,36 +263,33 @@ class NewPostActivity : FireListener() {
     }
 
     fun setWiths() {
-        if(withBuddies.isEmpty()) {
-            post_with.visibility = View.GONE
-            post_with_names.visibility = View.GONE
-        } else {
+        if(withBuddies.isNotEmpty()) {
             post_with.visibility = View.VISIBLE
             post_with_names.visibility = View.VISIBLE
-
-            var withText = " "
 
             if (withBuddies.size == 1) {
                 displayWithName(withBuddies.keys.elementAt(0), post_with_names)
             } else {
-                withText += withBuddies.size.toString() + " others"
+                val withText = withBuddies.size.toString() + " others"
                 post_with_names.text = withText
             }
+        } else {
+            post_with.visibility = View.GONE
+            post_with_names.visibility = View.GONE
         }
     }
 
     fun displayWithName(key: String, nameField: TextView) {
-        firebaseService.getUserReference(key).addListenerForSingleValueEvent(object: ValueEventListener {
+        firebaseService.getPetReference(key).addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onCancelled(p0: DatabaseError?) {
-                Log.e(TAG, "Could not find user")
+                Log.e(TAG, "Could not find buddy")
             }
 
             override fun onDataChange(userSnapshot: DataSnapshot?) {
                 if(userSnapshot != null && userSnapshot.hasChildren()) {
-                    val user = User(userSnapshot)
+                    val buddy = Buddy(userSnapshot)
 
-                    val nameText = " " + user.name
-                    nameField.text = nameText
+                    nameField.text = buddy.name
                 }
             }
         })

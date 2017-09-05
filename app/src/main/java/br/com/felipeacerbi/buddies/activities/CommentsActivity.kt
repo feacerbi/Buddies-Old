@@ -1,19 +1,23 @@
 package br.com.felipeacerbi.buddies.activities
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.adapters.CommentsAdapter
+import br.com.felipeacerbi.buddies.adapters.listeners.IListClickListener
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.models.Comment
 import com.google.firebase.database.DatabaseReference
 import kotlinx.android.synthetic.main.activity_comments.*
+import kotlin.reflect.KClass
 
-class CommentsActivity : AppCompatActivity() {
+class CommentsActivity : AppCompatActivity(), IListClickListener {
 
     companion object {
         val POST_ID_EXTRA = "post_id"
@@ -84,4 +88,19 @@ class CommentsActivity : AppCompatActivity() {
         return null
     }
 
+    override fun <T : Any> onListClick(clazz: KClass<T>, identifiers: Array<String>?, extras: Array<Any>?) {
+        // No need
+    }
+
+    override fun getContext(): Context {
+        return this
+    }
+
+    override fun getViewInflater(): LayoutInflater {
+        return layoutInflater
+    }
+
+    override fun selectListItem(position: Int) {
+        // No need
+    }
 }

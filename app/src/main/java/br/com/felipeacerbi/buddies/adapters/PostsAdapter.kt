@@ -219,12 +219,10 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
                 post_with.visibility = View.VISIBLE
                 post_with_names.visibility = View.VISIBLE
 
-                var withText = " "
-
                 if(post.withs.size == 1) {
                     displayWithName(post.withs.keys.elementAt(0), post_with_names)
                 } else {
-                    withText += post.withs.size.toString() + " others"
+                    val withText = post.withs.size.toString() + " others"
                     post_with_names.text = withText
                 }
             }
@@ -232,17 +230,16 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
     }
 
     fun displayWithName(key: String, nameField: TextView) {
-        firebaseService.getUserReference(key).addListenerForSingleValueEvent(object: ValueEventListener {
+        firebaseService.getPetReference(key).addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onCancelled(p0: DatabaseError?) {
-                Log.e(TAG, "Could not find user")
+                Log.e(TAG, "Could not find buddy")
             }
 
             override fun onDataChange(userSnapshot: DataSnapshot?) {
                 if(userSnapshot != null && userSnapshot.hasChildren()) {
-                    val user = User(userSnapshot)
+                    val buddy = Buddy(userSnapshot)
 
-                    val nameText = " " + user.name
-                    nameField.text = nameText
+                    nameField.text = buddy.name
                 }
             }
         })

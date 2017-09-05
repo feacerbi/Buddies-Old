@@ -16,9 +16,6 @@ import br.com.felipeacerbi.buddies.utils.toHexString
 import java.io.UnsupportedEncodingException
 import kotlin.experimental.and
 
-/**
- * Created by felipe.acerbi on 05/07/2017.
- */
 class NFCService {
 
     companion object {

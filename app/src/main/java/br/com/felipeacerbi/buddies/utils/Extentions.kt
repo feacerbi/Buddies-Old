@@ -128,7 +128,7 @@ fun AlertDialog.Builder.showInputDialog(
     setView(inputView)
     setTitle(title)
     setPositiveButton(buttonTitle, func)
-    setNeutralButton("Cancel") { _, _ -> }
+    setNegativeButton("Cancel") { _, _ -> }
     show()
 }
 
@@ -160,6 +160,7 @@ fun AlertDialog.Builder.showConfirmAdapterDialog(
     setTitle(title)
     setAdapter(adapter, adapterFunc)
     setPositiveButton(buttonTitle, buttonFunc)
+    setNegativeButton("Cancel") { _, _ -> }
     show()
 }
 

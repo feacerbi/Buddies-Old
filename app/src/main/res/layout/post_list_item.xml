@@ -46,8 +46,7 @@
             android:layout_marginStart="72dp"
             app:layout_constraintStart_toStartOf="parent"
             android:textSize="14sp"
-            android:textStyle="bold"
-            android:text="Mila"/>
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/post_with"
@@ -56,7 +55,7 @@
             app:layout_constraintStart_toEndOf="@id/poster_name"
             android:textSize="14sp"
             android:visibility="visible"
-            android:text="  with  "/>
+            android:text=" with "/>
 
         <TextView
             android:id="@+id/post_with_names"
@@ -64,8 +63,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toEndOf="@id/post_with"
             android:textSize="14sp"
-            android:textStyle="bold"
-            android:text="3 others"/>
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/post_timestamp"
@@ -74,8 +72,7 @@
             android:layout_marginStart="72dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/poster_name"
-            android:textSize="12sp"
-            android:text="5 hrs"/>
+            android:textSize="12sp"/>
 
         <TextView
             android:id="@+id/post_separator"
@@ -94,7 +91,7 @@
             app:layout_constraintStart_toEndOf="@id/post_separator"
             app:layout_constraintTop_toBottomOf="@id/poster_name"
             android:visibility="visible"
-            android:text="Vila Madá"
+            android:textStyle="bold"
             android:textSize="12sp"/>
     </android.support.constraint.ConstraintLayout>
 

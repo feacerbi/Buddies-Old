@@ -55,8 +55,6 @@ class BuddiesAdapter(
                         .into(picture)
             }
 
-            val editable = userPetsReference.key == Buddy.DATABASE_OWNS_CHILD
-
             remove_button.setOnClickListener { firebaseService.removePetFromUser(userPetsReference.key, petId) }
             click_profile_layout.setOnClickListener {
                 listener.onListClick<BuddyProfileActivity>(

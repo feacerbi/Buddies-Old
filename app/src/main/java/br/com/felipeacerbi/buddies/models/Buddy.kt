@@ -4,9 +4,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.IgnoreExtraProperties
 import org.parceler.Parcel
 
-@IgnoreExtraProperties
 @Parcel
-data class Buddy(
+@IgnoreExtraProperties
+data class Buddy (
         var name: String = "",
         var animal: String = "",
         var breed: String = "",

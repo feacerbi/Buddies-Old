@@ -1,8 +1,10 @@
 package br.com.felipeacerbi.buddies.tags.models
 
 import com.google.firebase.database.DataSnapshot
+import org.parceler.Parcel
 
-open class BaseTag(
+@Parcel
+data class BaseTag(
         var id: String = "",
         var petId: String = "",
         var verified: Boolean = false,
