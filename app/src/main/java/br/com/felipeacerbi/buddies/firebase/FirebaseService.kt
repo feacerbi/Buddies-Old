@@ -137,6 +137,17 @@ class FirebaseService : FirebaseInstanceIdService() {
         updateDB(childUpdates)
     }
 
+    fun updateTag(baseTag: BaseTag?, tagId: String) {
+        if(baseTag != null) {
+
+            val childUpdates = HashMap<String, Any?>()
+            childUpdates.put(DATABASE_TAGS_PATH + tagId + "/" + BaseTag.DATABASE_PETID_CHILD + "/" + baseTag.petId, true)
+            childUpdates.put(DATABASE_PETS_PATH + baseTag.petId + "/" + Buddy.DATABASE_TAG_CHILD + "/" + tagId, true)
+
+            updateDB(childUpdates)
+        }
+    }
+
     fun checkTagObservable(baseTag: BaseTag): Observable<Pair<String, BaseTag>> = Observable.create {
         subscriber ->
         getTagsReference().orderByChild(BaseTag.DATABASE_ID_CHILD).equalTo(baseTag.id).addListenerForSingleValueEvent(object: ValueEventListener {
@@ -335,12 +346,13 @@ class FirebaseService : FirebaseInstanceIdService() {
         if(buddy != null) {
 
             val childUpdates = HashMap<String, Any?>()
-            val currentUserPath = DATABASE_PETS_PATH + petId + "/"
+            val currentPetPath = DATABASE_PETS_PATH + petId + "/"
 
-            childUpdates.put(currentUserPath + Buddy.DATABASE_NAME_CHILD, buddy.name)
-            childUpdates.put(currentUserPath + Buddy.DATABASE_ANIMAL_CHILD, buddy.animal)
-            childUpdates.put(currentUserPath + Buddy.DATABASE_BREED_CHILD, buddy.breed)
-            childUpdates.put(currentUserPath + Buddy.DATABASE_PHOTO_CHILD, buddy.photo)
+            childUpdates.put(currentPetPath + Buddy.DATABASE_TAG_CHILD, buddy.tagId)
+            childUpdates.put(currentPetPath + Buddy.DATABASE_NAME_CHILD, buddy.name)
+            childUpdates.put(currentPetPath + Buddy.DATABASE_ANIMAL_CHILD, buddy.animal)
+            childUpdates.put(currentPetPath + Buddy.DATABASE_BREED_CHILD, buddy.breed)
+            childUpdates.put(currentPetPath + Buddy.DATABASE_PHOTO_CHILD, buddy.photo)
 
             updateDB(childUpdates)
         }

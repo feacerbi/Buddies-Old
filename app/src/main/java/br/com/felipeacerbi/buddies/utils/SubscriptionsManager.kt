@@ -21,7 +21,6 @@ class SubscriptionsManager(val context: Context) {
                              usedAction: (BaseTag) -> Unit,
                              newAction: (String, BaseTag) -> Unit,
                              notVerifiedAction: (BaseTag) -> Unit): Disposable {
-        Log.d(TAG, "Check pet with action " + baseTag.id)
         return firebaseService.checkTagObservable(baseTag)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -49,7 +48,6 @@ class SubscriptionsManager(val context: Context) {
     fun checkOwnerRequestSubscription(baseTag: BaseTag,
                                       ownsAction: () -> Unit,
                                       notOwnsAction: () -> Unit): Disposable {
-        Log.d(TAG, "Check owner request action " + baseTag.id)
         return firebaseService.addPetOwnerRequestObservable(baseTag)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -69,7 +67,6 @@ class SubscriptionsManager(val context: Context) {
     fun checkUserSubscription(existsAction: (Pair<Boolean, User>) -> Unit,
                               notExistsAction: (Pair<Boolean, User>) -> Unit): Disposable {
         val username = firebaseService.getCurrentUserUID()
-        Log.d(TAG, "Check user with action " + username)
 
         return firebaseService.checkUserObservable(username)
                 .subscribeOn(Schedulers.io())

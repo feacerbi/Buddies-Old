@@ -13,7 +13,6 @@ import br.com.felipeacerbi.buddies.firebase.FireListener
 import br.com.felipeacerbi.buddies.models.Buddy
 import br.com.felipeacerbi.buddies.tags.NFCService
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
-import br.com.felipeacerbi.buddies.utils.PermissionsManager
 import br.com.felipeacerbi.buddies.utils.launchActivity
 import br.com.felipeacerbi.buddies.utils.launchActivityWithExtras
 import br.com.felipeacerbi.buddies.utils.showTwoChoiceCancelableDialog
@@ -25,10 +24,6 @@ abstract class TagHandlerActivity : FireListener() {
         var TAG = "TagHandlerActivity"
         val NEW_PET_RESULT = 1000
         val QR_CODE_RESULT = 1001
-    }
-
-    val permissionsManager: PermissionsManager by lazy {
-        PermissionsManager(this)
     }
 
     val nfcService: NFCService by lazy {
@@ -121,6 +116,14 @@ abstract class TagHandlerActivity : FireListener() {
                         arrayOf(key, foundTag),
                         true,
                         NEW_PET_RESULT) },
+                notVerifiedAction = { Toast.makeText(this, "This TAG was not verified yet.", Toast.LENGTH_SHORT).show() }))
+    }
+
+    fun requestChangeTag(baseTag: BaseTag) {
+        subscriptions.add(subscriptionsManager.checkTagSubscription(
+                baseTag,
+                usedAction = { Toast.makeText(this, "This TAG is already in use.", Toast.LENGTH_SHORT).show() },
+                newAction = { key, _ -> firebaseService.updateTag(baseTag, key) },
                 notVerifiedAction = { Toast.makeText(this, "This TAG was not verified yet.", Toast.LENGTH_SHORT).show() }))
     }
 }

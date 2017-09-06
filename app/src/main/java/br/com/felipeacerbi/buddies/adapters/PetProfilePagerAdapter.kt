@@ -1,6 +1,7 @@
 package br.com.felipeacerbi.buddies.adapters
 
 import android.os.Bundle
+import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
@@ -15,7 +16,7 @@ import com.google.firebase.database.DatabaseReference
 
 class PetProfilePagerAdapter(
         fm: FragmentManager,
-        val ref: DatabaseReference) : FragmentPagerAdapter(fm) {
+        val ref: DatabaseReference) : FragmentPagerAdapter(fm), TabLayout.OnTabSelectedListener {
 
     val firebaseService = FirebaseService()
 
@@ -36,6 +37,18 @@ class PetProfilePagerAdapter(
             else -> { return ProfileInfoFragment()
             }
         }
+    }
+
+    override fun onTabReselected(tab: TabLayout.Tab?) {
+        // No need
+    }
+
+    override fun onTabUnselected(tab: TabLayout.Tab?) {
+        // No need
+    }
+
+    override fun onTabSelected(tab: TabLayout.Tab?) {
+
     }
 
     override fun getCount() = 2

@@ -3,14 +3,17 @@ package br.com.felipeacerbi.buddies.activities
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.TabLayout
+import android.support.v7.app.AlertDialog
 import br.com.felipeacerbi.buddies.R
+import br.com.felipeacerbi.buddies.activities.base.TagHandlerActivity
 import br.com.felipeacerbi.buddies.adapters.PetProfilePagerAdapter
-import br.com.felipeacerbi.buddies.firebase.FireListener
 import br.com.felipeacerbi.buddies.fragments.PostsListFragment
+import br.com.felipeacerbi.buddies.tags.models.BaseTag
+import br.com.felipeacerbi.buddies.utils.showOneChoiceCancelableDialog
 import com.google.firebase.database.DatabaseReference
 import kotlinx.android.synthetic.main.activity_pet_profile.*
 
-class BuddyProfileActivity : FireListener() {
+class BuddyProfileActivity : TagHandlerActivity() {
 
     companion object {
         val TAG = "BuddyProfileActivity"
@@ -60,5 +63,15 @@ class BuddyProfileActivity : FireListener() {
                 it.cleanUp()
             }
         }
+    }
+
+    override fun showTagOptionsDialog(baseTag: BaseTag) {
+        baseTag.petId = petId
+        AlertDialog.Builder(this).showOneChoiceCancelableDialog(
+                getString(R.string.tag_options_dialog_title),
+                getString(R.string.tag_options_dialog_message),
+                "Change Buddy Tag",
+                { _, _ -> requestChangeTag(baseTag) }
+        )
     }
 }

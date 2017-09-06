@@ -1,11 +1,11 @@
 package br.com.felipeacerbi.buddies.fragments
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Typeface
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
-import android.support.v4.widget.NestedScrollView
 import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,13 +14,15 @@ import android.view.ViewGroup
 import android.widget.Toast
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.FullscreenPhotoActivity
+import br.com.felipeacerbi.buddies.activities.QRCodeActivity
+import br.com.felipeacerbi.buddies.activities.SettingsActivity
 import br.com.felipeacerbi.buddies.firebase.FireListener
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.models.Buddy
-import br.com.felipeacerbi.buddies.utils.launchActivityWithExtras
-import br.com.felipeacerbi.buddies.utils.showInputDialog
-import br.com.felipeacerbi.buddies.utils.showListDialog
+import br.com.felipeacerbi.buddies.tags.models.BaseTag
+import br.com.felipeacerbi.buddies.utils.*
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.activity_pet_profile.*
 import kotlinx.android.synthetic.main.input_dialog.view.*
 import kotlinx.android.synthetic.main.pet_profile_info_fragment.*
 
@@ -37,10 +39,16 @@ open class PetProfileInfoFragment : Fragment() {
         val RC_PHOTO_PICKER = 1
     }
 
+    val permissionsManager: PermissionsManager by lazy {
+        PermissionsManager(activity)
+    }
+
+    val sharedPreferences by lazy {
+        PreferenceManager.getDefaultSharedPreferences(activity)
+    }
+
     val editViewList by lazy {
-        with(view) {
-            arrayOf(buddy_name_edit_button, picture_edit_button)
-        }
+        arrayOf(buddy_name_edit_button, picture_edit_button, buddy_animal_edit_button, buddy_breed_edit_button, tag_info_button)
     }
 
     val buddyReference by lazy {
@@ -57,33 +65,56 @@ open class PetProfileInfoFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater?.inflate(R.layout.pet_profile_info_fragment, container, false)
-        setUpViews()
         return view
     }
 
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setUpViews()
+    }
+
     fun setUpViews() {
-        if(view is NestedScrollView) {
-            with(view) {
-                for(editView in editViewList) {
-                    editView.visibility = if(editable) View.VISIBLE else View.INVISIBLE
-                }
+        for(editView in editViewList) {
+            editView?.visibility = if(editable) View.VISIBLE else View.INVISIBLE
+        }
 
-                if(editable) {
-                    initPetChooser()
-                    initBreedChooser()
+        if(editable) {
+            initPetChooser()
+            initBreedChooser()
+            displayTagValue()
 
-                    buddy_name_edit_button.setOnClickListener {
-                        showEditDialog("Edit name", buddy_name.text.toString(), { buddy?.name = it })
-                    }
-
-                    picture_edit_button.setOnClickListener {
-                        val intent = Intent(Intent.ACTION_GET_CONTENT)
-                        intent.type = "image/"
-                        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
-                        startActivityForResult(Intent.createChooser(intent, "Complete action using"), RC_PHOTO_PICKER)
-                    }
-                }
+            buddy_name_edit_button.setOnClickListener {
+                showEditDialog("Edit name", buddy_name.text.toString(), { buddy?.name = it })
             }
+
+            picture_edit_button.setOnClickListener {
+                val intent = Intent(Intent.ACTION_GET_CONTENT)
+                intent.type = "image/"
+                intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
+                startActivityForResult(Intent.createChooser(intent, "Complete action using"), RC_PHOTO_PICKER)
+            }
+
+            tag_info_button.setOnClickListener {
+                AlertDialog.Builder(context).showTextDialog("Change Tag", "Please approach an NFC TAG if your device supports or enable the camera button on Settings to scan for the TAG QR Code.")
+            }
+        }
+    }
+
+    fun displayTagValue() {
+        val tagId = buddy?.tagId
+
+        if(tagId != null) {
+            val fireBuilder = (activity as FireListener).FireBuilder()
+            fireBuilder.onRef(firebaseService.getTagReference(tagId))
+                    .mode(FireListener.MODE_SINGLE)
+                    .complete {
+                        if(it != null && it.hasChildren()) {
+                            val tag = BaseTag(it)
+                            tag_value.text = tag.id
+                        }
+                    }
+                    .cancel { Log.d(TAG, "Tag not found") }
+                    .listen()
         }
     }
 
@@ -105,8 +136,6 @@ open class PetProfileInfoFragment : Fragment() {
     }
 
     fun initPetChooser() {
-        pet_chooser.setTypeface(null, Typeface.BOLD)
-
         val fireBuilder = (activity as FireListener).FireBuilder()
         fireBuilder.onRef(firebaseService.getAnimalsReference())
                 .mode(FireListener.MODE_SINGLE)
@@ -121,8 +150,6 @@ open class PetProfileInfoFragment : Fragment() {
     }
 
     fun initBreedChooser(show: Boolean = false) {
-        breed_chooser.setTypeface(null, Typeface.BOLD)
-
         val fireBuilder = (activity as FireListener).FireBuilder()
         fireBuilder.onRef(firebaseService.getAnimalBreedsReference(pet_chooser.text.toString()))
                 .mode(FireListener.MODE_SINGLE)
@@ -138,7 +165,7 @@ open class PetProfileInfoFragment : Fragment() {
 
     fun setPetChooser(items: Array<String>) {
         petSelected = items.indexOf(buddy?.animal)
-        pet_chooser.setOnClickListener {
+        buddy_animal_edit_button.setOnClickListener {
             showPetDialog(items)
         }
     }
@@ -151,7 +178,7 @@ open class PetProfileInfoFragment : Fragment() {
             breedSelected = items.indexOf(buddy?.breed)
         }
 
-        breed_chooser.setOnClickListener {
+        buddy_breed_edit_button.setOnClickListener {
             showBreedDialog(items)
         }
     }
@@ -219,17 +246,18 @@ open class PetProfileInfoFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        setUpFab(sharedPreferences.getBoolean(SettingsActivity.QR_CODE_BUTTON_SHORTCUT_KEY, false))
 
         val fireBuilder = (activity as FireListener).FireBuilder()
         fireBuilder.onRef(buddyReference)
                 .mode(FireListener.MODE_CONTINUOUS)
                 .complete {
                     if(it != null && it.hasChildren()) {
-                        Log.d(TAG, it.key)
                         buddy = Buddy(it)
                         buddy_name.text = buddy?.name
                         pet_chooser.text = buddy?.animal
                         breed_chooser.text = buddy?.breed
+                        tag_value.text = buddy?.tagId
 
                         val isOwner = buddy?.owners?.containsKey(firebaseService.getCurrentUserUID()) ?: false
                         if(isOwner) {
@@ -260,5 +288,11 @@ open class PetProfileInfoFragment : Fragment() {
                 }
                 .cancel { Log.d(TAG, "Buddy not found") }
                 .listen()
+    }
+
+    fun setUpFab(show: Boolean) {
+        activity.fab?.setUp(activity, show, R.drawable.ic_add_a_photo_white_24dp) {
+            permissionsManager.actionWithPermission(Manifest.permission.CAMERA) { activity.launchActivity(QRCodeActivity::class) }
+        }
     }
 }
