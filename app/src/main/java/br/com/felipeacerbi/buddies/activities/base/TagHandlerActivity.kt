@@ -7,9 +7,9 @@ import android.support.v7.app.AlertDialog
 import android.widget.Toast
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.NewBuddyActivity
-import br.com.felipeacerbi.buddies.activities.ProfileActivity
 import br.com.felipeacerbi.buddies.activities.QRCodeActivity
 import br.com.felipeacerbi.buddies.firebase.FireListener
+import br.com.felipeacerbi.buddies.fragments.ProfileFragment
 import br.com.felipeacerbi.buddies.models.Buddy
 import br.com.felipeacerbi.buddies.tags.NFCService
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
@@ -71,7 +71,7 @@ abstract class TagHandlerActivity : FireListener() {
                     val tagKey = data.extras.getString(NewBuddyActivity.EXTRA_TAG_KEY)
                     val baseTag = Parcels.unwrap<BaseTag>(data.extras.getSerializable(NewBuddyActivity.EXTRA_BASETAG) as Parcelable)
                     firebaseService.addNewPet(tagKey, baseTag, buddy)
-                    launchActivity(ProfileActivity::class)
+                    launchActivity(ProfileFragment::class)
                 }
                 QR_CODE_RESULT -> { showTagOptionsDialog(BaseTag(data?.extras?.getString(QRCodeActivity.QR_CODE_TEXT) ?: "")) }
             }

@@ -17,12 +17,12 @@ import com.google.firebase.database.DatabaseReference
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.buddy_list_item.view.*
 
-class BuddiesAdapter(
+class BuddiesTabAdapter(
         val listener: IListClickListener,
         val userPetsReference: DatabaseReference,
         val petsReference: DatabaseReference,
         val progressBar: ProgressBar) :
-        FirebaseIndexRecyclerAdapter<Buddy, BuddiesAdapter.BuddyViewHolder>
+        FirebaseIndexRecyclerAdapter<Buddy, BuddiesTabAdapter.BuddyViewHolder>
         (
                 Buddy::class.java,
                 R.layout.buddy_list_item,
@@ -92,27 +92,27 @@ class BuddiesAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        if(position == 0 || position == itemCount - 1) return HEADER_FOOTER_VIEW_TYPE
+        if(position == itemCount - 1) return HEADER_FOOTER_VIEW_TYPE
         return super.getItemViewType(position)
     }
 
     override fun getItem(position: Int): Buddy {
-        if(itemCount > 2 && position > 0 && position < itemCount - 1) {
-            return super.getItem(position - 1)
+        if(itemCount > 1 && position < itemCount - 1) {
+            return super.getItem(position)
         } else {
             return Buddy()
         }
     }
 
     override fun getRef(position: Int): DatabaseReference {
-        if(itemCount > 2 && position > 0 && position < itemCount - 1) {
-            return super.getRef(position - 1)
+        if(itemCount > 1 && position < itemCount - 1) {
+            return super.getRef(position)
         }
         return firebaseService.getDatabaseReference("")
     }
 
     override fun getItemCount(): Int {
-        return super.getItemCount() + 2
+        return super.getItemCount() + 1
     }
 
     open class BuddyViewHolder(view: View) : RecyclerView.ViewHolder(view)

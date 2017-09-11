@@ -25,7 +25,7 @@
         android:paddingEnd="8dp"
         android:layout_alignTop="@id/post_profile_photo"
         android:layout_alignBottom="@id/post_profile_photo"
-        android:src="@drawable/ic_more_vert_black_24dp"
+        android:src="@drawable/ic_more_vert_white_24dp"
         android:alpha="0.4"
         android:layout_alignParentEnd="true"
         android:visibility="invisible"/>

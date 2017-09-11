@@ -4,11 +4,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v7.app.AlertDialog
+import android.view.Menu
+import android.view.MenuItem
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.base.TagHandlerActivity
 import br.com.felipeacerbi.buddies.adapters.PetProfilePagerAdapter
 import br.com.felipeacerbi.buddies.fragments.PostsListFragment
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
+import br.com.felipeacerbi.buddies.utils.launchActivity
 import br.com.felipeacerbi.buddies.utils.showOneChoiceCancelableDialog
 import com.google.firebase.database.DatabaseReference
 import kotlinx.android.synthetic.main.activity_pet_profile.*
@@ -73,5 +76,18 @@ class BuddyProfileActivity : TagHandlerActivity() {
                 "Change Buddy Tag",
                 { _, _ -> requestChangeTag(baseTag) }
         )
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_simple_activity, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when(item?.itemId) {
+            R.id.action_settings -> launchActivity(SettingsActivity::class)
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 }

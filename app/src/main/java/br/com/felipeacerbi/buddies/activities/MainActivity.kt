@@ -15,6 +15,7 @@ import br.com.felipeacerbi.buddies.activities.base.TagHandlerActivity
 import br.com.felipeacerbi.buddies.fragments.PetsListFragment
 import br.com.felipeacerbi.buddies.fragments.PlacesListFragment
 import br.com.felipeacerbi.buddies.fragments.PostsListFragment
+import br.com.felipeacerbi.buddies.fragments.ProfileFragment
 import br.com.felipeacerbi.buddies.models.User
 import br.com.felipeacerbi.buddies.tags.models.BaseTag
 import br.com.felipeacerbi.buddies.utils.launchActivity
@@ -36,6 +37,7 @@ class MainActivity : TagHandlerActivity() {
         val FRAGMENT_POSTS = R.id.navigation_home
         val FRAGMENT_FOLLOWS = R.id.navigation_following
         val FRAGMENT_PLACES = R.id.navigation_places
+        val FRAGMENT_PROFILE = R.id.navigation_profile
     }
 
     @State @JvmField var currentFragment: Int? = null
@@ -121,6 +123,7 @@ class MainActivity : TagHandlerActivity() {
                         container.id,
                         Bundle().makeQueryBundle(firebaseService.queryPosts())
                 )
+                title = "Home"
                 currentFragment = FRAGMENT_POSTS
                 return@OnNavigationItemSelectedListener true
             }
@@ -130,6 +133,7 @@ class MainActivity : TagHandlerActivity() {
                         container.id,
                         Bundle().makeQueryBundle(firebaseService.queryFollow())
                 )
+                title = "Following"
                 currentFragment = FRAGMENT_FOLLOWS
                 return@OnNavigationItemSelectedListener true
             }
@@ -139,7 +143,18 @@ class MainActivity : TagHandlerActivity() {
                         container.id,
                         Bundle().makeQueryBundle(firebaseService.queryPlaces())
                 )
+                title = "Places"
                 currentFragment = FRAGMENT_PLACES
+                return@OnNavigationItemSelectedListener true
+            }
+            FRAGMENT_PROFILE -> {
+                ProfileFragment().transact(
+                        this,
+                        container.id,
+                        Bundle()
+                )
+                title = "Profile"
+                currentFragment = FRAGMENT_PROFILE
                 return@OnNavigationItemSelectedListener true
             }
         }
@@ -148,10 +163,6 @@ class MainActivity : TagHandlerActivity() {
 
     fun setUpUI() {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-        setSupportActionBar(toolbar)
-        toolbar.setNavigationOnClickListener {
-            finish()
-        }
 
         if(!sharedPreferences.contains(SettingsActivity.QR_CODE_BUTTON_SHORTCUT_KEY)) {
             sharedPreferences.edit()
@@ -197,7 +208,6 @@ class MainActivity : TagHandlerActivity() {
         when(item?.itemId) {
             R.id.action_sign_out -> onSignOut()
             R.id.action_settings -> launchActivity(SettingsActivity::class)
-            R.id.action_profile -> launchActivity(ProfileActivity::class)
             R.id.action_requests -> launchActivity(RequestsActivity::class)
         }
         return super.onOptionsItemSelected(item)

@@ -123,6 +123,8 @@ class NewPostActivity : FireListener() {
             title = "Edit Post"
             post_message.setText(postToEdit.message)
 
+            post_timestamp.text = postToEdit.created.toString()
+
             val postLocation = postToEdit.location
             if(postLocation.isNotEmpty()) {
                 mapsPlace = postLocation
@@ -137,7 +139,7 @@ class NewPostActivity : FireListener() {
                         .error(R.drawable.placeholder)
                         .placeholder(R.drawable.placeholder)
                         .fit()
-                        .centerCrop()
+                        .centerInside()
                         .into(post_photo)
             }
 

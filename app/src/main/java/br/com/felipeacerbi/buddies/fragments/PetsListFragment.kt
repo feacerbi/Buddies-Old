@@ -4,6 +4,8 @@ import android.Manifest
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
+import android.support.v4.view.ViewPager
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +15,7 @@ import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.QRCodeActivity
 import br.com.felipeacerbi.buddies.activities.SettingsActivity
 import br.com.felipeacerbi.buddies.adapters.BuddiesAdapter
+import br.com.felipeacerbi.buddies.adapters.BuddiesTabAdapter
 import br.com.felipeacerbi.buddies.adapters.listeners.IListClickListener
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.utils.*
@@ -46,6 +49,10 @@ open class PetsListFragment : Fragment(), IListClickListener {
         firebaseService.getDatabaseReference(arguments.getString(DATABASE_REFERENCE))
     }
 
+    val parentActivity by lazy {
+        activity as AppCompatActivity
+    }
+
     companion object {
         val TAG = "PetsListFragment"
         val DATABASE_REFERENCE = "database_reference"
@@ -53,14 +60,23 @@ open class PetsListFragment : Fragment(), IListClickListener {
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
+        val tab = container is ViewPager
 
-        val view = inflater?.inflate(R.layout.buddies_list, container, false)
+        var view = inflater?.inflate(R.layout.buddies_list, container, false)
+        if(tab) {
+            view = inflater?.inflate(R.layout.tab_buddies_list, container, false)
+        }
 
         // Set the adapter
         if(view is RelativeLayout) {
             with(view) {
+                parentActivity.setSupportActionBar(toolbar)
                 list.layoutManager = LinearLayoutManager(context)
-                list.adapter = BuddiesAdapter(this@PetsListFragment, ref, firebaseService.getPetsReference(), progress)
+                if(tab) {
+                    list.adapter = BuddiesTabAdapter(this@PetsListFragment, ref, firebaseService.getPetsReference(), progress)
+                } else {
+                    list.adapter = BuddiesAdapter(this@PetsListFragment, ref, firebaseService.getPetsReference(), progress)
+                }
             }
         }
 

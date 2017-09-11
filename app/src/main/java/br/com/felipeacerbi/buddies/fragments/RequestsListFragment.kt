@@ -29,6 +29,10 @@ open class RequestsListFragment : PetsListFragment() {
         // Set the adapter
         if(view is ConstraintLayout) {
             with(view) {
+                parentActivity.setSupportActionBar(toolbar)
+                toolbar.setNavigationOnClickListener {
+                    activity.finish()
+                }
                 list.layoutManager = LinearLayoutManager (context)
                 list.adapter = RequestsAdapter(activity, ref, firebaseService.getRequestsReference(), progress)
             }

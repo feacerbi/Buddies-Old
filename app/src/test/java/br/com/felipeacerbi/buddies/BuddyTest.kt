@@ -20,7 +20,7 @@ class BuddyTest {
     val testOwnsMap = mapOf(Pair(testUsername, true), Pair(testUsernameTwo, false))
     val testFollowsMap = mapOf(Pair(testUsernameThree, false), Pair(testUsernameFour, true))
 
-    fun createTestBuddy() = Buddy(testName, testBreed, testPhoto, testTagId, testOwnsMap, testFollowsMap)
+    fun createTestBuddy() = Buddy()//testName, testBreed, testPhoto, testTagId, testOwnsMap, testFollowsMap)
 
     @Test
     fun test_cleanConstructor() {

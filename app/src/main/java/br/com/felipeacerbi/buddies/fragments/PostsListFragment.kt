@@ -53,6 +53,7 @@ open class PostsListFragment : PetsListFragment() {
         // Set the adapter
         if(view is ConstraintLayout) {
             with(view) {
+                parentActivity.setSupportActionBar(toolbar)
                 list.layoutManager = LinearLayoutManager(context)
                 (list.layoutManager as LinearLayoutManager).reverseLayout = true
                 list.adapter = PostsAdapter(this@PostsListFragment, ref, firebaseService.getPostsReference(), progress)

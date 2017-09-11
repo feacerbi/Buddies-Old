@@ -1,10 +1,8 @@
 package br.com.felipeacerbi.buddies.fragments
 
-import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
 import android.support.v4.widget.NestedScrollView
 import android.support.v7.app.AlertDialog
@@ -15,14 +13,12 @@ import android.view.ViewGroup
 import android.widget.Toast
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.FullscreenPhotoActivity
-import br.com.felipeacerbi.buddies.activities.QRCodeActivity
-import br.com.felipeacerbi.buddies.activities.SettingsActivity
 import br.com.felipeacerbi.buddies.firebase.FireListener
 import br.com.felipeacerbi.buddies.firebase.FirebaseService
 import br.com.felipeacerbi.buddies.models.User
-import br.com.felipeacerbi.buddies.utils.*
+import br.com.felipeacerbi.buddies.utils.launchActivityWithExtras
+import br.com.felipeacerbi.buddies.utils.showInputDialog
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.activity_profile.*
 import kotlinx.android.synthetic.main.input_dialog.view.*
 import kotlinx.android.synthetic.main.profile_info_fragment.*
 import kotlinx.android.synthetic.main.profile_info_fragment.view.*
@@ -38,14 +34,6 @@ open class ProfileInfoFragment : Fragment() {
     companion object {
         val TAG = "ProfileInfoFragment"
         val RC_PHOTO_PICKER = 1
-    }
-
-    val permissionsManager: PermissionsManager by lazy {
-        PermissionsManager(activity)
-    }
-
-    val sharedPreferences by lazy {
-        PreferenceManager.getDefaultSharedPreferences(activity)
     }
 
     var user: User? = null
@@ -118,7 +106,6 @@ open class ProfileInfoFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        setUpFab(sharedPreferences.getBoolean(SettingsActivity.QR_CODE_BUTTON_SHORTCUT_KEY, false))
 
         val fireBuilder = (activity as FireListener).FireBuilder()
         fireBuilder.onRef(userReference)
@@ -151,11 +138,5 @@ open class ProfileInfoFragment : Fragment() {
                 }
                 .cancel { Log.d(TAG, "User not found") }
                 .listen()
-    }
-
-    fun setUpFab(show: Boolean) {
-        activity.fab?.setUp(activity, show, R.drawable.ic_add_a_photo_white_24dp) {
-            permissionsManager.actionWithPermission(Manifest.permission.CAMERA) { activity.launchActivity(QRCodeActivity::class) }
-        }
     }
 }

@@ -65,6 +65,7 @@ open class PlacesListFragment : PetsListFragment() {
         // Set the adapter
         if(view is RelativeLayout) {
             with(view) {
+                parentActivity.setSupportActionBar(toolbar)
                 list.layoutManager = LinearLayoutManager (context)
                 list.adapter = PlacesAdapter(this@PlacesListFragment, ref.orderByValue(), progress)
                 list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
