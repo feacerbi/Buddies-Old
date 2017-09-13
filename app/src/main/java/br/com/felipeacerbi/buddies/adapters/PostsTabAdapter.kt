@@ -35,9 +35,8 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.post_list_item.view.*
 import org.parceler.Parcels
 
-
-class PostsAdapter(val listener: IListClickListener, val userPostsReference: Query, val postsReference: DatabaseReference, val progressBar: ProgressBar) :
-        FirebaseIndexRecyclerAdapter<Post, PostsAdapter.PostViewHolder>
+class PostsTabAdapter(val listener: IListClickListener, val userPostsReference: Query, val postsReference: DatabaseReference, val progressBar: ProgressBar) :
+        FirebaseIndexRecyclerAdapter<Post, PostsTabAdapter.PostViewHolder>
         (
                 Post::class.java,
                 R.layout.post_list_item,
@@ -47,7 +46,7 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
         ) {
 
     companion object {
-        val TAG = "PostsAdapter"
+        val TAG = "PostsTabAdapter"
         val HEADER_FOOTER_VIEW_TYPE = 1
     }
 
@@ -70,11 +69,11 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
                         with(holder.itemView) {
                             poster_name.text = buddy.name
                             poster_name.setOnClickListener {
-                                openBuddyDetails(post.petId)
+                                openBuddyDetails(post)
                             }
 
                             post_profile_photo.setOnClickListener {
-                                openBuddyDetails(post.petId)
+                                openBuddyDetails(post)
                             }
 
                             Picasso.with(context)
@@ -239,14 +238,11 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
                 Log.e(TAG, "Could not find buddy")
             }
 
-            override fun onDataChange(buddySnapshot: DataSnapshot?) {
-                if(buddySnapshot != null && buddySnapshot.hasChildren()) {
-                    val buddy = Buddy(buddySnapshot)
+            override fun onDataChange(userSnapshot: DataSnapshot?) {
+                if(userSnapshot != null && userSnapshot.hasChildren()) {
+                    val buddy = Buddy(userSnapshot)
 
                     nameField.text = buddy.name
-                    nameField.setOnClickListener {
-                        openBuddyDetails(buddySnapshot.key)
-                    }
                 }
             }
         })
@@ -347,11 +343,11 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
         return null
     }
 
-    fun openBuddyDetails(petId: String) {
+    fun openBuddyDetails(post: Post) {
         listener.onListClick<BuddyProfileActivity>(
                 BuddyProfileActivity::class,
                 arrayOf(BuddyProfileActivity.EXTRA_PETID),
-                arrayOf(petId))
+                arrayOf(post.petId))
     }
 
     fun openCommentsActivity(position: Int) {
@@ -396,12 +392,12 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
     }
 
     override fun getItemViewType(position: Int): Int {
-        if(position == 0 || position == itemCount - 1) return HEADER_FOOTER_VIEW_TYPE
+        if(position == 0) return HEADER_FOOTER_VIEW_TYPE
         return super.getItemViewType(position)
     }
 
     override fun getItem(position: Int): Post {
-        if(itemCount > 2 && position > 0 && position < itemCount - 1) {
+        if(itemCount > 1 && position > 0) {
             return super.getItem(position - 1)
         } else {
             return Post()
@@ -409,11 +405,11 @@ class PostsAdapter(val listener: IListClickListener, val userPostsReference: Que
     }
 
     override fun getItemCount(): Int {
-        return super.getItemCount() + 2
+        return super.getItemCount() + 1
     }
 
     override fun getRef(position: Int): DatabaseReference {
-        if(itemCount > 2 && position > 0 && position < itemCount - 1) {
+        if(itemCount > 1 && position > 0) {
             return super.getRef(position - 1)
         }
         return firebaseService.getDatabaseReference("")

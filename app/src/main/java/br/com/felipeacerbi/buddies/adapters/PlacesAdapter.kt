@@ -109,6 +109,7 @@ class PlacesAdapter(val listener: IListClickListener, val userPlacesReference: Q
                 if(itemDataSnapshot?.value != null && itemDataSnapshot.hasChildren()) {
                     val item = FriendlyItem(itemDataSnapshot)
                     with(view as TextView) {
+                        view.setPaddingRelative(4, 0, 4, 0)
                         text = item.name
                     }
                 }

@@ -106,10 +106,10 @@ fun AlertDialog.Builder.showOneChoiceCancelableDialog(
 }
 
 fun AlertDialog.Builder.showTextDialog(
-        title: String,
-        message: String) {
+        textView: View,
+        title: String) {
+    setView(textView)
     setTitle(title)
-    setMessage(message)
     setPositiveButton("OK") { _, _ -> }
     show()
 }

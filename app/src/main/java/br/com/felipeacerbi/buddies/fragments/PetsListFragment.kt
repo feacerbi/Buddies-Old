@@ -65,12 +65,13 @@ open class PetsListFragment : Fragment(), IListClickListener {
         var view = inflater?.inflate(R.layout.buddies_list, container, false)
         if(tab) {
             view = inflater?.inflate(R.layout.tab_buddies_list, container, false)
+        } else {
+            parentActivity.setSupportActionBar(view?.toolbar)
         }
 
         // Set the adapter
         if(view is RelativeLayout) {
             with(view) {
-                parentActivity.setSupportActionBar(toolbar)
                 list.layoutManager = LinearLayoutManager(context)
                 if(tab) {
                     list.adapter = BuddiesTabAdapter(this@PetsListFragment, ref, firebaseService.getPetsReference(), progress)

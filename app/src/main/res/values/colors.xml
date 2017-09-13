@@ -6,4 +6,6 @@
     <color name="profile_picture_background">#E0E0E0</color>
 
     <color name="black_overlay">#66000000</color>
+
+    <color name="black_light">#EEEEEE</color>
 </resources>

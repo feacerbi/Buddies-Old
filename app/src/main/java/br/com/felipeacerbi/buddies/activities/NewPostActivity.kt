@@ -76,7 +76,6 @@ class NewPostActivity : FireListener() {
         poster_name.text = buddyIntent?.name
         post_post_button.isEnabled = false
         post_location.visibility = View.GONE
-        post_separator.visibility = View.GONE
         post_with.visibility = View.GONE
         post_with_names.visibility = View.GONE
 
@@ -123,14 +122,11 @@ class NewPostActivity : FireListener() {
             title = "Edit Post"
             post_message.setText(postToEdit.message)
 
-            post_timestamp.text = postToEdit.created.toString()
-
             val postLocation = postToEdit.location
             if(postLocation.isNotEmpty()) {
                 mapsPlace = postLocation
                 post_location.text = postLocation
                 post_location.visibility = View.VISIBLE
-                post_separator.visibility = View.VISIBLE
             }
 
             if(postToEdit.photo.isNotEmpty()) {

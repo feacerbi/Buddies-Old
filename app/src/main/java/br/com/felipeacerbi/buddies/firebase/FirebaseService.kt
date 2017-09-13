@@ -291,7 +291,7 @@ class FirebaseService : FirebaseInstanceIdService() {
     }
 
     fun removePetFromUser(ref: String, petId: String) {
-        if(!petId.isEmpty()) {
+        if(petId.isNotEmpty()) {
             Log.d(TAG, "Removing pet from owner")
             val childUpdates = HashMap<String, Any?>()
             val currentUserPath = DATABASE_USERS_PATH + getCurrentUserUID() + "/" + ref + "/" + petId
@@ -324,7 +324,7 @@ class FirebaseService : FirebaseInstanceIdService() {
     }
 
     fun removePet(petId: String) {
-        if(!petId.isEmpty()) {
+        if(petId.isNotEmpty()) {
             Log.d(TAG, "Removing pet")
             getPetReference(petId).removeValue()
             getTagsReference().orderByChild(BaseTag.DATABASE_PETID_CHILD).equalTo(petId).addListenerForSingleValueEvent(object: ValueEventListener {

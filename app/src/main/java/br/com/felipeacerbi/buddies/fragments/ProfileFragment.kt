@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.adapters.ProfilePagerAdapter
-import kotlinx.android.synthetic.main.fragment_profile.view.*
+import kotlinx.android.synthetic.main.profile_fragment.view.*
 
 class ProfileFragment : PetsListFragment() {
 
@@ -19,7 +19,7 @@ class ProfileFragment : PetsListFragment() {
     var profilePagerAdapter: ProfilePagerAdapter? = null
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater?.inflate(R.layout.fragment_profile, container, false)
+        val view = inflater?.inflate(R.layout.profile_fragment, container, false)
 
         profilePagerAdapter = ProfilePagerAdapter(childFragmentManager)
 
@@ -29,7 +29,6 @@ class ProfileFragment : PetsListFragment() {
                 view_pager.adapter = profilePagerAdapter
                 view_pager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
                 tabs.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(view_pager))
-
             }
         }
 

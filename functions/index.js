@@ -138,10 +138,12 @@ exports.syncPostToFollows =
 		var postId = event.params.postId;
 		
 		const getFollowsPromise = admin.database().ref('pets/' + petId + "/follows").once('value');
+		const getPostCommentsPromise = admin.database().ref('posts/' + postId + "/comments").once('value');
 		
-		return Promise.all([getFollowsPromise]).then(
+		return Promise.all([getFollowsPromise, getPostCommentsPromise]).then(
 			results => {
 				const followsSnapshot = results[0];
+				const postCommentsSnapshot = results[1];
 				
 				var promises = [];
 				
@@ -154,6 +156,14 @@ exports.syncPostToFollows =
 							promises[promises.length] = removePostPromise(followKey, postId);
 						}
 					})
+					
+				if(!event.data.val()) {
+					postCommentsSnapshot.forEach(
+						comment => {
+							var commentKey = comment.key;
+							promises[promises.length] = removeCommentPromise(commentKey);
+						})
+				}
 					
 				return Promise.all(promises);
 			})
@@ -168,9 +178,16 @@ function addPostPromise(userKey, postId) {
 
 function removePostPromise(userKey, postId) {
 	var userPostsRef = admin.database().ref('users/' + userKey + "/posts/" + postId);
-	var addPost = userPostsRef.set(null);
+	var removePost = userPostsRef.set(null);
 	
-	return Promise.all([addPost]);
+	return Promise.all([removePost]);
+}
+
+function removeCommentPromise(commentKey) {
+	var commentsRef = admin.database().ref('comments/' + commentKey);
+	var removeComment = commentsRef.set(null);
+	
+	return Promise.all([removeComment]);
 }
 
 exports.listUserPlaces =

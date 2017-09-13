@@ -86,6 +86,7 @@ class BuddiesAdapter(
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): BuddyViewHolder {
         if(viewType == HEADER_FOOTER_VIEW_TYPE) {
             val view = LayoutInflater.from(parent?.context).inflate(R.layout.header_footer, parent, false)
+            view.setBackgroundColor(listener.getContext().resources.getColor(android.R.color.white))
             return HeaderFooterViewHolder(view)
         }
         return super.onCreateViewHolder(parent, viewType)

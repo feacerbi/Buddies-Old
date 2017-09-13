@@ -25,6 +25,7 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_pet_profile.*
 import kotlinx.android.synthetic.main.input_dialog.view.*
 import kotlinx.android.synthetic.main.pet_profile_info_fragment.*
+import kotlinx.android.synthetic.main.text_dialog.view.*
 
 /**
  * Mandatory empty constructor for the fragment manager to instantiate the
@@ -95,7 +96,9 @@ open class PetProfileInfoFragment : Fragment() {
             }
 
             tag_info_button.setOnClickListener {
-                AlertDialog.Builder(context).showTextDialog("Change Tag", "Please approach an NFC TAG if your device supports or enable the camera button on Settings to scan for the TAG QR Code.")
+                val textView = layoutInflater.inflate(R.layout.text_dialog, null)
+                textView.text_field.text = "Please approach an NFC TAG if your device supports or enable the camera button on Settings to scan for the TAG QR Code."
+                AlertDialog.Builder(context).showTextDialog(textView, "Change Tag")
             }
         }
     }

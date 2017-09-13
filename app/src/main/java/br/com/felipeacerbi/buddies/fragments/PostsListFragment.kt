@@ -2,6 +2,7 @@ package br.com.felipeacerbi.buddies.fragments
 
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
+import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -13,6 +14,7 @@ import br.com.felipeacerbi.buddies.R
 import br.com.felipeacerbi.buddies.activities.NewPostActivity
 import br.com.felipeacerbi.buddies.adapters.BuddiesListAdapter
 import br.com.felipeacerbi.buddies.adapters.PostsAdapter
+import br.com.felipeacerbi.buddies.adapters.PostsTabAdapter
 import br.com.felipeacerbi.buddies.models.Buddy
 import br.com.felipeacerbi.buddies.utils.launchActivityWithExtras
 import br.com.felipeacerbi.buddies.utils.setUp
@@ -47,25 +49,36 @@ open class PostsListFragment : PetsListFragment() {
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
+        val tab = container is ViewPager
 
-        val view = inflater?.inflate(R.layout.posts_list, container, false)
+        var view = inflater?.inflate(R.layout.posts_list, container, false)
+        if(tab) {
+            view = inflater?.inflate(R.layout.tab_posts_list, container, false)
+        } else {
+            parentActivity.setSupportActionBar(view?.toolbar)
+        }
 
         // Set the adapter
         if(view is ConstraintLayout) {
             with(view) {
-                parentActivity.setSupportActionBar(toolbar)
                 list.layoutManager = LinearLayoutManager(context)
                 (list.layoutManager as LinearLayoutManager).reverseLayout = true
-                list.adapter = PostsAdapter(this@PostsListFragment, ref, firebaseService.getPostsReference(), progress)
+                if(tab) {
+                    list.adapter = PostsTabAdapter(this@PostsListFragment, ref, firebaseService.getPostsReference(), progress)
+                } else {
+                    list.adapter = PostsAdapter(this@PostsListFragment, ref, firebaseService.getPostsReference(), progress)
+                }
                 list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                     override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
                         super.onScrolled(recyclerView, dx, dy)
                         if (dy > 0) {
                             postsFab?.hide()
                             postsFab?.isClickable = false
+//                            parentActivity.supportActionBar?.hide()
                         } else {
                             postsFab?.show()
                             postsFab?.isClickable = true
+//                            parentActivity.supportActionBar?.show()
                         }
                     }
                 })
@@ -108,6 +121,7 @@ open class PostsListFragment : PetsListFragment() {
             override fun onDataChange(buddySnapshot: DataSnapshot?) {
                 if (buddySnapshot != null && buddySnapshot.hasChildren()) {
                     val newBuddy = Buddy(buddySnapshot)
+
                     adapter.add(newBuddy)
 
                     checkAndOpenBuddiesDialog(adapter, ownedsSnapshot)

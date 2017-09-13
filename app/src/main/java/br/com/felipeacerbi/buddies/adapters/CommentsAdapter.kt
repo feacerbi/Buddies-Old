@@ -64,15 +64,18 @@ class CommentsAdapter(val listener: IListClickListener, val postCommentsReferenc
                                 .centerCrop()
                                 .into(poster_profile_photo)
 
-                        setOnLongClickListener {
-                            view ->
-                            val popup = PopupMenu(context, view)
-                            popup.setOnMenuItemClickListener {
-                                menuItem -> onActionsMenuClicked(menuItem, getRef(position).key, comment)
+                        val editable = userSnapshot.key == firebaseService.getCurrentUserUID()
+
+                        if(editable) {
+                            setOnLongClickListener { view ->
+                                val popup = PopupMenu(context, view)
+                                popup.setOnMenuItemClickListener { menuItem ->
+                                    onActionsMenuClicked(menuItem, getRef(position).key, comment)
+                                }
+                                popup.inflate(R.menu.post_actions)
+                                popup.show()
+                                true
                             }
-                            popup.inflate(R.menu.post_actions)
-                            popup.show()
-                            true
                         }
                     }
                 }

@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
         android:elevation="4dp"
-        app:navigationIcon="@drawable/ic_keyboard_backspace_white_24dp"
+        app:navigationIcon="@drawable/ic_close_white_24dp"
         android:theme="@style/AppTheme.Toolbar" />
 
     <RelativeLayout
@@ -55,40 +55,26 @@
                 app:layout_constraintStart_toEndOf="@id/poster_name"
                 android:textSize="14sp"
                 android:visibility="visible"
-                android:text=" with "/>
+                android:alpha="0.5"
+                android:layout_marginStart="4dp"
+                android:text="with"/>
 
             <TextView
                 android:id="@+id/post_with_names"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toEndOf="@id/post_with"
+                android:layout_marginStart="4dp"
                 android:textSize="14sp"/>
-
-            <TextView
-                android:id="@+id/post_timestamp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="72dp"
-                app:layout_constraintTop_toBottomOf="@id/poster_name"
-                android:textSize="12sp"/>
-
-            <TextView
-                android:id="@+id/post_separator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toEndOf="@id/post_timestamp"
-                app:layout_constraintTop_toBottomOf="@id/poster_name"
-                android:textSize="12sp"
-                android:visibility="visible"
-                android:text="  •  "/>
 
             <TextView
                 android:id="@+id/post_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
                 app:layout_constraintStart_toEndOf="@id/post_separator"
                 app:layout_constraintTop_toBottomOf="@id/poster_name"
-                android:visibility="visible"
+                android:alpha="0.5"
                 android:textSize="12sp"/>
         </android.support.constraint.ConstraintLayout>
     </RelativeLayout>
@@ -100,8 +86,8 @@
         android:layout_alignBottom="@id/post_header">
         <cn.gavinliu.android.lib.shapedimageview.ShapedImageView
             android:id="@+id/post_profile_photo"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginStart="16dp"
             android:layout_gravity="center_vertical"
             app:shape_mode="circle"/>
